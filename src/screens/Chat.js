@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   Modal,
   View,
+  Dimensions,
   Image,
   BackAndroid,
   ActivityIndicator,
@@ -533,7 +534,9 @@ export default class Chat extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')} style={styles.container}>
+        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+
+
           <GiftedChat
             messages={this.state.messages}
 
@@ -590,17 +593,15 @@ export default class Chat extends React.Component {
             />
           </Image>
 
-
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
+  containerimage: {
     flex: 1,
-
-    alignSelf: 'stretch',
-    width: null,
+    width:null,
+    alignSelf:'stretch'
   },
   quickContainer: {
     marginTop: 5,

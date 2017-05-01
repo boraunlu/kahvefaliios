@@ -23,9 +23,9 @@
 		<string>fbshareextension</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
-	<string>Kameranı kullanabilmek için lütfen onayla</string>
+	<string>Kamerayı kullanabilmek için lütfen onayla</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Fotoğraflarına erişebilmek için lütfen onayla</string>
+	<string>Fotoğraflarından seçebilmek için lütfen onayla</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>

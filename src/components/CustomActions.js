@@ -166,7 +166,6 @@ export default class CustomActions extends React.Component {
           }}
         >
            <Camera
-            captureTarget={Camera.constants.CaptureTarget.disk}
             sendCapturedImage={(image) => { this.sendCapturedImage(image)}}
           />
         </Modal>
