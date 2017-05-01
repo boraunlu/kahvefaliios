@@ -165,8 +165,10 @@ export default class CustomActions extends React.Component {
             this.setCameraVisible(false);
           }}
         >
-           <Camera sendCapturedImage={(image) => {    this.sendCapturedImage(image)
-                 }}/>
+           <Camera
+            captureTarget={Camera.constants.CaptureTarget.disk}
+            sendCapturedImage={(image) => { this.sendCapturedImage(image)}}
+          />
         </Modal>
         {this.renderIcon()}
       </TouchableOpacity>

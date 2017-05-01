@@ -229,7 +229,8 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 20,
     color:'white',
-    textAlign:'center'
+    textAlign:'center',
+    backgroundColor:'transparent'
   },
   chattext:{
     fontSize:16,
@@ -238,7 +239,8 @@ const styles = StyleSheet.create({
   label2:{
     fontSize: 24,
     color:'white',
-    textAlign:'center'
+    textAlign:'center',
+    backgroundColor:'transparent'
   },
   headline:{
     fontSize: 30,
@@ -265,10 +267,12 @@ const styles = StyleSheet.create({
     color:'white',
     fontSize:20,
     fontWeight:'bold',
+    backgroundColor:'transparent'
   },
   description2:{
     color:'white',
     fontSize:20,
-    fontWeight:'normal'
+    fontWeight:'normal',
+    backgroundColor:'transparent'
   }
 });
