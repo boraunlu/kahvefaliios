@@ -75,7 +75,7 @@ export default class CustomActions extends React.Component {
       <NavBar style={{
         statusBar: {
           backgroundColor: '#FFF',
-          height:5
+          height:30
         },
         navBar: {
           backgroundColor: '#FFF',

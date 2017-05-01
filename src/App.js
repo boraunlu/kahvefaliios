@@ -24,7 +24,7 @@ const kahvefaliapp = StackNavigator({
   Odeme: {screen:Odeme},
   About: {screen:About},
 
-});
+},{ headerMode: 'screen' });
 
 
 

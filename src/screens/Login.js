@@ -40,7 +40,7 @@ export default class Login extends React.Component {
 }
 
   static navigationOptions = {
-      headerVisible:false
+      header:null
     };
 
   onVideoLoadError = () => {

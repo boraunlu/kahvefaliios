@@ -29,7 +29,7 @@ export default class Home extends React.Component {
 }
 
   static navigationOptions = {
-      headerVisible:false
+      header:null
     };
 
     _navigateTo = (routeName: string) => {

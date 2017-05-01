@@ -15,7 +15,8 @@ import {
 
 import firebase from 'firebase';
 import Backend from '../Backend';
-
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
 
 const productId = "deneme"
