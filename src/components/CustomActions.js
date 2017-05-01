@@ -8,7 +8,8 @@ import {
 } from 'react-native';
 
 import CameraRollPicker from 'react-native-camera-roll-picker';
-import Camera from './CameraPick';
+import CameraPick from './CameraPick';
+import Camera from 'react-native-camera';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -53,7 +54,7 @@ export default class CustomActions extends React.Component {
           this.setPickerVisible(true);
           break;
         case 1:
-          this.setCameraVisible(true);
+          Camera.checkVideoAuthorizationStatus().then((response) => {if(response==true){this.setCameraVisible(true)}})
           break;
         default:
       }
@@ -165,7 +166,7 @@ export default class CustomActions extends React.Component {
             this.setCameraVisible(false);
           }}
         >
-           <Camera
+           <CameraPick
             sendCapturedImage={(image) => { this.sendCapturedImage(image)}}
           />
         </Modal>

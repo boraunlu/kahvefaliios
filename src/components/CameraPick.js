@@ -20,6 +20,7 @@ export default class CameraPick extends Component {
           }}
           captureQuality={"medium"}
           style={styles.preview}
+          captureTarget={Camera.constants.CaptureTarget.disk}
           aspect={Camera.constants.Aspect.fill}>
           <Text style={styles.capture} onPress={this.takePicture.bind(this)}><Icon name="camera" color="black" size={30} /></Text>
         </Camera>
