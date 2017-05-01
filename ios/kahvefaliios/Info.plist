@@ -2,30 +2,30 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CFBundleURLTypes</key>
-  <array>
-    <dict>
-      <key>CFBundleURLSchemes</key>
-      <array>
-        <string>fb845566225565988</string>
-      </array>
-    </dict>
-  </array>
-  <key>FacebookAppID</key>
-  <string>845566225565988</string>
-  <key>FacebookDisplayName</key>
-  <string>Kahve Falı Sohbeti</string>
-  <key>LSApplicationQueriesSchemes</key>
-  <array>
-    <string>fbapi</string>
-    <string>fb-messenger-api</string>
-    <string>fbauth2</string>
-    <string>fbshareextension</string>
-  </array>
-  <key>NSCameraUsageDescription</key>
-  <string>Kameranı kullanabilmek için lütfen onayla</string>
-  <key>NSPhotoLibraryUsageDescription</key>
-  <string>Fotoğraflarına erişebilmek için lütfen onayla</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb845566225565988</string>
+			</array>
+		</dict>
+	</array>
+	<key>FacebookAppID</key>
+	<string>845566225565988</string>
+	<key>FacebookDisplayName</key>
+	<string>Kahve Falı Sohbeti</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
+	<key>NSCameraUsageDescription</key>
+	<string>Kameranı kullanabilmek için lütfen onayla</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Fotoğraflarına erişebilmek için lütfen onayla</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -64,8 +64,11 @@
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>FontAwesome.ttf</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
-	<!--See http://ste.vn/2015/06/10/configuring-app-transport-security-ios-9-osx-10-11/ -->
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
