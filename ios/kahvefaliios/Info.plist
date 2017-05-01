@@ -67,6 +67,7 @@
 	<key>UIAppFonts</key>
 	<array>
 		<string>FontAwesome.ttf</string>
+		<string>Courgette.ttf</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>

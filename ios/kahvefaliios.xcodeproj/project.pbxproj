@@ -39,6 +39,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		86C925766AF940F4AF581B4D /* libRCTFBSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A855BFCB224FD2BE6EDC2A /* libRCTFBSDK.a */; };
 		9FE62F112CB84AA7B09859E9 /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DC290A569F14026A7799668 /* libRCTVideo.a */; };
+		BD44FBCB1EB7297E00F1CD7E /* Courgette.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD44FBCA1EB7297E00F1CD7E /* Courgette.ttf */; };
 		BD724B001EB70005005B48F6 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD724AFC1EB70005005B48F6 /* Bolts.framework */; };
 		BD724B011EB70005005B48F6 /* FBSDKCoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD724AFD1EB70005005B48F6 /* FBSDKCoreKit.framework */; };
 		BD724B021EB70005005B48F6 /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD724AFE1EB70005005B48F6 /* FBSDKLoginKit.framework */; };
@@ -330,6 +331,7 @@
 		95A2268A3F3648B792BC9B6B /* RNSound.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNSound.xcodeproj; path = "../node_modules/react-native-sound/RNSound.xcodeproj"; sourceTree = "<group>"; };
 		A4CBC99F066E43AFBD8A504A /* libRCTCamera.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTCamera.a; sourceTree = "<group>"; };
 		BC6BF1927B3746D794038AD7 /* libRNSound.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSound.a; sourceTree = "<group>"; };
+		BD44FBCA1EB7297E00F1CD7E /* Courgette.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Courgette.ttf; sourceTree = "<group>"; };
 		BD724AFC1EB70005005B48F6 /* Bolts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Bolts.framework; path = ../../../FacebookSDK/Bolts.framework; sourceTree = "<group>"; };
 		BD724AFD1EB70005005B48F6 /* FBSDKCoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKCoreKit.framework; path = ../../../FacebookSDK/FBSDKCoreKit.framework; sourceTree = "<group>"; };
 		BD724AFE1EB70005005B48F6 /* FBSDKLoginKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FBSDKLoginKit.framework; path = ../../../FacebookSDK/FBSDKLoginKit.framework; sourceTree = "<group>"; };
@@ -645,6 +647,7 @@
 		BD724BC01EB71B04005B48F6 /* Fonts */ = {
 			isa = PBXGroup;
 			children = (
+				BD44FBCA1EB7297E00F1CD7E /* Courgette.ttf */,
 				BD724BC11EB71B04005B48F6 /* Entypo.ttf */,
 				BD724BC21EB71B04005B48F6 /* EvilIcons.ttf */,
 				BD724BC31EB71B04005B48F6 /* FontAwesome.ttf */,
@@ -1082,6 +1085,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BD724BD91EB71B04005B48F6 /* Octicons.ttf in Resources */,
+				BD44FBCB1EB7297E00F1CD7E /* Courgette.ttf in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				BD724BE31EB71B34005B48F6 /* yourturn.mp3 in Resources */,
 				BD724BD11EB71B04005B48F6 /* Foundation.ttf in Resources */,
