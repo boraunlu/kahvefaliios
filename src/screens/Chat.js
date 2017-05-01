@@ -79,15 +79,11 @@ export default class Chat extends React.Component {
 
     this._isAlright = null;
   }
-  static navigationOptions = {
-    title: 'Sohbet',
-    header: ({ state }) => ({
-      left:   <Button title={"Sayfam"} onPress={() => {state.params.setnavigation('Greeting')}}/>,
-      right: <Button title={"kredi al"} onPress={() => {state.params.setnavigation('Odeme')}}/>,
-
-    }),
-
-  };
+  static navigationOptions = ({ navigation }) => ({
+    headerLeft:<Button title={"Sayfam"} onPress={() => {navigation.state.params.setnavigation('Greeting')}}/>,
+    headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
+    HeaderTitle:"Sohbet"
+  })
 
 
 
@@ -537,7 +533,7 @@ export default class Chat extends React.Component {
   render() {
     return (
 
-        <Image source={{uri:'http://kahvefali.s3.amazonaws.com/images/wallpaper/splash4.png'}} style={styles.container}>
+        <Image source={require('../static/images/splash4.png')} style={styles.container}>
           <GiftedChat
             messages={this.state.messages}
 

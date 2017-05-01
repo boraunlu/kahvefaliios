@@ -27,7 +27,7 @@ export default class Greeting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      profPhoto:null,
+      profPhoto:'http://www.omnovia.com/wp/wp-content/uploads/2015/04/analyst-placeholder-avatar.png',
       userName:null,
       user:null,
       userData:null,
