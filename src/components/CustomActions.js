@@ -156,6 +156,7 @@ export default class CustomActions extends React.Component {
             imagesPerRow={4}
             callback={this.selectImages}
             selected={[]}
+            emptyText={"Fotoğrafın bulunmuyor ya da uygulamamıza gerekli izni vermemişsin. Çekilmiş fotoğraflarından göndermek istersen telefonunun ayarlar bölümünden uygulamamıza fotoğraflarına erişim izni verebilirsin. Teşekkürler!"}
           />
         </Modal>
         <Modal
