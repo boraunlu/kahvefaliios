@@ -14,6 +14,7 @@
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
     "react-native-camera-roll-picker": "^1.1.9",
     "react-native-fbsdk": "^0.5.0",
+    "react-native-fcm": "^6.2.3",
     "react-native-fetch-blob": "^0.10.5",
     "react-native-gifted-chat": "^0.1.4",
     "react-native-in-app-utils": "^5.2.3",
