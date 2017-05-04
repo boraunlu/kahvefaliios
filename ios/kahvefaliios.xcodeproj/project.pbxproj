@@ -269,6 +269,48 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		BD2D28EB1EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6000084EE5951C63FFC5F3AF748003C8;
+			remoteInfo = GoogleToolboxForMac;
+		};
+		BD2D28ED1EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B1FDB453AA67E0743988EF8B6F43DE2D;
+			remoteInfo = "Pods-kahvefaliios";
+		};
+		BD2D28EF1EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B40771CC8DEC98F74B782A763F5DC4CD;
+			remoteInfo = "Pods-kahvefaliios-tvOS";
+		};
+		BD2D28F11EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 92A3A6FEA52838112370B30DA13DFB1B;
+			remoteInfo = "Pods-kahvefaliios-tvOSTests";
+		};
+		BD2D28F31EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 912EB72544A3D1FA865BDA01FA8451C7;
+			remoteInfo = "Pods-kahvefaliiosTests";
+		};
+		BD2D28F51EBA5C9900C9108C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 3A12AB3C1688446964D2CCEB593864C7;
+			remoteInfo = Protobuf;
+		};
 		BD4456991EB744CB00F9EC14 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD4456911EB744CB00F9EC14 /* RCTCameraRoll.xcodeproj */;
@@ -381,6 +423,7 @@
 		A4CBC99F066E43AFBD8A504A /* libRCTCamera.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTCamera.a; sourceTree = "<group>"; };
 		AC80583990FE4BC5B2D286CD /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		BC6BF1927B3746D794038AD7 /* libRNSound.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSound.a; sourceTree = "<group>"; };
+		BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
 		BD4456911EB744CB00F9EC14 /* RCTCameraRoll.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTCameraRoll.xcodeproj; path = "../node_modules/react-native/Libraries/CameraRoll/RCTCameraRoll.xcodeproj"; sourceTree = "<group>"; };
 		BD4456EE1EB77BB800F9EC14 /* kahvefaliios.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = kahvefaliios.entitlements; path = kahvefaliios/kahvefaliios.entitlements; sourceTree = "<group>"; };
 		BD4456EF1EB7805900F9EC14 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
@@ -605,6 +648,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */,
 				BD4456911EB744CB00F9EC14 /* RCTCameraRoll.xcodeproj */,
 				5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
@@ -677,6 +721,19 @@
 				71B61F9E71F09668D096043A /* Pods-kahvefaliiosTests.release.xcconfig */,
 			);
 			name = Pods;
+			sourceTree = "<group>";
+		};
+		BD2D28E11EBA5C9900C9108C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD2D28EC1EBA5C9900C9108C /* libGoogleToolboxForMac.a */,
+				BD2D28EE1EBA5C9900C9108C /* libPods-kahvefaliios.a */,
+				BD2D28F01EBA5C9900C9108C /* libPods-kahvefaliios-tvOS.a */,
+				BD2D28F21EBA5C9900C9108C /* libPods-kahvefaliios-tvOSTests.a */,
+				BD2D28F41EBA5C9900C9108C /* libPods-kahvefaliiosTests.a */,
+				BD2D28F61EBA5C9900C9108C /* libProtobuf.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		BD4456921EB744CB00F9EC14 /* Products */ = {
@@ -885,6 +942,9 @@
 							com.apple.BackgroundModes = {
 								enabled = 1;
 							};
+							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 1;
 							};
@@ -919,6 +979,10 @@
 				{
 					ProductGroup = BD4456C71EB77AFB00F9EC14 /* Products */;
 					ProjectRef = 847E518A22CE4808B8350760 /* InAppUtils.xcodeproj */;
+				},
+				{
+					ProductGroup = BD2D28E11EBA5C9900C9108C /* Products */;
+					ProjectRef = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
 				},
 				{
 					ProductGroup = 00C302A81ABCB8CE00DB3ED1 /* Products */;
@@ -1177,6 +1241,48 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28EC1EBA5C9900C9108C /* libGoogleToolboxForMac.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libGoogleToolboxForMac.a;
+			remoteRef = BD2D28EB1EBA5C9900C9108C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28EE1EBA5C9900C9108C /* libPods-kahvefaliios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libPods-kahvefaliios.a";
+			remoteRef = BD2D28ED1EBA5C9900C9108C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28F01EBA5C9900C9108C /* libPods-kahvefaliios-tvOS.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libPods-kahvefaliios-tvOS.a";
+			remoteRef = BD2D28EF1EBA5C9900C9108C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28F21EBA5C9900C9108C /* libPods-kahvefaliios-tvOSTests.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libPods-kahvefaliios-tvOSTests.a";
+			remoteRef = BD2D28F11EBA5C9900C9108C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28F41EBA5C9900C9108C /* libPods-kahvefaliiosTests.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = "libPods-kahvefaliiosTests.a";
+			remoteRef = BD2D28F31EBA5C9900C9108C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD2D28F61EBA5C9900C9108C /* libProtobuf.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libProtobuf.a;
+			remoteRef = BD2D28F51EBA5C9900C9108C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD44569A1EB744CB00F9EC14 /* libRCTCameraRoll.a */ = {

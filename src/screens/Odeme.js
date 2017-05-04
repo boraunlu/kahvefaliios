@@ -20,7 +20,9 @@ const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
 
 const productId = "deneme"
-
+var products = [
+   'com.grepsi.kahvefaliios.25',
+];
 
 export default class Odeme extends React.Component {
   constructor(props) {
@@ -42,7 +44,14 @@ export default class Odeme extends React.Component {
       navigate(route);
     }
 
-    pay(){}
+    pay(){
+
+      InAppUtils.loadProducts(products, (error, products) => {
+        if(error){alert(error)}
+        alert(JSON.stringify(products))
+      });
+
+    }
 
 
   componentDidMount() {
