@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button,ScrollView,Animated, Dimensions, Image,Text,TouchableHighlight, TouchableOpacity, View , StyleSheet} from 'react-native';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class Element extends Component {
 
@@ -12,16 +12,16 @@ class Element extends Component {
 
   render(){
     return(
-      <TouchableOpacity style={{alignSelf:'stretch',padding:0, borderTopWidth:1, borderColor:'black'}} onPress={() => {this.props.sendPayload(this.props.payload)}}>
-        <View style={{alignSelf:'stretch',padding:0,flexDirection:'row',justifyContent:'space-between'}}>
-          <Image source={{ uri: this.props.image}} style={{height:75,width:75}} ></Image>
-          <View style={{alignSelf:'stretch',padding:5,paddingTop:15,paddingBottom:15,flexDirection:'column',justifyContent:'space-around',flexGrow:2}}>
-            <Text style={{fontWeight:'bold',fontSize:17}}>{this.props.title}</Text>
-            <Text style={{}}>{this.props.subtitle}</Text>
+      <TouchableOpacity style={{alignSelf:'stretch',padding:0, width:200,borderWidth:1, borderColor:'black'}} onPress={() => {this.props.sendPayload(this.props.payload)}}>
+        <View style={{height:230,justifyContent:'space-between'}}>
+          <Image source={{ uri: this.props.image}} style={{height:120,width:200}} ></Image>
+          <View style={{padding:5,flexDirection:'column'}}>
+            <Text style={{textAlign:'center',fontWeight:'bold',fontSize:17}}>{this.props.title}</Text>
+            <Text style={{textAlign:'center'}}>{this.props.subtitle}</Text>
           </View>
-          <View style={{paddingTop:20,paddingRight:8}}>
-            <Button title={"Seç"} onPress={() => {this.props.sendPayload(this.props.payload)}}/>
-          </View>
+
+          <Button title={"Seç"} onPress={() => {this.props.sendPayload(this.props.payload)}}/>
+
         </View>
       </TouchableOpacity>
     )
@@ -42,7 +42,7 @@ export default class ChatModal extends Component {
   render() {
 
     var containerHeight = {
-      height: this.props.modalVisible ? this.props.keyboardHeight : 0,
+      height: this.props.modalVisible ? 250 : 0,
      };
 
     return (
@@ -50,7 +50,11 @@ export default class ChatModal extends Component {
 
           <View style={[styles.container, containerHeight]}>
              <View style={[styles.innerContainer]}>
-                 <ScrollView contentContainerStyle={styles.scrollcontainer}>
+                <View style={{height:20,alignItems:'center'}}>
+                  <Text><Icon name="chevron-left" size={18} color="#1194F7" />  Sağa Sola Kaydırabilirsin  <Icon name="chevron-right" size={18} color="#1194F7" /></Text>
+                </View>
+                 <ScrollView horizontal={true} contentContainerStyle={styles.scrollcontainer}>
+
                    {this.props.elements.map(function(element, index) {
                      return (
 
@@ -81,9 +85,11 @@ var styles = StyleSheet.create({
     width: Dimensions.get('window').width,
     position:'absolute',
     bottom:0
+
   },
   innerContainer: {
-
+    borderTopWidth:1,
+    borderColor:'black',
     backgroundColor:'white',
     flexDirection:'column',
   },

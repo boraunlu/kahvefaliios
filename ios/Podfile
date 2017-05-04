@@ -6,7 +6,17 @@ target 'kahvefaliios' do
   # use_frameworks!
 
   # Pods for kahvefaliios
+  pod 'React', :path => '../node_modules/react-native', :subspecs => [
+    'Core',
+    'RCTText',
+    'RCTNetwork',
+    'RCTWebSocket', # needed for debugging
+    # Add any other subspecs you want to use in your project
+  ]
+  # Explicitly include Yoga if you are using RN >= 0.42.0
+  pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
   pod 'Firebase/Messaging'
+  pod 'CodePush', :path => '../node_modules/react-native-code-push'
 
   target 'kahvefaliios-tvOSTests' do
     inherit! :search_paths

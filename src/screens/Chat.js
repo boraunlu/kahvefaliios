@@ -131,6 +131,9 @@ export default class Chat extends React.Component {
         else if (payload.payload.includes("odeme")) {
           alert('odeme')
         }
+        else if (payload.payload=="ben") {
+          this.child.onActionsPress()
+        }
         else{
             Backend.sendPayload(payload.payload);
         }
@@ -419,6 +422,7 @@ export default class Chat extends React.Component {
       return (
         <CustomActions
           {...props}
+          ref={instance => { this.child = instance; }}
         />
       );
 
@@ -525,7 +529,7 @@ export default class Chat extends React.Component {
     }
     if(this.state.modalVisible){
       return(
-        <View style={{height:this.state.keyboardHeight-30}}></View>
+        <View style={{height:250}}></View>
       )
     }
     return null;

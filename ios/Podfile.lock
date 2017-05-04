@@ -24,9 +24,33 @@ PODS:
   - GoogleToolboxForMac/NSData+zlib (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - Protobuf (3.3.0)
+  - React/Core (0.43.4):
+    - React/cxxreact
+    - Yoga (= 0.43.4.React)
+  - React/cxxreact (0.43.4):
+    - React/jschelpers
+  - React/jschelpers (0.43.4)
+  - React/RCTNetwork (0.43.4):
+    - React/Core
+  - React/RCTText (0.43.4):
+    - React/Core
+  - React/RCTWebSocket (0.43.4):
+    - React/Core
+  - Yoga (0.43.4.React)
 
 DEPENDENCIES:
   - Firebase/Messaging
+  - React/Core (from `../node_modules/react-native`)
+  - React/RCTNetwork (from `../node_modules/react-native`)
+  - React/RCTText (from `../node_modules/react-native`)
+  - React/RCTWebSocket (from `../node_modules/react-native`)
+  - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
+
+EXTERNAL SOURCES:
+  React:
+    :path: ../node_modules/react-native
+  Yoga:
+    :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
   Firebase: 4b66b5b59c43edac745b87f0c87e42cdd0279c13
@@ -36,7 +60,9 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 753d05a925e9eb8eadd09a0ffc9b808578b72fac
   GoogleToolboxForMac: 8e329f1b599f2512c6b10676d45736bcc2cbbeb0
   Protobuf: d582fecf68201eac3d79ed61369ef45734394b9c
+  React: 607aa7eb8b0e44b102f95f43fd49dc8aedefa93f
+  Yoga: 2a70bc5ab41486a272b9fd5b76c482ba9268c5dd
 
-PODFILE CHECKSUM: 4aa0211a2d9e2db8005e69a0683f38059aa2a46a
+PODFILE CHECKSUM: d21680bb55e06c82091e28c927612a0b225d5a63
 
 COCOAPODS: 1.2.1

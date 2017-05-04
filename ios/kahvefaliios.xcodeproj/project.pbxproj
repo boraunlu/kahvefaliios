@@ -35,7 +35,9 @@
 		2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3E991DF850E9000B6D8A /* libRCTWebSocket-tvOS.a */; };
 		2D02E4C91E0B4AEC006451C7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* kahvefaliiosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* kahvefaliiosTests.m */; };
+		323230B96D5D4D53B6207F21 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C67C53B555FB448DAAF0C5B4 /* libCodePush.a */; };
 		32FA34E6C2F64CBF83423FD2 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC80583990FE4BC5B2D286CD /* libRNFIRMessaging.a */; };
+		4BCEE8651FAD424E99FCF199 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 85133C7683994E398970BCB1 /* libz.tbd */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
 		715F8B5493904CA88B302EDC /* libRNSound.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BC6BF1927B3746D794038AD7 /* libRNSound.a */; };
 		75C916589AC7D42F7784C947 /* libPods-kahvefaliios-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF4A60C32FE764BC48862AD /* libPods-kahvefaliios-tvOSTests.a */; };
@@ -269,6 +271,27 @@
 			remoteGlobalIDString = 58B5119B1A9E6C1200147676;
 			remoteInfo = RCTText;
 		};
+		BD0D20441EBB959E005312A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 62B0414881DF43FA85D9956A /* CodePush.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = CodePush;
+		};
+		BD0D20501EBB959E005312A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = DBCCA4ADBBB65D871F99DC877F346E28;
+			remoteInfo = React;
+		};
+		BD0D20521EBB959E005312A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 79078959C5EE7837C59FAC3659A1AD32;
+			remoteInfo = Yoga;
+		};
 		BD2D28EB1EBA5C9900C9108C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
@@ -409,12 +432,14 @@
 		5478FCF5033BB9EDD380FF5A /* libPods-kahvefaliios-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-kahvefaliios-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E91572D1DD0AC6500FF2AA8 /* RCTAnimation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAnimation.xcodeproj; path = "../node_modules/react-native/Libraries/NativeAnimation/RCTAnimation.xcodeproj"; sourceTree = "<group>"; };
 		60A855BFCB224FD2BE6EDC2A /* libRCTFBSDK.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTFBSDK.a; sourceTree = "<group>"; };
+		62B0414881DF43FA85D9956A /* CodePush.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = CodePush.xcodeproj; path = "../node_modules/react-native-code-push/ios/CodePush.xcodeproj"; sourceTree = "<group>"; };
 		7111B3887E9B44FFBBA460CB /* RCTFBSDK.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTFBSDK.xcodeproj; path = "../node_modules/react-native-fbsdk/ios/RCTFBSDK.xcodeproj"; sourceTree = "<group>"; };
 		71B61F9E71F09668D096043A /* Pods-kahvefaliiosTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliiosTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliiosTests/Pods-kahvefaliiosTests.release.xcconfig"; sourceTree = "<group>"; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		797413B5689C4AB8AD84898E /* libRNFetchBlob.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFetchBlob.a; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		847E518A22CE4808B8350760 /* InAppUtils.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = InAppUtils.xcodeproj; path = "../node_modules/react-native-in-app-utils/InAppUtils.xcodeproj"; sourceTree = "<group>"; };
+		85133C7683994E398970BCB1 /* libz.tbd */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		86D87DF0B2AA4CC19680E961 /* RNFIRMessaging.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFIRMessaging.xcodeproj; path = "../node_modules/react-native-fcm/ios/RNFIRMessaging.xcodeproj"; sourceTree = "<group>"; };
 		91A0EA47509881D19175A41A /* Pods-kahvefaliios.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios.release.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios/Pods-kahvefaliios.release.xcconfig"; sourceTree = "<group>"; };
 		9543BFC1136D8202C7B5CD0D /* libPods-kahvefaliios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-kahvefaliios.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -444,6 +469,7 @@
 		BD724BC91EB71B04005B48F6 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		BD724BCA1EB71B04005B48F6 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
 		BD724BE21EB71B34005B48F6 /* yourturn.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = yourturn.mp3; sourceTree = "<group>"; };
+		C67C53B555FB448DAAF0C5B4 /* libCodePush.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libCodePush.a; sourceTree = "<group>"; };
 		E1D3AC810E55DB80455E1584 /* Pods-kahvefaliios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios/Pods-kahvefaliios.debug.xcconfig"; sourceTree = "<group>"; };
 		E804C229916DF18E2DC9DCDE /* Pods-kahvefaliiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliiosTests/Pods-kahvefaliiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F1180790BDB14F938073ADDF /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -489,6 +515,8 @@
 				F7424FDDCC76458AAAF3A46A /* libInAppUtils.a in Frameworks */,
 				32FA34E6C2F64CBF83423FD2 /* libRNFIRMessaging.a in Frameworks */,
 				7756A07F8869D1423BD213DC /* libPods-kahvefaliios.a in Frameworks */,
+				323230B96D5D4D53B6207F21 /* libCodePush.a in Frameworks */,
+				4BCEE8651FAD424E99FCF199 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -668,6 +696,7 @@
 				F1180790BDB14F938073ADDF /* RNFetchBlob.xcodeproj */,
 				847E518A22CE4808B8350760 /* InAppUtils.xcodeproj */,
 				86D87DF0B2AA4CC19680E961 /* RNFIRMessaging.xcodeproj */,
+				62B0414881DF43FA85D9956A /* CodePush.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -723,6 +752,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		BD0D20411EBB959E005312A4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD0D20451EBB959E005312A4 /* libCodePush.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BD2D28E11EBA5C9900C9108C /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -732,6 +769,8 @@
 				BD2D28F21EBA5C9900C9108C /* libPods-kahvefaliios-tvOSTests.a */,
 				BD2D28F41EBA5C9900C9108C /* libPods-kahvefaliiosTests.a */,
 				BD2D28F61EBA5C9900C9108C /* libProtobuf.a */,
+				BD0D20511EBB959E005312A4 /* libReact.a */,
+				BD0D20531EBB959E005312A4 /* libYoga.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -781,6 +820,7 @@
 				5478FCF5033BB9EDD380FF5A /* libPods-kahvefaliios-tvOS.a */,
 				1DF4A60C32FE764BC48862AD /* libPods-kahvefaliios-tvOSTests.a */,
 				543CC2B83318503CE833F94E /* libPods-kahvefaliiosTests.a */,
+				85133C7683994E398970BCB1 /* libz.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -976,6 +1016,10 @@
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
 			projectDirPath = "";
 			projectReferences = (
+				{
+					ProductGroup = BD0D20411EBB959E005312A4 /* Products */;
+					ProjectRef = 62B0414881DF43FA85D9956A /* CodePush.xcodeproj */;
+				},
 				{
 					ProductGroup = BD4456C71EB77AFB00F9EC14 /* Products */;
 					ProjectRef = 847E518A22CE4808B8350760 /* InAppUtils.xcodeproj */;
@@ -1241,6 +1285,27 @@
 			fileType = archive.ar;
 			path = libRCTText.a;
 			remoteRef = 832341B41AAA6A8300B99B32 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD0D20451EBB959E005312A4 /* libCodePush.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libCodePush.a;
+			remoteRef = BD0D20441EBB959E005312A4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD0D20511EBB959E005312A4 /* libReact.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libReact.a;
+			remoteRef = BD0D20501EBB959E005312A4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD0D20531EBB959E005312A4 /* libYoga.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libYoga.a;
+			remoteRef = BD0D20521EBB959E005312A4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD2D28EC1EBA5C9900C9108C /* libGoogleToolboxForMac.a */ = {
@@ -1701,12 +1766,14 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1740,12 +1807,14 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1786,6 +1855,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1822,6 +1892,7 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1858,11 +1929,13 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1905,11 +1978,13 @@
 					"$(SRCROOT)/../node_modules/react-native-fetch-blob/ios/**",
 					"$(SRCROOT)/../node_modules/react-native-in-app-utils/InAppUtils",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-code-push/ios/CodePush/**",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
@@ -1953,6 +2028,7 @@
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.kahvefaliios-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1978,6 +2054,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
