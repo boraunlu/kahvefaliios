@@ -31,6 +31,8 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>CodePushDeploymentKey</key>
+	<string>AalW2rtWsgNZvtuWFVQo8uaXvjsmN1ypOHUFG</string>
 	<key>FacebookAppID</key>
 	<string>845566225565988</string>
 	<key>FacebookDisplayName</key>
@@ -82,8 +84,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>CodePushDeploymentKey</key>
-	<string>AalW2rtWsgNZvtuWFVQo8uaXvjsmN1ypOHUFG</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

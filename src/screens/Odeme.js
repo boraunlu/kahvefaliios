@@ -47,8 +47,21 @@ export default class Odeme extends React.Component {
     pay(){
 
       InAppUtils.loadProducts(products, (error, products) => {
-        if(error){alert(error)}
-        alert(JSON.stringify(products))
+        if(error){alert(JSON.stringify(error))}
+        else{
+          var identifier = products[0].identifier
+          InAppUtils.purchaseProduct(identifier, (error, response) => {
+             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             if(error){alert(JSON.stringify(error))}
+             else{
+               alert(JSON.stringify(response))
+               if(response && response.productIdentifier) {
+                  AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+                  //unlock store here.
+               }
+             }
+          });
+        }
       });
 
     }

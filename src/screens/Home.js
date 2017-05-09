@@ -55,7 +55,7 @@ export default class Home extends React.Component {
           //this._navigateTo('Greeting')
           FCM.requestPermissions(); // for iOS
              FCM.getFCMToken().then(token => {
-                 console.log(token)
+      
                  fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
                    method: 'POST',
                    headers: {
@@ -70,6 +70,7 @@ export default class Home extends React.Component {
                  // store fcm token in your server
              });
              this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
+               //alert(JSON.stringify(notif))
                  // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
                  if(notif.local_notification){
                    //this is a local notification
@@ -77,7 +78,6 @@ export default class Home extends React.Component {
                  if(notif.opened_from_tray){
                    //app is open/resumed because user clicked banner
                  }
-                 await  FCM.removeAllDeliveredNotifications()
 
                  if(Platform.OS ==='ios'){
                    //optional
@@ -92,7 +92,7 @@ export default class Home extends React.Component {
                        notif.finish();
                        break;
                      case NotificationType.WillPresent:
-                       notif.finish(WillPresentNotificationResult.All) //other types available: WillPresentNotificationResult.None
+                       notif.finish(WillPresentNotificationResult.None) //other types available: WillPresentNotificationResult.None
                        break;
                    }
                  }

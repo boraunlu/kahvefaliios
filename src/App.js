@@ -13,19 +13,23 @@ import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
 import About from './screens/About';
 
+import codePush from "react-native-code-push";
+
+
 import { StackNavigator, addNavigationHelpers } from 'react-navigation';
 
-const kahvefaliapp = StackNavigator({
+let kahvefaliapp = StackNavigator({
 
   Home: {screen:Home},
   Greeting: {screen:Greeting},
   Login: { screen: Login },
     Chat: {screen:Chat},
+
   Odeme: {screen:Odeme},
   About: {screen:About},
 
-},{ headerMode: 'screen' });
+});
 
-
+kahvefaliapp = codePush(kahvefaliapp)
 
 AppRegistry.registerComponent('kahvefaliios', () => kahvefaliapp);
