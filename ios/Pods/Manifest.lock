@@ -1,4 +1,12 @@
 PODS:
+  - CodePush (2.0.3):
+    - CodePush/Core (= 2.0.3)
+    - CodePush/SSZipArchive (= 2.0.3)
+    - React
+  - CodePush/Core (2.0.3):
+    - React
+  - CodePush/SSZipArchive (2.0.3):
+    - React
   - Firebase/Core (3.17.0):
     - FirebaseAnalytics (= 3.9.0)
     - FirebaseCore (= 3.6.0)
@@ -24,35 +32,32 @@ PODS:
   - GoogleToolboxForMac/NSData+zlib (2.1.1):
     - GoogleToolboxForMac/Defines (= 2.1.1)
   - Protobuf (3.3.0)
+  - React (0.43.4):
+    - React/Core (= 0.43.4)
   - React/Core (0.43.4):
     - React/cxxreact
     - Yoga (= 0.43.4.React)
   - React/cxxreact (0.43.4):
     - React/jschelpers
   - React/jschelpers (0.43.4)
-  - React/RCTNetwork (0.43.4):
-    - React/Core
-  - React/RCTText (0.43.4):
-    - React/Core
-  - React/RCTWebSocket (0.43.4):
-    - React/Core
   - Yoga (0.43.4.React)
 
 DEPENDENCIES:
+  - CodePush (from `../node_modules/react-native-code-push`)
   - Firebase/Messaging
   - React/Core (from `../node_modules/react-native`)
-  - React/RCTNetwork (from `../node_modules/react-native`)
-  - React/RCTText (from `../node_modules/react-native`)
-  - React/RCTWebSocket (from `../node_modules/react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 EXTERNAL SOURCES:
+  CodePush:
+    :path: ../node_modules/react-native-code-push
   React:
     :path: ../node_modules/react-native
   Yoga:
     :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
+  CodePush: 2e2ffb214ddd52d13ab67e134945811f8ba316f2
   Firebase: 4b66b5b59c43edac745b87f0c87e42cdd0279c13
   FirebaseAnalytics: e5fe8486efc01bec33f6bf82e2fa9fce4b124052
   FirebaseCore: 9691ee2ade70c098d7cf92440f4303f16d83ca75
@@ -63,6 +68,6 @@ SPEC CHECKSUMS:
   React: 607aa7eb8b0e44b102f95f43fd49dc8aedefa93f
   Yoga: 2a70bc5ab41486a272b9fd5b76c482ba9268c5dd
 
-PODFILE CHECKSUM: d21680bb55e06c82091e28c927612a0b225d5a63
+PODFILE CHECKSUM: aff93adb9d935fec25d181a6a43f772f4dff4745
 
 COCOAPODS: 1.2.1
