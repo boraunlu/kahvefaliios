@@ -55,7 +55,7 @@ export default class Home extends React.Component {
           //this._navigateTo('Greeting')
           FCM.requestPermissions(); // for iOS
              FCM.getFCMToken().then(token => {
-      
+
                  fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
                    method: 'POST',
                    headers: {
@@ -120,10 +120,10 @@ export default class Home extends React.Component {
     }.bind(this));
 
     NetInfo.isConnected.fetch().then(isConnected => {
-      //alert('First, is ' + (isConnected ? 'online' : 'offline'));
+      alert('First, is ' + (isConnected ? 'online' : 'offline'));
     });
     function handleFirstConnectivityChange(isConnected) {
-      //alert('Then, is ' + (isConnected ? 'online' : 'offline'));
+      alert('Then, is ' + (isConnected ? 'online' : 'offline'));
       NetInfo.isConnected.removeEventListener(
         'change',
         handleFirstConnectivityChange

@@ -22,6 +22,7 @@
     "react-native-nav": "^1.2.0",
     "react-native-root-toast": "^1.0.5",
     "react-native-sound": "^0.10.0",
+    "react-native-swiper": "^1.5.4",
     "react-native-vector-icons": "^4.0.1",
     "react-native-video": "^1.0.0",
     "react-navigation": "^1.0.0-beta.8"

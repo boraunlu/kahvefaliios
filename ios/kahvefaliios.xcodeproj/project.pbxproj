@@ -35,7 +35,6 @@
 		2D02E4C81E0B4AEC006451C7 /* libRCTWebSocket-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3E991DF850E9000B6D8A /* libRCTWebSocket-tvOS.a */; };
 		2D02E4C91E0B4AEC006451C7 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3DAD3EA31DF850E9000B6D8A /* libReact.a */; };
 		2DCD954D1E0B4F2C00145EB5 /* kahvefaliiosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* kahvefaliiosTests.m */; };
-		323230B96D5D4D53B6207F21 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C67C53B555FB448DAAF0C5B4 /* libCodePush.a */; };
 		32FA34E6C2F64CBF83423FD2 /* libRNFIRMessaging.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AC80583990FE4BC5B2D286CD /* libRNFIRMessaging.a */; };
 		4BCEE8651FAD424E99FCF199 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 85133C7683994E398970BCB1 /* libz.tbd */; };
 		5E9157361DD0AC6A00FF2AA8 /* libRCTAnimation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5E9157331DD0AC6500FF2AA8 /* libRCTAnimation.a */; };
@@ -75,6 +74,7 @@
 		BD724BDE1EB71B04005B48F6 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BD724BCA1EB71B04005B48F6 /* Zocial.ttf */; };
 		BD724BE31EB71B34005B48F6 /* yourturn.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BD724BE21EB71B34005B48F6 /* yourturn.mp3 */; };
 		BD724BE41EB71B34005B48F6 /* yourturn.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BD724BE21EB71B34005B48F6 /* yourturn.mp3 */; };
+		BDDAE2EA1EC4DEDC00D8BCB0 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D20451EBB959E005312A4 /* libCodePush.a */; };
 		CE79F448C850F5E177F4A7FC /* libPods-kahvefaliios-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5478FCF5033BB9EDD380FF5A /* libPods-kahvefaliios-tvOS.a */; };
 		E021CA16A6E140A191FDD042 /* libRNFetchBlob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 797413B5689C4AB8AD84898E /* libRNFetchBlob.a */; };
 		F422CBEA13AD4F64B3384F27 /* libRCTCamera.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A4CBC99F066E43AFBD8A504A /* libRCTCamera.a */; };
@@ -397,6 +397,13 @@
 			remoteGlobalIDString = A15C300E1CD25C330074CB35;
 			remoteInfo = RNFetchBlob;
 		};
+		BDDAE2C81EC4DECC00D8BCB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 68C0EC8F9B0A1508254CB98BC2A55AD6;
+			remoteInfo = CodePush;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -469,7 +476,6 @@
 		BD724BC91EB71B04005B48F6 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = SimpleLineIcons.ttf; sourceTree = "<group>"; };
 		BD724BCA1EB71B04005B48F6 /* Zocial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = Zocial.ttf; sourceTree = "<group>"; };
 		BD724BE21EB71B34005B48F6 /* yourturn.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = yourturn.mp3; sourceTree = "<group>"; };
-		C67C53B555FB448DAAF0C5B4 /* libCodePush.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libCodePush.a; sourceTree = "<group>"; };
 		E1D3AC810E55DB80455E1584 /* Pods-kahvefaliios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios/Pods-kahvefaliios.debug.xcconfig"; sourceTree = "<group>"; };
 		E804C229916DF18E2DC9DCDE /* Pods-kahvefaliiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliiosTests/Pods-kahvefaliiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		F1180790BDB14F938073ADDF /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -490,6 +496,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDDAE2EA1EC4DEDC00D8BCB0 /* libCodePush.a in Frameworks */,
 				BD4456F01EB7805900F9EC14 /* StoreKit.framework in Frameworks */,
 				BD4456B51EB744F800F9EC14 /* libRCTCameraRoll.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
@@ -515,7 +522,6 @@
 				F7424FDDCC76458AAAF3A46A /* libInAppUtils.a in Frameworks */,
 				32FA34E6C2F64CBF83423FD2 /* libRNFIRMessaging.a in Frameworks */,
 				7756A07F8869D1423BD213DC /* libPods-kahvefaliios.a in Frameworks */,
-				323230B96D5D4D53B6207F21 /* libCodePush.a in Frameworks */,
 				4BCEE8651FAD424E99FCF199 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -763,6 +769,7 @@
 		BD2D28E11EBA5C9900C9108C /* Products */ = {
 			isa = PBXGroup;
 			children = (
+				BDDAE2C91EC4DECC00D8BCB0 /* libCodePush.a */,
 				BD2D28EC1EBA5C9900C9108C /* libGoogleToolboxForMac.a */,
 				BD2D28EE1EBA5C9900C9108C /* libPods-kahvefaliios.a */,
 				BD2D28F01EBA5C9900C9108C /* libPods-kahvefaliios-tvOS.a */,
@@ -1411,6 +1418,13 @@
 			fileType = archive.ar;
 			path = libRNFetchBlob.a;
 			remoteRef = BD724BBD1EB70BA3005B48F6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BDDAE2C91EC4DECC00D8BCB0 /* libCodePush.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libCodePush.a;
+			remoteRef = BDDAE2C81EC4DECC00D8BCB0 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */

@@ -85,7 +85,7 @@ export default class Login extends React.Component {
                   .then((response) => response.json())
                    .then((responseJson) => {
 
-                       this._navigateTo('Greeting',{login:responseJson.cevap});
+                       this._navigateTo('Swipers');
 
                    })
 
