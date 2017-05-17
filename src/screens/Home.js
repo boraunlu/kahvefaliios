@@ -16,7 +16,9 @@ import {
 import { NavigationActions } from 'react-navigation'
 import firebase from 'firebase';
 import Backend from '../Backend';
+import { Client } from 'bugsnag-react-native';
 
+const bugsnag = new Client();
 
 import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 
@@ -115,15 +117,15 @@ export default class Home extends React.Component {
       } else {
 
         this._navigateTo('Login')
-        // No user is signed in.
+        init = !init;
       }
     }.bind(this));
 
     NetInfo.isConnected.fetch().then(isConnected => {
-      alert('First, is ' + (isConnected ? 'online' : 'offline'));
+      //alert('First, is ' + (isConnected ? 'online' : 'offline'));
     });
     function handleFirstConnectivityChange(isConnected) {
-      alert('Then, is ' + (isConnected ? 'online' : 'offline'));
+      //alert('Then, is ' + (isConnected ? 'online' : 'offline'));
       NetInfo.isConnected.removeEventListener(
         'change',
         handleFirstConnectivityChange

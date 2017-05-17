@@ -14,6 +14,7 @@
 #import <React/RCTRootView.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "RNFIRMessaging.h"
+#import <BugsnagReactNative/BugsnagReactNative.h>
 
 @implementation AppDelegate
 
@@ -50,6 +51,7 @@
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
   [FIRApp configure];
+  [BugsnagReactNative start];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
   return YES;
 }
