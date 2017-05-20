@@ -19,7 +19,7 @@ import Toast from 'react-native-root-toast';
 
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
-import {GiftedChat, Actions,Bubble,Send,Composer} from 'react-native-gifted-chat';
+import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
 import CustomView from '../components/CustomView';
 import Backend from '../Backend';
@@ -29,8 +29,8 @@ import Elements from '../components/Elements';
 const productId = "deneme"
 const shareModel = {
          contentType: 'link',
-          contentUrl: "https://facebook.com",
-  contentDescription: 'Facebook sharing is easy!',
+          contentUrl: "https://facebook.com/kahvefalisohbeti",
+  contentDescription: 'Kahve Falı Sohbeti!',
 };
 const shareLinkContent = {
   contentType: 'link',
@@ -63,6 +63,7 @@ export default class Chat extends React.Component {
       buttons: null,
       shareLinkContent: shareLinkContent,
       keyboardHeight:300,
+      inputVisible:true
     };
 
 
@@ -74,6 +75,7 @@ export default class Chat extends React.Component {
     this.renderFooter = this.renderFooter.bind(this);
     this.renderSend = this.renderSend.bind(this);
     this.renderComposer = this.renderComposer.bind(this);
+    this.renderInputToolbar = this.renderInputToolbar.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
     this.shareLinkWithShareDialog = this.shareLinkWithShareDialog.bind(this);
     this.setnavigation = this.setnavigation.bind(this);
@@ -118,6 +120,30 @@ export default class Chat extends React.Component {
     });
   }
 
+  pay = (credit) => {
+    var products = [
+       'com.grepsi.kahvefaliios.'+credit,
+    ];
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){console.log(error)}
+      else{
+        var identifier = products[0].identifier
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){console.log(error)
+             Backend.sendPayload("paymentiptal")
+           }
+           else{
+             if(response && response.productIdentifier) {
+                //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+                Backend.sendPayload(credit+"baslat")
+             }
+           }
+        });
+      }
+    });
+
+  }
   sendPayload(payload){
 
     if(payload=="appstart"){
@@ -126,10 +152,13 @@ export default class Chat extends React.Component {
     else{
       if(payload.type=="postback"){
         if(payload.payload=="sharepage"){
+          this.setState({inputVisible:true})
           this.shareLinkWithShareDialog()
         }
         else if (payload.payload.includes("odeme")) {
-          alert('odeme')
+          var credit= payload.payload.slice(5);
+          this.pay(credit)
+          this.setState({inputVisible:true})
         }
         else if (payload.payload=="ben") {
           this.child.onActionsPress()
@@ -137,6 +166,8 @@ export default class Chat extends React.Component {
         else{
             Backend.sendPayload(payload.payload);
         }
+
+        if(payload.payload=="nohizlibak"||payload.payload=="vazgecti"){this.setState({inputVisible:true})}
       }
       else{
         this.shareLinkWithShareDialog()
@@ -238,6 +269,9 @@ export default class Chat extends React.Component {
               });
             }
             else if (message.type=="button") {
+              if(message.buttons[0].payload=="hizlibak"||message.buttons[0].payload.includes("odeme")){
+                this.setState({inputVisible:false})
+              }
               this.setState((previousState) => {
                 return {
                   messages: GiftedChat.append(previousState.messages, message),
@@ -260,7 +294,6 @@ export default class Chat extends React.Component {
 
       });
 
-      BackAndroid.addEventListener('hardwareBackPress', this.backhandler);
 
 
       Backend.loadInitialMessages((messages) => {
@@ -278,6 +311,9 @@ export default class Chat extends React.Component {
                     this.setState({quick_reply:lastMessage.quick_reply})
                   }
                   else if (lastMessage.type=="button") {
+                    if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")){
+                      this.setState({inputVisible:false})
+                    }
                       this.setState({quick_reply:lastMessage.buttons})
                   }
                   else if (lastMessage.type=="generic") {
@@ -473,25 +509,52 @@ export default class Chat extends React.Component {
     );
   }
   renderComposer(props) {
-    return (
-      <Composer
-        {...props}
-        placeholder={'Mesajınızı yazın...'}
-      />
-    );
+    if(this.state.inputVisible){
+      return (
+        <Composer
+          {...props}
+          placeholder={'Mesajınızı yazın...'}
+        />
+      );
+    }
+    else{
+      return null
+    }
+
+  }
+  renderInputToolbar(props) {
+    if(this.state.inputVisible){
+      return (
+        <InputToolbar
+          {...props}
+        />
+      );
+    }
+    else{
+      return null
+    }
+
   }
 
   renderFooter(props) {
+    if(this.state.modalVisible){
+      return(
+        <View style={{height:225}}></View>
+      )
+    }
     if (this.state.typingText) {
       return (
         <View style={styles.footerContainer}>
-          <Text style={styles.footerText}>
+          <Text style={styles.footerText1}>
             {this.state.typingText}
           </Text>
         </View>
       );
     }
     if(this.state.quick_reply){
+      let bubblewidth = (Dimensions.get('window').width-25)/3
+      if(this.state.quick_reply.length>2){bubblewidth = (Dimensions.get('window').width-25)/4}
+
       return (
         <View style={styles.quickContainer}>
 
@@ -500,7 +563,7 @@ export default class Chat extends React.Component {
 
               <TouchableHighlight
                 onPress={() => {this.sendQuickPayload(reply)}}
-                key={index} style={styles.quickBubble}>
+                key={index} style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
                   <Text style={styles.footerText}>{reply.title}</Text>
                 </TouchableHighlight>
             );
@@ -508,30 +571,31 @@ export default class Chat extends React.Component {
 
         </View>
       );
+
+
     }
     if(this.state.buttons){
-      return (
-        <View style={styles.quickContainer}>
+      let bubblewidth = (Dimensions.get('window').width-25)/3
+      if(this.state.buttons.length>2){bubblewidth = (Dimensions.get('window').width-25)/4}
+        return (
+          <View style={styles.quickContainer}>
 
-          {this.state.buttons.map(function(reply, index) {
-            return (
+            {this.state.buttons.map(function(reply, index) {
+              return (
 
-              <TouchableHighlight
-                onPress={() => {this.sendPayload(reply)}}
-                key={index} style={styles.quickBubble}>
-                  <Text style={styles.footerText}>{reply.title}</Text>
-                </TouchableHighlight>
-            );
-          }.bind(this))}
+                <TouchableHighlight
+                  onPress={() => {this.sendPayload(reply)}}
+                  key={index} style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
+                    <Text style={styles.footerText}>{reply.title}</Text>
+                  </TouchableHighlight>
+              );
+            }.bind(this))}
 
-        </View>
-      );
+          </View>
+        );
+
     }
-    if(this.state.modalVisible){
-      return(
-        <View style={{height:250}}></View>
-      )
-    }
+
     return null;
   }
 
@@ -558,6 +622,7 @@ export default class Chat extends React.Component {
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}
+            renderInputToolbar={this.renderInputToolbar}
             >
 
             </GiftedChat>

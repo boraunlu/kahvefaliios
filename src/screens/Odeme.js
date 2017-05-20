@@ -19,7 +19,7 @@ import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
 
-const productId = "deneme"
+
 var products = [
    'com.grepsi.kahvefaliios.25',
 ];
@@ -44,20 +44,39 @@ export default class Odeme extends React.Component {
       navigate(route);
     }
 
-    pay(){
-
+    pay = (credit) => {
+      var products = [
+         'com.grepsi.kahvefaliios.'+credit,
+      ];
       InAppUtils.loadProducts(products, (error, products) => {
-        if(error){alert(JSON.stringify(error))}
+        if(error){console.log(error)}
         else{
           var identifier = products[0].identifier
           InAppUtils.purchaseProduct(identifier, (error, response) => {
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-             if(error){alert(JSON.stringify(error))}
+             if(error){console.log(error)}
              else{
-               alert(JSON.stringify(response))
                if(response && response.productIdentifier) {
-                  AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
-                  //unlock store here.
+                  //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+                  fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
+                    method: 'POST',
+                    headers: {
+                      'Accept': 'application/json',
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      uid: Backend.getUid(),
+                      credit: credit
+                    })
+                  })
+                  .then((response) => {
+                    alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
+                    this.setState((previousState) => {
+                      return {
+                        credit: previousState.credit+credit,
+                      };
+                    });
+                  });
                }
              }
           });
@@ -140,6 +159,7 @@ export default class Odeme extends React.Component {
             Kredi Al
           </Text>
           <ScrollView >
+          <TouchableOpacity onPress={() => {this.pay(100)}}>
             <View style={styles.productRow}>
                 <View>
                   <View style={{flexDirection:'row'}}>
@@ -152,9 +172,11 @@ export default class Odeme extends React.Component {
                     +10 Kredi Hediye
                   </Text>
                 </View>
-                <Button style={styles.buyButton} color={'#1194F7'} onPress={() => {this.pay()}} title={"7.99 TL"}>
+                <Button style={styles.buyButton} color={'#1194F7'} onPress={() => {this.pay(100)}} title={"6.99 TL"}>
                 </Button>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.pay(150)}}>
             <View style={styles.productRow}>
               <View>
                 <View style={{flexDirection:'row'}}>
@@ -167,9 +189,11 @@ export default class Odeme extends React.Component {
                   +15 Kredi Hediye
                 </Text>
               </View>
-                <Button title={"11.99 TL"} style={styles.buyButton} onPress={() => {this.pay()}} color={'#1194F7'}>
+                <Button title={"9.99 TL"} style={styles.buyButton} onPress={() => {this.pay(150)}} color={'#1194F7'}>
                 </Button>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.pay(250)}}>
             <View style={[styles.productRow,{elevation:5}]}>
                 <View>
                   <Text style={{color:'white'}}>
@@ -185,9 +209,11 @@ export default class Odeme extends React.Component {
                     +25 Kredi Hediye
                   </Text>
                 </View>
-                <Button title={"18.99 TL"} style={styles.buyButton} onPress={() => {this.pay()}} color={'#1194F7'}>
+                <Button title={"13.99 TL"} style={styles.buyButton} onPress={() => {this.pay(250)}} color={'#1194F7'}>
                 </Button>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.pay(250)}}>
             <View style={styles.productRow}>
               <View>
                 <View style={{flexDirection:'row'}}>
@@ -200,9 +226,11 @@ export default class Odeme extends React.Component {
                   +50 Kredi Hediye
                 </Text>
               </View>
-                <Button title={"34.99 TL"} style={styles.buyButton} onPress={() => {this.pay()}} color={'#1194F7'}>
+                <Button title={"24.99 TL"} style={styles.buyButton} onPress={() => {this.pay(500)}} color={'#1194F7'}>
                 </Button>
             </View>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.pay(1000)}}>
             <View style={styles.productRow}>
                 <View>
                   <View style={{flexDirection:'row'}}>
@@ -215,9 +243,10 @@ export default class Odeme extends React.Component {
                     +100 Kredi Hediye
                   </Text>
                 </View>
-                <Button title={"64.99 TL"} style={styles.buyButton} onPress={() => {this.pay()}} color={'#1194F7'}>
+                <Button title={"44.99 TL"} style={styles.buyButton} onPress={() => {this.pay(1000)}} color={'#1194F7'}>
                 </Button>
             </View>
+          </TouchableOpacity>
           </ScrollView>
         </View>
         </ScrollView>
@@ -235,7 +264,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
     width: null,
-    padding:5,
+    padding:0,
   },
   buyButton:{
     color:'green'
