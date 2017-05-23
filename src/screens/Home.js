@@ -44,6 +44,7 @@ export default class Home extends React.Component {
 
   componentDidMount() {
     const { navigate } = this.props.navigation;
+
    var init = false;
     firebase.auth().onAuthStateChanged(function(user) {
 
@@ -52,10 +53,10 @@ export default class Home extends React.Component {
 
         if(!init){
           this._navigateTo('Greeting')
-          init = !init;
+          init = true;
         }
           //this._navigateTo('Greeting')
-          FCM.requestPermissions(); // for iOS
+
              FCM.getFCMToken().then(token => {
 
                  fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
@@ -72,7 +73,7 @@ export default class Home extends React.Component {
                  // store fcm token in your server
              });
              this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
-               //alert(JSON.stringify(notif))
+
                  // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
                  if(notif.local_notification){
                    //this is a local notification
@@ -117,7 +118,7 @@ export default class Home extends React.Component {
       } else {
 
         this._navigateTo('Login')
-        init = !init;
+        init = true;
       }
     }.bind(this));
 
@@ -135,6 +136,7 @@ export default class Home extends React.Component {
       'change',
       handleFirstConnectivityChange
     );
+    FCM.requestPermissions(); // for iOS
   }
 componentWillUnmount() {
 

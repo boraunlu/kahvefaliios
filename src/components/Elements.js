@@ -42,7 +42,7 @@ export default class ChatModal extends Component {
   render() {
 
     var containerHeight = {
-      height: this.props.modalVisible ? 250 : 0,
+      height: this.props.modalVisible ? 270 : 0,
      };
 
     return (

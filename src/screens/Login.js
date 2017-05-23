@@ -58,7 +58,7 @@ export default class Login extends React.Component {
     LoginManager.logInWithReadPermissions(['public_profile']).then(
       function(result) {
         if (result.isCancelled) {
-          alert('Login cancelled');
+
         } else {
           if(result.grantedPermissions){
 
@@ -70,7 +70,7 @@ export default class Login extends React.Component {
 
                 // Sign in with credential from the Google user.
                 firebase.auth().signInWithCredential(credential).then(function(user){
-                  //alert(user.uid+" "+token);
+
                   fetch('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
                     method: 'POST',
                     headers: {
@@ -82,12 +82,7 @@ export default class Login extends React.Component {
                       token: token
                     })
                   })
-                  .then((response) => response.json())
-                   .then((responseJson) => {
-
-                       this._navigateTo('Swipers');
-
-                   })
+                  .then((response) => this._navigateTo('Swipers'))
 
                 }.bind(this))
                 .catch(function(error) {
@@ -107,7 +102,7 @@ export default class Login extends React.Component {
         }
       }.bind(this),
       function(error) {
-        alert('Login fail with error: ' + error);
+
       }
     );
   }

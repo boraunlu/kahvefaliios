@@ -25,8 +25,10 @@ import CustomView from '../components/CustomView';
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 
-const productId = "deneme"
+
 const shareModel = {
          contentType: 'link',
           contentUrl: "https://facebook.com/kahvefalisohbeti",
@@ -167,7 +169,7 @@ export default class Chat extends React.Component {
             Backend.sendPayload(payload.payload);
         }
 
-        if(payload.payload=="nohizlibak"||payload.payload=="vazgecti"){this.setState({inputVisible:true})}
+        if(payload.payload=="nohizlibak"||payload.payload=="hizlibak"||payload.payload=="vazgecti"){this.setState({inputVisible:true})}
       }
       else{
         this.shareLinkWithShareDialog()
@@ -539,7 +541,7 @@ export default class Chat extends React.Component {
   renderFooter(props) {
     if(this.state.modalVisible){
       return(
-        <View style={{height:225}}></View>
+        <View style={{height:250}}></View>
       )
     }
     if (this.state.typingText) {
@@ -693,6 +695,13 @@ const styles = StyleSheet.create({
     color: '#aaa',
   },
   footerText: {
+    fontSize: 14,
+    color: 'white',
+    textAlign:'center',
+    fontWeight:'bold',
+    backgroundColor:'transparent'
+  },
+  footerText1: {
     fontSize: 14,
     color: 'white',
     textAlign:'center',

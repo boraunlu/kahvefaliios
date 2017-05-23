@@ -36,12 +36,16 @@ export default class UserData extends Component {
         <View style={styles.firstrow}>
 
       {this.props.userData.currentFalci!==null ? (
-                <View style={{flexDirection: 'row',flex:1,alignItems:'center',justifyContent:'space-around'}}>
-                  <Text>Bugünkü Falcınız: <Text style={{fontWeight:'bold',fontSize:16}}>{falcilar[this.props.userData.currentFalci].name}</Text></Text>
-                  <Image source={{uri:falcilar[this.props.userData.currentFalci].url}} style={{height:34,width:34, borderRadius:17}}></Image>
-                  <TouchableOpacity style={styles.button1} onPress={() => {this.props.setDestination('Chat')}}>
-                      <Text style={styles.buttontext1}>Sohbete Devam</Text>
-                  </TouchableOpacity>
+                <View style={{flex:1,alignItems:'center',justifyContent:'space-around'}}>
+                  <View style={{flexDirection: 'row',flex:1,alignItems:'center',justifyContent:'space-around'}}>
+                    <Text>Bugünkü Falcınız: <Text style={{fontWeight:'bold',fontSize:16}}>{falcilar[this.props.userData.currentFalci].name}</Text></Text>
+                    <Image source={{uri:falcilar[this.props.userData.currentFalci].url}} style={{height:34,width:34, borderRadius:17}}></Image>
+                  </View>
+                  <View style={{alignItems:'center'}}>
+                    <TouchableOpacity style={styles.button1} onPress={() => {this.props.setDestination('Chat')}}>
+                        <Text style={styles.buttontext1}>Sohbete Devam</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
                 ) : (
                   <TouchableOpacity onPress={() => {this.props.setDestination('Chat')}}>
