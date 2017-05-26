@@ -195,7 +195,7 @@ export default class Chat extends React.Component {
     ).then(
       function(result) {
         if (result.isCancelled) {
-          alert('Share cancelled');
+          Backend.sendPayload("vazgecti")
         } else {
           console.log('Share success with postId: ' + result.postId)
           console.log('paylaştı')
