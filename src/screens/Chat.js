@@ -42,7 +42,7 @@ const shareLinkContent = {
 
 var whoosh = new Sound('yourturn.mp3', Sound.MAIN_BUNDLE, (error) => {
   if (error) {
-    console.log('failed to load the sound', error);
+    //console.log('failed to load the sound', error);
     return;
   }
   // loaded successfully
@@ -87,7 +87,8 @@ export default class Chat extends React.Component {
   static navigationOptions = ({ navigation }) => ({
     headerLeft:<Button title={"Sayfam"} onPress={() => {navigation.state.params.setnavigation('Greeting')}}/>,
     headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
-    HeaderTitle:"Sohbet"
+    headerTitle:"Sohbet",
+
   })
 
 
@@ -114,7 +115,7 @@ export default class Chat extends React.Component {
 
 
   setModalVisibility(visible) {
-    console.log(visible);
+    ////console.log(visible);
     this.setState(() => {
       return {
         modalVisible: visible,
@@ -127,13 +128,18 @@ export default class Chat extends React.Component {
        'com.grepsi.kahvefaliios.'+credit,
     ];
     InAppUtils.loadProducts(products, (error, products) => {
-      if(error){console.log(error)}
+      if(error){}
       else{
         var identifier = products[0].identifier
         InAppUtils.purchaseProduct(identifier, (error, response) => {
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-           if(error){console.log(error)
-             Backend.sendPayload("paymentiptal")
+           if(error){
+             if(credit==25){
+               Backend.sendPayload("nohizlibak")
+             }
+             else{
+               Backend.sendPayload("paymentiptal")
+             }
            }
            else{
              if(response && response.productIdentifier) {
@@ -195,10 +201,10 @@ export default class Chat extends React.Component {
     ).then(
       function(result) {
         if (result.isCancelled) {
-          Backend.sendPayload("vazgecti")
+          Backend.sendPayload("nohizlibak")
         } else {
-          console.log('Share success with postId: ' + result.postId)
-          console.log('paylaştı')
+          ////console.log('Share success with postId: ' + result.postId)
+          ////console.log('paylaştı')
           Backend.sendPayload("appshared")
         }
       },
@@ -235,7 +241,7 @@ export default class Chat extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    console.log("chatunmounted")
+    //console.log("chatunmounted")
     this.keyboardDidShowListener.remove();
 
   }

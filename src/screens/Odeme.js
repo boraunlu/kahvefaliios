@@ -36,6 +36,7 @@ export default class Odeme extends React.Component {
 
   static navigationOptions = {
       title: 'Ödeme',
+      headerBackTitle:'Geri'
 
     };
 
@@ -49,12 +50,12 @@ export default class Odeme extends React.Component {
          'com.grepsi.kahvefaliios.'+credit,
       ];
       InAppUtils.loadProducts(products, (error, products) => {
-        if(error){console.log(error)}
+        if(error){}
         else{
           var identifier = products[0].identifier
           InAppUtils.purchaseProduct(identifier, (error, response) => {
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-             if(error){console.log(error)}
+             if(error){}
              else{
                if(response && response.productIdentifier) {
                   //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
@@ -106,7 +107,7 @@ export default class Odeme extends React.Component {
   }
 
   componentWillUnmount() {
-    console.log("odemeunmount")
+    //console.log("odemeunmount")
 
   }
 

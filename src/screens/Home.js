@@ -101,7 +101,7 @@ export default class Home extends React.Component {
                  }
              });
              this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
-                 console.log(token)
+                 //console.log(token)
                  fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
                    method: 'POST',
                    headers: {

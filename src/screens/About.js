@@ -8,7 +8,9 @@ import {
   Image,
   ScrollView,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  TextInput,
+  Alert
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -21,7 +23,7 @@ export default class About extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'
   };
 }
 
@@ -33,6 +35,30 @@ export default class About extends React.Component {
 
     Backend.logOut()
   }
+
+  sendMail = () => {
+    if(this.state.text == 'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'){
+      alert("Lütfen önce önerini veya şikayetini yaz")
+    }
+    else{
+      fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: Backend.getUid(),
+          text: this.state.text
+        })
+      })
+      .then((response) => {
+        Alert.alert('Şikayet & Oneri','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
+        this.setState({text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'})
+      })
+    }
+  }
+
   componentDidMount() {
 
   }
@@ -48,8 +74,22 @@ export default class About extends React.Component {
 
     return (
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
-        <View style={{paddingTop:5}}>
+        <View style={{paddingTop:5,marginBottom:10}}>
           <Button title={"Çıkış Yap"} color={"gray"} onPress={() => {this.logout()}}/>
+        </View>
+        <View style={{height:80,flex:1}}>
+          <TextInput
+
+            multiline = {true}
+            onFocus = {() => {this.setState({text:''})}}
+            style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+            onChangeText={(text) => this.setState({text})}
+            value={this.state.text}
+            editable = {true}
+          />
+        </View>
+        <View style={{marginBottom:10}}>
+          <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
         </View>
         <ScrollView style={{backgroundColor:'white',opacity:0.8,margin:5,padding:5}}>
           <Text style={{textAlign:'center',fontWeight:'bold',fontSize:18}}>Kullanım Koşulları</Text>

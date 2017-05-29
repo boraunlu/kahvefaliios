@@ -38,7 +38,7 @@ export default class UserData extends Component {
       {this.props.userData.currentFalci!==null ? (
                 <View style={{flex:1,alignItems:'center',justifyContent:'space-around'}}>
                   <View style={{flexDirection: 'row',flex:1,alignItems:'center',justifyContent:'space-around'}}>
-                    <Text>Bugünkü Falcınız: <Text style={{fontWeight:'bold',fontSize:16}}>{falcilar[this.props.userData.currentFalci].name}</Text></Text>
+                    <Text style={{marginRight:5}}>Bugünkü Falcınız: <Text style={{fontWeight:'bold',fontSize:16}}>{falcilar[this.props.userData.currentFalci].name}</Text></Text>
                     <Image source={{uri:falcilar[this.props.userData.currentFalci].url}} style={{height:34,width:34, borderRadius:17}}></Image>
                   </View>
                   <View style={{alignItems:'center'}}>
@@ -55,7 +55,7 @@ export default class UserData extends Component {
 
         </View>
         <View style={styles.secondrow}>
-          <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Bakılan Fallar</Text>
+          <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistiklerin</Text>
           <View style={styles.secondinner}>
             <View >
               <View style={{height:21,borderColor:'#1194F7',borderBottomWidth:1}}>
@@ -85,6 +85,7 @@ export default class UserData extends Component {
           </View>
         <View style={styles.thirdrow}>
             <Text style={{fontWeight:'bold',marginBottom:5}}>İlk konuştuğumuz tarih: <Text style={{fontWeight:'normal'}}>{moment(this.props.userData.joinDate).format('LLL')}</Text></Text>
+            <Text style={{fontWeight:'bold',marginBottom:5}}>En son fal baktığın tarih: <Text style={{fontWeight:'normal'}}>{moment(this.props.userData.lastUsed).format('LLL')}</Text></Text>
             <Text style={{fontWeight:'bold'}}>Kredin: <Text style={{fontWeight:'normal'}}>{this.props.userData.credit ? this.props.userData.credit : 0}</Text></Text>
         </View>
         </View>
