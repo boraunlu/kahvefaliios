@@ -134,40 +134,52 @@ class Backend {
 
   //var uploadImage = (uri, imageName, mime) => {}
 
-  loadInitialMessages = (callback) => {
+
+    loadInitialMessages = (callback) => {
 
 
-    const loadInitial = (data) => {
-      const messages = data.val();
-      var callbackobj = [];
-      if(messages!==null){
-        var counter = 0;
-        var uzunluk = Object.keys(messages).length
-        Object.keys(messages).forEach((key) => {
-            //console.log("keyler "+key)
-            counter=counter+1;
-            if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
-            var message=messages[key];
+      const loadInitial = (data) => {
+        const messages = data.val();
+        var callbackobj = [];
+        var simdi = moment()
+        var saat = simdi.hour();
+        if(messages!==null){
+          var counter = 0;
+          var uzunluk = Object.keys(messages).length
+          Object.keys(messages).forEach((key) => {
+              //console.log("keyler "+key)
+              counter=counter+1;
+              if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
+              var message=messages[key];
 
-            if(message.type!=="typing"){
-              message._id=key;
-              var simdi = moment()
-              var createdAt = moment(message.createdAt)
-              if(createdAt.dayOfYear()==simdi.dayOfYear()){
-                  callbackobj.unshift(message)
+              if(message.type!=="typing"){
+                message._id=key;
+
+                var createdAt = moment(message.createdAt)
+                if(saat>2){
+                  if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.hour()>2){
+                      callbackobj.unshift(message)
+                  }
+                }
+                else{
+                  if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.dayOfYear()==simdi.dayOfYear()-1){
+                      callbackobj.unshift(message)
+                  }
+                }
+
               }
-            }
-        });
-      }
-      else{
-        this.lastKeyLoaded="asdf"
-      }
+          });
+        }
+        else{
+          this.lastKeyLoaded="asdf"
+        }
 
-      callback(callbackobj);
+        callback(callbackobj);
 
-    };
-    this.messagesRef.limitToLast(50).once('value',loadInitial);
-  }
+      };
+      this.messagesRef.limitToLast(50).once('value',loadInitial);
+    }
+
 newfortune = () => {this.lastKeyLoaded="asdf"}
   // retrieve the messages from the Backend
   loadMessages = (callback) => {

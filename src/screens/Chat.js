@@ -288,6 +288,9 @@ export default class Chat extends React.Component {
               });
             }
             else if (message.type=="image"||message.type=="text") {
+              if(this.state.buttons!==null||this.state.quick_reply!==null){
+                this.setState({quick_reply:null,quick_reply:null})
+              }
               this.setState((previousState) => {
                 return {
                   messages: GiftedChat.append(previousState.messages, message),
