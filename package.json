@@ -21,6 +21,7 @@
     "react-native-gifted-chat": "^0.1.4",
     "react-native-in-app-utils": "^5.2.3",
     "react-native-nav": "^1.2.0",
+    "react-native-picker": "^4.0.18",
     "react-native-root-toast": "^1.0.5",
     "react-native-sound": "^0.10.0",
     "react-native-swiper": "^1.5.4",

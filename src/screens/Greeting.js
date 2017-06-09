@@ -28,7 +28,7 @@ export default class Greeting extends React.Component {
     super(props);
     this.state = {
       profPhoto:'http://www.omnovia.com/wp/wp-content/uploads/2015/04/analyst-placeholder-avatar.png',
-      userName:null,
+      userName:'',
       user:null,
       userData:null,
       animatedButton: new Animated.Value(0),
@@ -143,8 +143,12 @@ export default class Greeting extends React.Component {
         this.setState({greetingMessage:greetingMessage});
       }
     }
-
-    this.setState({profPhoto:user.photoURL,userName:user.displayName});
+    if(user.photoURL){
+      this.setState({profPhoto:user.photoURL})
+    }
+    if(user.displayName){
+        this.setState({userName:user.displayName})
+    }
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
       headers: {

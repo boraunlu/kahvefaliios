@@ -310,7 +310,7 @@ newfortune = () => {this.lastKeyLoaded="asdf"}
 
   sendMessage = (message) => {
 
-
+    if(message){
     if(message[0].text){
       for (let i = 0; i < message.length; i++) {
 
@@ -398,6 +398,7 @@ newfortune = () => {this.lastKeyLoaded="asdf"}
         }
 
       }
+    }
   }
   // close the connection to the Backend
   closeChat() {

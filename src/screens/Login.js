@@ -5,16 +5,22 @@ import {
   TextInput,
   TouchableOpacity,
   TouchableHighlight,
+  KeyboardAvoidingView,
   View,
   Image,
   Modal,
-  Dimensions
+  Dimensions,
+
+  Animated,
+  Easing,
 } from 'react-native';
 
 
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Video from 'react-native-video'
+import Picker from 'react-native-picker'
+
 
 const FBSDK = require('react-native-fbsdk');
 const {
@@ -33,7 +39,10 @@ export default class Login extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      imageVisibility:0
+      imageVisibility:0,
+      anonacik:false,
+      gender:"female",
+      name:'İsmini buraya yaz'
   };
   this.navigateto = this.navigateto.bind(this);
   this._navigateTo = this._navigateTo.bind(this);
@@ -106,7 +115,61 @@ export default class Login extends React.Component {
       }
     );
   }
+  renderanongiris = () => {
+    if (this.state.anonacik) {
+            return (
+              <View style={{marginTop:30,backgroundColor:'white'}}>
+              <TextInput
+                 numberOfLines = {1}
+                 onFocus = {() => {this.setState({name:''})}}
+                 style={{height: 40, borderColor: 'gray', borderWidth: 1}}
+                 onChangeText={(name) => this.setState({name})}
+                 value={this.state.name}
+                 editable = {true}
+                 maxLength = {40}
+               />
 
+             <Picker />
+             <TouchableOpacity onPress={() => {this.loginAnonly()}} style={{marginTop:30,backgroundColor:'rgba(0, 0, 0, 0.5)',borderColor:'white',borderWidth:1,padding:5,borderRadius:5}}>
+              <Text style={{fontSize:17,color:'white',textAlign:'center',backgroundColor:'transparent',textDecorationLine:'underline'}}>Devam Et</Text>
+             </TouchableOpacity>
+             </View>
+            );
+        } else {
+            return (
+            <TouchableOpacity onPress={() => {this.setState({anonacik:true})}} style={{marginTop:30,backgroundColor:'rgba(0, 0, 0, 0.5)',borderColor:'white',borderWidth:1,padding:5,borderRadius:5}}>
+             <Text style={{fontSize:17,color:'white',textAlign:'center',backgroundColor:'transparent',textDecorationLine:'underline'}}>Facebook hesabım yok</Text>
+            </TouchableOpacity>
+          );
+        }
+  }
+
+  loginAnonly = () => {
+    firebase.auth().signInAnonymously().then(function(user){
+
+      user.updateProfile({
+        displayName: this.state.name,
+      })
+      fetch('https://eventfluxbot.herokuapp.com/appapi/anonlogin', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: user.uid,
+          name: this.state.name,
+          gender:this.state.gender
+        })
+      })
+      .then((response) => this._navigateTo('Swipers'))
+    }.bind(this)).catch(function(error) {
+      // Handle Errors here.
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      // ...
+    });
+  }
   navigateto = (destination) => {
     const { navigate } = this.props.navigation;
     navigate(destination)
@@ -122,6 +185,19 @@ export default class Login extends React.Component {
 
   componentDidMount() {
 
+    Picker.init({
+        pickerData: ['Erkek','Kadın'],
+        selectedValue: ['Kadın'],
+        onPickerConfirm: data => {
+            alert(data);
+        },
+        onPickerCancel: data => {
+            console.log(data);
+        },
+        onPickerSelect: data => {
+            console.log(data);
+        }
+    });
   }
 
   render() {
@@ -146,12 +222,17 @@ export default class Login extends React.Component {
                 Bambaşka bir fal deneyimi
                 </Text>
           </View>
-         <View style={{marginTop:(Dimensions.get('window').height)/5,paddingTop:(Dimensions.get('window').height)/4,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6}}>
+
+         <View style={{paddingTop:(Dimensions.get('window').height)/4,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6}}>
            <Icon.Button name="facebook"  style={styles.fbloginbutton} backgroundColor="#3b5998" onPress={()=>{this.newLogin()}}>
              <Text style={{fontSize:17,color:'white',fontWeight:'bold'}}>Facebook ile giriş yap</Text>
            </Icon.Button>
+           {this.renderanongiris()}
+
+
 
           </View>
+
 
       </View>
 
