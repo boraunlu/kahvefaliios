@@ -209,7 +209,7 @@ _keyboardDidShow = (event) => {
       else{
 
         firebase.auth().signInAnonymously().then(function(user){
-
+            alert(user.uid)
           user.updateProfile({
             displayName: this.state.name,
           })
@@ -288,7 +288,7 @@ _keyboardDidShow = (event) => {
           </View>
 
           {this.renderanongiris()}
-
+          <TouchableHighlight style={{width:Dimensions.get('window').width,alignItems:'center',position: 'absolute',bottom: 0}} onPress={() => {this.navigateto('Kimiz')}}><Text style={{textAlign:'center',textDecorationLine:'underline',fontSize:16,paddingBottom:10}}>Biz Kimiz?</Text></TouchableHighlight>
       </View>
 
 
