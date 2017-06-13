@@ -13,6 +13,7 @@ import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
 import About from './screens/About';
+import Kimiz from './screens/Kimiz';
 import Swipers from './screens/Swipers';
 
 import { StackNavigator, addNavigationHelpers } from 'react-navigation';
@@ -23,6 +24,7 @@ let kahvefaliapp = StackNavigator({
   Home: {screen:Home},
   Greeting: {screen:Greeting},
   Login: { screen: Login },
+    Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
 Swipers: {screen:Swipers},
   Odeme: {screen:Odeme},

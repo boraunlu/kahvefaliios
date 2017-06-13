@@ -52,7 +52,7 @@ static navigationOptions = {
     return (
       <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true}>
          <View style={styles.slide1}>
-           <Image source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableHighlight></Image>
+           <Image source={require('../static/images/swipe1.jpg')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableHighlight></Image>
          </View>
          <View style={styles.slide2}>
            <Image source={require('../static/images/swipe2.png')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableHighlight></Image>

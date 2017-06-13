@@ -11,6 +11,8 @@ import {
   Dimensions,
   Image,
   BackAndroid,
+  Animated,
+  Easing,
   ActivityIndicator,
 } from 'react-native';
 import Sound from 'react-native-sound'
@@ -65,7 +67,8 @@ export default class Chat extends React.Component {
       buttons: null,
       shareLinkContent: shareLinkContent,
       keyboardHeight:300,
-      inputVisible:true
+      inputVisible:true,
+      buttonOpacity: new Animated.Value(0),
     };
 
 
@@ -112,7 +115,16 @@ export default class Chat extends React.Component {
 
   }
 
-
+  fadeButtons = () => {
+    this.state.buttonOpacity.setValue(0)
+    Animated.timing(
+      this.state.buttonOpacity,
+      {
+        toValue: 1,
+        duration: 3000,
+      }
+    ).start()
+  }
 
   setModalVisibility(visible) {
     ////console.log(visible);
@@ -270,6 +282,7 @@ export default class Chat extends React.Component {
                   Keyboard.dismiss()
             }
             else if (message.type=="quick") {
+              this.fadeButtons()
               this.setState((previousState) => {
                 return {
                   messages: GiftedChat.append(previousState.messages, message),quick_reply:message.quick_reply
@@ -277,6 +290,7 @@ export default class Chat extends React.Component {
               });
             }
             else if (message.type=="button") {
+              this.fadeButtons()
               if(message.buttons[0].payload=="hizlibak"||message.buttons[0].payload.includes("odeme")){
                 this.setState({inputVisible:false})
               }
@@ -319,12 +333,14 @@ export default class Chat extends React.Component {
                 if(messages.length>0){
                   var lastMessage=messages[0]
                   if(lastMessage.type=="quick"){
+                    this.fadeButtons()
                     this.setState({quick_reply:lastMessage.quick_reply})
                   }
                   else if (lastMessage.type=="button") {
                     if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")){
                       this.setState({inputVisible:false})
                     }
+                    this.fadeButtons()
                       this.setState({quick_reply:lastMessage.buttons})
                   }
                   else if (lastMessage.type=="generic") {
@@ -571,12 +587,13 @@ export default class Chat extends React.Component {
 
           {this.state.quick_reply.map(function(reply, index) {
             return (
-
+              <Animated.View key={index} style={{opacity:this.state.buttonOpacity}}>
               <TouchableHighlight
                 onPress={() => {this.sendQuickPayload(reply)}}
-                key={index} style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
+              style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
                   <Text style={styles.footerText}>{reply.title}</Text>
                 </TouchableHighlight>
+                </Animated.View>
             );
           }.bind(this))}
 
@@ -588,17 +605,19 @@ export default class Chat extends React.Component {
     if(this.state.buttons){
       let bubblewidth = (Dimensions.get('window').width-25)/3
       if(this.state.buttons.length>2){bubblewidth = (Dimensions.get('window').width-25)/4}
+      this.fadeButtons()
         return (
           <View style={styles.quickContainer}>
 
             {this.state.buttons.map(function(reply, index) {
               return (
-
+                <Animated.View  key={index} style={{opacity:this.state.buttonOpacity}}>
                 <TouchableHighlight
                   onPress={() => {this.sendPayload(reply)}}
-                  key={index} style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
+                   style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
                     <Text style={styles.footerText}>{reply.title}</Text>
                   </TouchableHighlight>
+                  </Animated.View>
               );
             }.bind(this))}
 

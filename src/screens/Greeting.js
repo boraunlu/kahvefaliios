@@ -126,7 +126,7 @@ export default class Greeting extends React.Component {
     ).start()
   }
   componentDidUpdate(){
-    if(this.state.userData!==null){this.animateButtons(); this.fadeButtons(); this.animateBubble(); this.spring(); }
+    if(this.state.userData!==null){this.fadeButtons();}
   }
 
   componentDidMount() {
@@ -239,8 +239,9 @@ componentWillUnmount() {
 
         </View>
         {this.state.userData!==null ? (
-          <View style={{padding:5,alignSelf:'stretch',marginBottom:5,height:30,backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
-            <TouchableHighlight onPress={() => {this.navigateto("About")}} style={{flex:1}}><Text style={{textAlign:'center',fontSize:16,color:'white'}}>Hakkında & Ayarlar</Text></TouchableHighlight>
+          <View style={{padding:5,alignSelf:'stretch',flexDirection:'row',marginBottom:5,height:30,backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
+            <TouchableHighlight onPress={() => {this.navigateto("About")}} style={{flex:1,borderColor:'white',borderRightWidth:3}}><Text style={{textAlign:'center',fontSize:16,color:'white'}}>Hakkında & Ayarlar</Text></TouchableHighlight>
+              <TouchableHighlight onPress={() => {this.navigateto("Kimiz")}} style={{flex:1}}><Text style={{textAlign:'center',fontSize:16,color:'white'}}>Biz Kimiz?</Text></TouchableHighlight>
           </View>
         ) : (<View/>)}
 

@@ -150,10 +150,7 @@ export default class Odeme extends React.Component {
           <Text style={styles.description}>Detaylı Fal  :<Text style={styles.description2}> 150 Kredi</Text></Text><Image source={require('../static/images/coins.png')} style={styles.coin}/>
 
               </View>
-            <View style={{flexDirection:'row'}}>
-          <Text style={styles.description}>Yıldızname :<Text style={styles.description2}> 250 Kredi</Text></Text><Image source={require('../static/images/coins.png')} style={styles.coin}/>
-
-              </View>
+        
         </View>
         <View style={styles.productsContainer}>
           <Text  style={[styles.label2, {fontWeight: 'bold'}]}>
