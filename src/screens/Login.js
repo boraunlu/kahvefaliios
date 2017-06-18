@@ -20,8 +20,9 @@ import {
 } from 'react-native';
 
 
-
+import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import Video from 'react-native-video'
 //import Picker from 'react-native-picker'
 import { Form,
@@ -37,6 +38,16 @@ const {
   LoginManager,
 } = FBSDK;
 
+function getFirstWord(str) {
+      if (str.indexOf(' ') === -1)
+          return str;
+      else
+          return str.substr(0, str.indexOf(' '));
+  }
+
+  function capitalizeFirstLetter(string) {
+      return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
 import firebase from 'firebase';
 import Backend from '../Backend';
@@ -66,12 +77,46 @@ export default class Login extends React.Component {
     this.setState({imageVisibility:1})
   }
 
+
+
   onPickerChange = (key: string, value: string) => {
       const newState = {};
       newState[key] = value;
       this.setState(newState);
     };
 
+  gugilsignin = () => {
+    GoogleSignin.signIn()
+    .then((user) => {
+      console.log(user);
+
+      var credential = firebase.auth.GoogleAuthProvider.credential(user.idToken);
+      // Sign in with credential from the Google user.
+
+      firebase.auth().signInWithCredential(credential).then(function(user2) {
+          /*if(error){
+
+          var errorCode = error.code;
+          var errorMessage = error.message;
+          // The email of the user's account used.
+          var email = error.email;
+          // The firebase.auth.AuthCredential type that was used.
+          var credential = error.credential;
+        }
+        else{*/
+
+          if(user.name){
+            this.setState({name:capitalizeFirstLetter(getFirstWord(user.name))})
+          }
+          this.setState({anonacik:true})
+
+      }.bind(this))
+    })
+    .catch((err) => {
+      console.log('WRONG SIGNIN', err);
+    })
+    .done();
+  }
     handleFormChange = (formData) => {
       /*
       formData will contain all the values of the form,
@@ -163,6 +208,7 @@ _keyboardDidShow = (event) => {
                 onChangeText={(text) => this.setState({name:text})}
                 clearTextOnFocus={true}
                 maxLength={20}
+                value={this.state.name ? this.state.name : null}
                 placeholder={'İsminizi buraya yazabilirsiniz'}
                 >
               </TextInput>
@@ -186,9 +232,12 @@ _keyboardDidShow = (event) => {
             );
         } else {
             return (
-            <TouchableOpacity onPress={() => {this.setState({anonacik:true})}} style={{marginTop:30,backgroundColor:'rgba(0, 0, 0, 0.5)',borderColor:'white',borderWidth:1,padding:5,borderRadius:5,marginRight:Dimensions.get('window').width/6,marginLeft:Dimensions.get('window').width/6}}>
-             <Text style={{fontSize:17,color:'white',textAlign:'center',backgroundColor:'transparent',textDecorationLine:'underline'}}>Facebook hesabım yok</Text>
-            </TouchableOpacity>
+
+              <View style={{paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6}}>
+                <Icon.Button name="google"  style={styles.fbloginbutton} backgroundColor="#dd4b39" onPress={()=>{this.gugilsignin()}}>
+                  <Text style={{fontSize:17,color:'white',fontWeight:'bold'}}>Google ile giriş yap</Text>
+                </Icon.Button>
+              </View>
           );
         }
   }
@@ -208,30 +257,30 @@ _keyboardDidShow = (event) => {
       }
       else{
 
-        firebase.auth().signInAnonymously().then(function(user){
-            alert(user.uid)
-          user.updateProfile({
-            displayName: this.state.name,
-          })
-          fetch('https://eventfluxbot.herokuapp.com/appapi/anonlogin', {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              uid: user.uid,
-              name: this.state.name,
-              gender:this.state.gender
-            })
-          })
-          .then((response) => this._navigateTo('Swipers'))
-        }.bind(this)).catch(function(error) {
-          // Handle Errors here.
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // ...
-        });
+          var user = firebase.auth().currentUser;
+
+            user.updateProfile({
+              displayName: this.state.name,
+
+            }).then(function() {
+              fetch('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  uid: user.uid,
+                  name: this.state.name,
+                  gender:this.state.gender
+                })
+              })
+              .then((response) => this._navigateTo('Swipers'))
+            }.bind(this), function(error) {
+            // An error happened.
+            });
+
+
       }
     }
   }
@@ -249,7 +298,7 @@ _keyboardDidShow = (event) => {
     }
 
   componentDidMount() {
-
+    GoogleSignin.configure({ iosClientId: '658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc.apps.googleusercontent.com' })
       this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
   }
 
@@ -277,15 +326,12 @@ _keyboardDidShow = (event) => {
                 </Text>
           </View>
 
-         <View style={ this.state.keyboardOn ? styles.keyboardAcik : styles.keyboardKapali }>
+         <View style={ this.state.anonacik ? styles.keyboardAcik : styles.keyboardKapali }>
            <Icon.Button name="facebook"  style={styles.fbloginbutton} backgroundColor="#3b5998" onPress={()=>{this.newLogin()}}>
              <Text style={{fontSize:17,color:'white',fontWeight:'bold'}}>Facebook ile giriş yap</Text>
            </Icon.Button>
-
-
-
-
           </View>
+
 
           {this.renderanongiris()}
           <TouchableHighlight style={{width:Dimensions.get('window').width,alignItems:'center',position: 'absolute',bottom: 0}} onPress={() => {this.navigateto('Kimiz')}}><Text style={{textAlign:'center',textDecorationLine:'underline',fontSize:16,paddingBottom:10}}>Biz Kimiz?</Text></TouchableHighlight>
@@ -313,10 +359,10 @@ const styles = StyleSheet.create({
   },
   keyboardAcik:{
 
-    paddingTop:(Dimensions.get('window').height)/10,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6
+    marginBottom:10,paddingTop:(Dimensions.get('window').height)/10,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6
   },
   keyboardKapali:{
-    paddingTop:(Dimensions.get('window').height)/4,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6
+    marginBottom:30,paddingTop:(Dimensions.get('window').height)/3,paddingRight:Dimensions.get('window').width/6,paddingLeft:Dimensions.get('window').width/6
   },
   malesecili:{
     height:80,

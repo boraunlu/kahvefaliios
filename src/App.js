@@ -20,10 +20,10 @@ import { StackNavigator, addNavigationHelpers } from 'react-navigation';
 
 let kahvefaliapp = StackNavigator({
 
-
+  Login: { screen: Login },
   Home: {screen:Home},
   Greeting: {screen:Greeting},
-  Login: { screen: Login },
+
     Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
 Swipers: {screen:Swipers},

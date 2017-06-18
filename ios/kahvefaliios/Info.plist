@@ -30,6 +30,26 @@
 				<string>fb845566225565988</string>
 			</array>
 		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.grepsi.kahvefaliios</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.grepsi.kahvefaliios</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>com.googleusercontent.apps.658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc</string>
+			</array>
+		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>12</string>

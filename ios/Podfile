@@ -14,6 +14,7 @@ target 'kahvefaliios' do
   pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
   pod 'Firebase/Messaging'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
+  pod 'Google/SignIn'
 
   target 'kahvefaliios-tvOSTests' do
     inherit! :search_paths

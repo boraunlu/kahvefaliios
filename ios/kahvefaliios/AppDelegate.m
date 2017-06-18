@@ -9,7 +9,7 @@
 
 #import "AppDelegate.h"
 #import <CodePush/CodePush.h>
-
+#import <RNGoogleSignin/RNGoogleSignin.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
@@ -69,10 +69,17 @@
               openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication
            annotation:(id)annotation {
+    
     return [[FBSDKApplicationDelegate sharedInstance] application:application
                                                           openURL:url
                                                 sourceApplication:sourceApplication
-                                                       annotation:annotation];
+                                                       annotation:annotation
+            ]
+    || [RNGoogleSignin application:application
+                           openURL:url
+                 sourceApplication:sourceApplication
+                        annotation:annotation
+        ];
   }
 
 @end
