@@ -12,7 +12,7 @@ import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 
 
-export default class About extends React.Component {
+export default class Kimiz extends React.Component {
   constructor(props) {
     super(props);
     this.state = {

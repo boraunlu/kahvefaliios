@@ -193,57 +193,93 @@ componentWillUnmount() {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
-        <ScrollView>
-        <View style={{borderBottomWidth:0,borderColor:'#1194F7',marginBottom:20}}>
-          <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
-            <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
-            </Image>
-            <Animated.View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
-              <Text style={{fontSize:16,color:'white'}}>
-                {this.state.greetingMessage}
-              </Text>
+      <Image source={require('../static/images/splash4.png')} style={styles.containerasd}>
+        <ScrollView style={{flex:1,padding:0}}>
+          <View style={{borderBottomWidth:0,borderColor:'#1194F7',marginBottom:20}}>
+            <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
+              <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
+              </Image>
+              <Animated.View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
+                <Text style={{fontSize:16,color:'white'}}>
+                  {this.state.greetingMessage}
+                </Text>
 
-            </Animated.View>
+              </Animated.View>
 
+            </View>
+
+
+            <View>
+              <View style={{flexDirection:'row'}}>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                  <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
+
+                    <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
+
+                      <Text style={styles.faltypeyazi}>
+                        Günlük Fal
+                      </Text>
+                      <Text style={styles.faltypeyazikucuk}>
+                        Hergün 1 adet kahve falı bizden size hediye!
+                      </Text>
+                    </View>
+                  </Image>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                  <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
+                    <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+                      <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                        <Text style={[styles.label]}>
+                          100
+                        </Text>
+                        <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                      </View>
+                      <Text style={styles.faltypeyazi}>
+                        Aşk Falı
+                      </Text>
+                      <Text style={styles.faltypeyazikucuk}>
+                        Sırlar dökülsün, aşk konuşalım
+                      </Text>
+                    </View>
+                  </Image>
+                </TouchableOpacity>
+              </View>
+              <View style={{flexDirection:'row'}}>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                  <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
+                  <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                      <Text style={[styles.label]}>
+                        150
+                      </Text>
+                      <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                    </View>
+                    <Text style={styles.faltypeyazi}>
+                      Detaylı Fal
+                    </Text>
+                    <Text style={styles.faltypeyazikucuk}>
+                      Ortaya çıkmayan detay kalmasın
+                    </Text>
+
+                  </View>
+                  </Image>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                  <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
+                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+                    <Text style={styles.faltypeyazi}>
+                      El Falı
+                    </Text>
+                    <Text style={styles.faltypeyazikucuk}>
+                      Eliniz, kaderiniz...
+                    </Text>
+                  </View>
+                  </Image>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
-
-          <View style={[styles.buttonswrap]}>
-            <Animated.View style={[styles.button1,{height:40,opacity:this.state.buttonOpacity}]} >
-              <TouchableOpacity onPress={() => {this.navigateto('Chat')}}>
-                <View style={{flexDirection:'row',justifyContent:'center'}}>
-                  <Text style={styles.buttontext1}>Fal Baktır </Text>
-                  <Icon name="comments" size={24} color="salmon" />
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-            <Animated.View style={[styles.button2,{height:40,opacity:this.state.buttonOpacity}]} >
-              <TouchableOpacity onPress={() => {this.navigateto('Odeme')}}>
-                <View style={{flexDirection:'row',justifyContent:'center'}}>
-                  <Text style={styles.buttontext2}>Kredi al  </Text>
-                  <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
-                </View>
-              </TouchableOpacity>
-            </Animated.View>
-
-
-          </View>
-        </View>
-        <View style={{elevation:3,paddingTop:15,backgroundColor:'white',flexDirection:'column'}}>
-          <View style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
-            <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
-          </View>
-          <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:16}}>{this.state.userName}</Text>
-
-          <UserData userData={this.state.userData} setDestination={(destination) =>{this.navigateto(destination)}}/>
-
-        </View>
-        {this.state.userData!==null ? (
-          <View style={{padding:5,alignSelf:'stretch',flexDirection:'row',marginBottom:5,height:30,backgroundColor:'rgba(0, 0, 0, 0.5)'}}>
-            <TouchableHighlight onPress={() => {this.navigateto("About")}} style={{flex:1,borderColor:'white',borderRightWidth:3}}><Text style={{textAlign:'center',fontSize:16,color:'white'}}>Hakkında & Ayarlar</Text></TouchableHighlight>
-              <TouchableHighlight onPress={() => {this.navigateto("Kimiz")}} style={{flex:1}}><Text style={{textAlign:'center',fontSize:16,color:'white'}}>Biz Kimiz?</Text></TouchableHighlight>
-          </View>
-        ) : (<View/>)}
+          
 
         </ScrollView>
       </Image>
@@ -256,17 +292,28 @@ componentWillUnmount() {
 
 
 const styles = StyleSheet.create({
-  container: {
+  containerasd: {
     flex: 1,
-    alignItems:'center',
-    alignSelf: 'stretch',
+    // remove width and height to override fixed static size
     width: null,
-    padding:5,
-    paddingBottom:0,
-    paddingTop:0,
+    height: null,
+
   },
   fbloginbutton:{
     justifyContent:'center',
+  },
+  faltypecontainer:{
+    flex:1,
+    height:125,
+    borderWidth:1,
+    borderColor:'white'
+  },
+  faltypeimage:{
+    alignItems:'center',
+    alignSelf: 'stretch',
+    width: null,
+    height:123,
+    flexDirection:'column-reverse'
   },
   button1:{
     backgroundColor:'#1194F7',
@@ -293,10 +340,27 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontSize:22
   },
+  faltypeyazi:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+  },
+  faltypeyazikucuk:{
+    textAlign: 'center',color:'white',fontSize:14
+  },
   buttontext2:{
     color:'white',
     fontWeight:'bold',
     textAlign:'center',
     fontSize:16
-  }
+  },
+  coin:{
+    height:15,
+    width:15,
+    marginLeft:5,
+  },
+  label: {
+    fontSize: 12,
+    color:'white',
+    textAlign:'center',
+    fontWeight:'bold'
+  },
 });
