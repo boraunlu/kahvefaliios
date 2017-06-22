@@ -31,6 +31,9 @@ export default class Kimiz extends React.Component {
   componentDidMount() {
 
   }
+  componentDidUpdate() {
+
+  }
 
   componentWillUnmount() {
 
@@ -45,7 +48,7 @@ export default class Kimiz extends React.Component {
 
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView>
-          <Image style={{alignSelf:'center',height:80,width:80, borderRadius:40,marginBottom:30}} source={require('../static/images/anneLogo3.png')}></Image>
+          <Image style={{alignSelf:'center',height:80,width:80, borderRadius:40,marginTop:30,marginBottom:30}} source={require('../static/images/anneLogo3.png')}></Image>
           <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10}}>
             <Text style={{fontSize:16,color:'white',textAlign:'justify'}}>
               İsmim Nevin.{"\n"}{"\n"}
@@ -72,8 +75,9 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: null,
     alignItems:'center',
-    padding:10,
-    paddingTop:30
+    paddingRight:10,
+    paddingLeft:10,
+
   },
 
 });

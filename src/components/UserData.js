@@ -33,27 +33,7 @@ export default class UserData extends Component {
     if (this.props.userData) {
       return (
         <View >
-        <View style={styles.firstrow}>
 
-      {this.props.userData.currentFalci!==null ? (
-                <View style={{flex:1,alignItems:'center',justifyContent:'space-around'}}>
-                  <View style={{flexDirection: 'row',flex:1,alignItems:'center',justifyContent:'space-around'}}>
-                    <Text style={{marginRight:5}}>Bugünkü Falcınız: <Text style={{fontWeight:'bold',fontSize:16}}>{falcilar[this.props.userData.currentFalci].name}</Text></Text>
-                    <Image source={{uri:falcilar[this.props.userData.currentFalci].url}} style={{height:34,width:34, borderRadius:17}}></Image>
-                  </View>
-                  <View style={{alignItems:'center'}}>
-                    <TouchableOpacity style={styles.button1} onPress={() => {this.props.setDestination('Chat')}}>
-                        <Text style={styles.buttontext1}>Sohbete Devam</Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-                ) : (
-                  <TouchableOpacity onPress={() => {this.props.setDestination('Chat')}}>
-                    <Text style={{textAlign:'center',color:'#1194F7',textDecorationLine:'underline'}}>Bugünkü falcını hemen belirle!</Text>
-                  </TouchableOpacity>
-                )}
-
-        </View>
         <View style={styles.secondrow}>
           <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistiklerin</Text>
           <View style={styles.secondinner}>
@@ -136,7 +116,8 @@ var styles = StyleSheet.create({
     borderBottomWidth:1,
     borderColor:'gainsboro',
     paddingBottom:15,
-    paddingTop:5
+    paddingTop:5,
+    borderTopWidth:1,
   },
   secondinner:{
     paddingTop:5,

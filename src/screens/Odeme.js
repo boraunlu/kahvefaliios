@@ -18,7 +18,7 @@ import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
-
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 var products = [
    'com.grepsi.kahvefaliios.25',
@@ -36,8 +36,11 @@ export default class Odeme extends React.Component {
 
   static navigationOptions = {
       title: 'Ödeme',
-      headerBackTitle:'Geri'
-
+      headerBackTitle:'Geri',
+      tabBarLabel: 'Krediler',
+       tabBarIcon: ({ tintColor }) => (
+         <Icon name="database" color={tintColor} size={15} />
+       ),
     };
 
     setnavigation(route){
@@ -150,7 +153,7 @@ export default class Odeme extends React.Component {
           <Text style={styles.description}>Detaylı Fal  :<Text style={styles.description2}> 150 Kredi</Text></Text><Image source={require('../static/images/coins.png')} style={styles.coin}/>
 
               </View>
-        
+
         </View>
         <View style={styles.productsContainer}>
           <Text  style={[styles.label2, {fontWeight: 'bold'}]}>

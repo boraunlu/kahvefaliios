@@ -12,8 +12,8 @@ import Chat from './screens/Chat';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
-import About from './screens/About';
 import Kimiz from './screens/Kimiz';
+import Mesajlar from './screens/Mesajlar';
 import Swipers from './screens/Swipers';
 import Profil from './screens/Profil';
 
@@ -21,12 +21,12 @@ import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigat
 
 const MainScreenNavigator = TabNavigator({
   Greeting: {screen:Greeting},
-  Kimiz: { screen: Kimiz },
+    Mesajlar: {screen:Mesajlar},
   Odeme: {screen:Odeme},
-  About: {screen:About},
+
   Profil: {screen:Profil},
 },{
-
+  lazy:true
 });
 
 let kahvefaliapp = StackNavigator({

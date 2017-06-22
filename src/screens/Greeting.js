@@ -44,6 +44,11 @@ export default class Greeting extends React.Component {
 
   static navigationOptions = {
       title: 'Kahve Falı Sohbeti',
+
+      tabBarLabel: 'Ana Sayfa',
+       tabBarIcon: ({ tintColor }) => (
+         <Icon name="home" color={tintColor} size={25} />
+       ),
     };
 
 
@@ -209,9 +214,9 @@ componentWillUnmount() {
             </View>
 
 
-            <View>
+            <View style={{borderColor:'white',borderWidth:1}}>
               <View style={{flexDirection:'row'}}>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateto('Chat',0)}}>
                   <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
                     <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
@@ -225,7 +230,7 @@ componentWillUnmount() {
                     </View>
                   </Image>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateto('Chat',1)}}>
                   <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
                     <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
                       <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -279,7 +284,7 @@ componentWillUnmount() {
               </View>
             </View>
           </View>
-          
+
 
         </ScrollView>
       </Image>

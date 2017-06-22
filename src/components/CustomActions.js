@@ -130,7 +130,7 @@ export default class CustomActions extends React.Component {
       <View
         style={[styles.wrapper, this.props.wrapperStyle]}
       >
-      <Icon name="camera" color="#b2b2b2" size={15} />
+      <Icon name="camera" color="#696969" size={15} />
 
       </View>
     );
