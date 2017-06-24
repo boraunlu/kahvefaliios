@@ -29,6 +29,7 @@ import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
+require('../components/data/falcilar.js');
 
 
 const shareModel = {
@@ -65,6 +66,7 @@ export default class Chat extends React.Component {
       loadingVisible:this.props.navigation.state.params.newFortune,
       quick_reply: null,
       buttons: null,
+      falciNo:this.props.navigation.state.params.falciNo,
       shareLinkContent: shareLinkContent,
       keyboardHeight:300,
       inputVisible:true,
@@ -167,7 +169,7 @@ export default class Chat extends React.Component {
   sendPayload(payload){
 
     if(payload=="appstart"){
-      Backend.sendPayload(payload);
+      Backend.sendPayload(payload+this.state.falciNo);
     }
     else{
       if(payload.type=="postback"){
@@ -381,7 +383,7 @@ export default class Chat extends React.Component {
           });
 
           this.sendPayload("appstart")
-          let toast = Toast.show('Falcı sohbete bağlandı!', {
+          let toast = Toast.show(falcilar[this.state.falciNo].name+' sohbete bağlandı!', {
             duration: Toast.durations.SHORT,
             position: 70,
             shadow: true,
@@ -610,7 +612,7 @@ export default class Chat extends React.Component {
           <View style={styles.quickContainer}>
 
             {this.state.buttons.map(function(reply, index) {
-              return (
+
                 <Animated.View  key={index} style={{opacity:this.state.buttonOpacity}}>
                 <TouchableHighlight
                   onPress={() => {this.sendPayload(reply)}}
@@ -618,7 +620,7 @@ export default class Chat extends React.Component {
                     <Text style={styles.footerText}>{reply.title}</Text>
                   </TouchableHighlight>
                   </Animated.View>
-              );
+
             }.bind(this))}
 
           </View>

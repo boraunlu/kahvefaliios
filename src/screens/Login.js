@@ -104,7 +104,7 @@ export default class Login extends React.Component {
           var credential = error.credential;
         }
         else{*/
-
+          alert(JSON.stringify(user2))
           if(user.name){
             this.setState({name:capitalizeFirstLetter(getFirstWord(user.name))})
           }

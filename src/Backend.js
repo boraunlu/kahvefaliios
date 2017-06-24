@@ -17,6 +17,7 @@ class Backend {
   messagesRef = null;
   lastKeyLoaded=null;
   userAvatar=null;
+  falci:null;
   // initialize Firebase Backend
 
 
@@ -39,6 +40,13 @@ class Backend {
   }
   setUid(value) {
     this.uid = value;
+  }
+  setFalci(value) {
+    return new Promise((resolve, reject) => {
+      this.falci = value;
+      resolve(value)
+    })
+
   }
   setAvatar(value) {
     this.userAvatar = value;
@@ -119,7 +127,12 @@ class Backend {
     })
 
   }
-
+  deleteData(){
+    var deleteref = firebase.database().ref('messages/'+this.getUid());
+    deleteref.remove()
+    var deleteref2 = firebase.database().ref('messages/'+this.getUid()+'lastMessage');
+      deleteref2.remove()
+  }
   saveNewUser(token){
     this.messagesRef = firebase.database().ref('messages/'+this.getUid());
     this.messagesRef.push({
@@ -177,12 +190,13 @@ class Backend {
         callback(callbackobj);
 
       };
-      this.messagesRef.limitToLast(50).once('value',loadInitial);
+      this.messagesRef.child(this.falci).limitToLast(50).once('value',loadInitial);
     }
 
 newfortune = () => {this.lastKeyLoaded="asdf"}
+
   // retrieve the messages from the Backend
-  loadMessages = (callback) => {
+loadMessages = (callback) => {
 
     //this.messagesRef.off();
     const onReceive = (data) => {
@@ -285,7 +299,7 @@ newfortune = () => {this.lastKeyLoaded="asdf"}
 
     };
   }
-    this.messagesRef.limitToLast(1).on('child_added', onReceive);
+    this.messagesRef.child(this.falci).limitToLast(1).on('child_added', onReceive);
     //this.messagesRef.limitToLast(20).once('value',loadInitial);
   }
 
@@ -293,7 +307,21 @@ newfortune = () => {this.lastKeyLoaded="asdf"}
 
   }
   // send the message to the Backend
+  getLastMessages = () => {
+    return new Promise((resolve, reject) => {
+      var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/lastMessage');
+      lastmessagesref.once('value')
+      .then(function(dataSnapshot) {
+        //alert(JSON.stringify(dataSnapshot))
+        resolve(dataSnapshot.val())
+      })
+      .catch((error) => {
+        reject(error)
+      })
 
+   })
+
+  }
   addMessage = (message) => {
     this.messagesRef.push({
       type: "text",
@@ -313,14 +341,14 @@ newfortune = () => {this.lastKeyLoaded="asdf"}
     if(message){
     if(message[0].text){
       for (let i = 0; i < message.length; i++) {
-
+          /*
           this.messagesRef.push({
             type: "text",
             text: message[i].text,
             user: message[i].user,
             avatar: this.userAvatar,
             createdAt: firebase.database.ServerValue.TIMESTAMP,
-          });
+          });*/
 
 
         fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {

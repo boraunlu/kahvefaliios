@@ -17,14 +17,14 @@ import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+require('../components/data/falcilar.js');
 
 
 export default class Mesajlar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-
+      messages: null
   };
 }
 
@@ -38,21 +38,46 @@ export default class Mesajlar extends React.Component {
 
 
   componentDidMount() {
+    Backend.getLastMessages().then((snapshot) => {
 
+        this.setState({messages:snapshot})
+
+    })
   }
 
   componentWillUnmount() {
 
 
   }
+  renderBody = (props) => {
+    if(this.state.messages==null){
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      )
+    }
+    else{
+      var messages = this.state.messages
+      return (
+      {
 
+
+        }
+        );
+    }
+  }
 
   render() {
 
 
     return (
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
-
+        <ScrollView style={{flex:1}}>
+          {this.renderBody()}
+        </ScrollView>
       </Image>
     );
   }

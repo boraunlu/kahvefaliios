@@ -21,6 +21,7 @@ import firebase from 'firebase';
 import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Backend from '../Backend';
 
 
 export default class Greeting extends React.Component {
@@ -59,23 +60,30 @@ export default class Greeting extends React.Component {
     if(destination=="Chat"){
       if(this.state.userData){
         if(this.state.userData.currentFalci==null){
-          const resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-              NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:true}})
-            ]
+          var randomnumber = Math.floor(Math.random() * (14)) + 0;
+          Backend.setFalci(randomnumber).then(() => {
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:true,falciNo:randomnumber}})
+              ]
+            })
+            this.props.navigation.dispatch(resetAction)
           })
-          this.props.navigation.dispatch(resetAction)
+
           //navigate('Chat',{newFortune:false})
         }
         else{
-          const resetAction = NavigationActions.reset({
-            index: 0,
-            actions: [
-              NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false}})
-            ]
+
+          Backend.setFalci(this.state.userData.currentFalci).then(() => {
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false,falciNo:this.state.userData.currentFalci}})
+              ]
+            })
+            this.props.navigation.dispatch(resetAction)
           })
-          this.props.navigation.dispatch(resetAction)
         }
       }
 
@@ -230,7 +238,7 @@ componentWillUnmount() {
                     </View>
                   </Image>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateto('Chat',1)}}>
+                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Backend.deleteData()}}>
                   <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
                     <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
                       <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
