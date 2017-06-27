@@ -100,7 +100,7 @@ export default class Profil extends React.Component {
     var user = firebase.auth().currentUser;
     if(user.photoURL){
 
-    //  this.setState({profPhoto:user.photoURL})
+      this.setState({profPhoto:user.photoURL})
 
     }
     if(user.displayName){
@@ -221,7 +221,7 @@ export default class Profil extends React.Component {
 
             style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
             onChangeText={(text) => this.setState({text})}
-        
+
             placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
             editable = {true}
           />

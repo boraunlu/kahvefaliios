@@ -27,8 +27,7 @@ import CustomView from '../components/CustomView';
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
-import { NativeModules } from 'react-native'
-const { InAppUtils } = NativeModules
+
 require('../components/data/falcilar.js');
 
 
@@ -59,7 +58,7 @@ class CustomMessage extends Message {
   }
 }
 
-export default class Chat extends React.Component {
+export default class ChatOld extends React.Component {
   constructor(props) {
     super(props);
 
@@ -71,20 +70,19 @@ export default class Chat extends React.Component {
       modalVisible: false,
       modalElements:[],
       initialLoaded:false,
-      loadingVisible:this.props.navigation.state.params.newFortune,
+      loadingVisible:false,
       quick_reply: null,
       buttons: null,
       falciNo:this.props.navigation.state.params.falciNo,
       shareLinkContent: shareLinkContent,
       keyboardHeight:300,
-      inputVisible:true,
+      inputVisible:false,
       buttonOpacity: new Animated.Value(0),
     };
 
 
     this._isMounted = false;
     this.onSend = this.onSend.bind(this);
-    this.onReceive = this.onReceive.bind(this);
     this.renderCustomActions = this.renderCustomActions.bind(this);
     this.renderBubble = this.renderBubble.bind(this);
     this.renderFooter = this.renderFooter.bind(this);
@@ -92,14 +90,12 @@ export default class Chat extends React.Component {
     this.renderComposer = this.renderComposer.bind(this);
     this.renderInputToolbar = this.renderInputToolbar.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
-    this.shareLinkWithShareDialog = this.shareLinkWithShareDialog.bind(this);
     this.setnavigation = this.setnavigation.bind(this);
 
     this._isAlright = null;
   }
   static navigationOptions = ({ navigation }) => ({
-    headerLeft:<Button title={"Sayfam"} onPress={() => {navigation.state.params.setnavigation('Greeting')}}/>,
-    headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
+
     headerTitle:falcilar[navigation.state.params.falciNo].name,
 
   })
@@ -118,23 +114,13 @@ export default class Chat extends React.Component {
        this.props.navigation.dispatch(resetAction)
     }
     else{
-      BackAndroid.removeEventListener('hardwareBackPress', this.backhandler);
+
       const { navigate } = this.props.navigation;
       navigate(route)
     }
 
   }
 
-  fadeButtons = () => {
-    this.state.buttonOpacity.setValue(0)
-    Animated.timing(
-      this.state.buttonOpacity,
-      {
-        toValue: 1,
-        duration: 3000,
-      }
-    ).start()
-  }
 
   setModalVisibility(visible) {
     ////console.log(visible);
@@ -145,110 +131,8 @@ export default class Chat extends React.Component {
     });
   }
 
-  pay = (credit) => {
-    var products = [
-       'com.grepsi.kahvefaliios.'+credit,
-    ];
-    InAppUtils.loadProducts(products, (error, products) => {
-      if(error){}
-      else{
-        var identifier = products[0].identifier
-        InAppUtils.purchaseProduct(identifier, (error, response) => {
-           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-           if(error){
-             if(credit==25){
-               Backend.sendPayload("nohizlibak")
-             }
-             else{
-               Backend.sendPayload("paymentiptal")
-             }
-           }
-           else{
-             if(response && response.productIdentifier) {
-                //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
-                Backend.sendPayload(credit+"baslat")
-             }
-           }
-        });
-      }
-    });
 
-  }
-  sendPayload(payload){
 
-    if(payload=="appstart"){
-      var epstart = "appstart"+this.state.falciNo
-      Backend.sendPayload(epstart);
-    }
-    else{
-      if(payload.type=="postback"){
-        if(payload.payload=="sharepage"){
-          this.setState({inputVisible:true})
-          this.shareLinkWithShareDialog()
-        }
-        else if (payload.payload.includes("odeme")) {
-          var credit= payload.payload.slice(5);
-          this.pay(credit)
-          this.setState({inputVisible:true})
-        }
-        else if (payload.payload=="ben") {
-          this.child.onActionsPress()
-        }
-        else{
-            Backend.sendPayload(payload.payload);
-        }
-
-        if(payload.payload=="nohizlibak"||payload.payload=="hizlibak"||payload.payload=="vazgecti"){this.setState({inputVisible:true})}
-      }
-      else{
-        this.shareLinkWithShareDialog()
-      }
-      Backend.addMessage(payload.title)
-      this.setState((previousState) => {
-        return {
-          buttons:null
-        };
-      });
-    }
-  }
-
-  shareLinkWithShareDialog() {
-    var tmp = this;
-    ShareDialog.canShow(this.state.shareLinkContent).then(
-      function(canShow) {
-        if (canShow) {
-          Keyboard.dismiss()
-          return ShareDialog.show(tmp.state.shareLinkContent);
-        }
-      }
-    ).then(
-      function(result) {
-        if (result.isCancelled) {
-          Backend.sendPayload("nohizlibak")
-        } else {
-          ////console.log('Share success with postId: ' + result.postId)
-          ////console.log('paylaştı')
-          Backend.sendPayload("appshared")
-        }
-      },
-      function(error) {
-      }
-    );
-  }
-
-  sendQuickPayload(payload){
-      if(payload.payload=="odeme"){
-
-      }else{
-        Backend.sendQuickPayload(payload.payload);
-      }
-      Backend.addMessage(payload.title)
-      this.setState((previousState) => {
-        return {
-          quick_reply:null
-        };
-      });
-  }
 
   componentWillMount() {
     this._isMounted = true;
@@ -277,63 +161,8 @@ export default class Chat extends React.Component {
 
   componentDidMount() {
 
-    this.props.navigation.setParams({ setnavigation: this.setnavigation })
 
-      Backend.loadMessages((message) => {
-        if(message!=={}){
-          if(this._isMounted){
-          if(message.type=="typing"){
-            this.setState({typingText:"Yazıyor..."})
-          }
-          else{
-            this.setState({typingText:null})
-            if(message.type=="generic"){
-
-                this.setState({modalElements:message.elements,modalVisible:true})
-                  Keyboard.dismiss()
-            }
-            else if (message.type=="quick") {
-              this.fadeButtons()
-              this.setState((previousState) => {
-                return {
-                  messages: GiftedChat.append(previousState.messages, message),quick_reply:message.quick_reply
-                };
-              });
-            }
-            else if (message.type=="button") {
-              this.fadeButtons()
-              if(message.buttons[0].payload=="hizlibak"||message.buttons[0].payload.includes("odeme")){
-                this.setState({inputVisible:false})
-              }
-              this.setState((previousState) => {
-                return {
-                  messages: GiftedChat.append(previousState.messages, message),
-                  buttons:message.buttons,
-                };
-              });
-            }
-            else if (message.type=="image"||message.type=="text") {
-              if(this.state.buttons!==null||this.state.quick_reply!==null){
-                this.setState({quick_reply:null,quick_reply:null})
-              }
-              this.setState((previousState) => {
-                return {
-                  messages: GiftedChat.append(previousState.messages, message),
-                };
-              });
-            }
-              whoosh.play();
-          }
-
-        }
-        }
-
-      });
-
-
-
-      Backend.loadInitialMessages((messages) => {
-        if(!this.props.navigation.state.params.newFortune){
+      Backend.loadOldMessages(this.state.falciNo).then((messages) => {
           if(this._isMounted){
                 this.setState((previousState) => {
                   return{
@@ -344,14 +173,14 @@ export default class Chat extends React.Component {
                 if(messages.length>0){
                   var lastMessage=messages[0]
                   if(lastMessage.type=="quick"){
-                    this.fadeButtons()
+
                     this.setState({quick_reply:lastMessage.quick_reply})
                   }
                   else if (lastMessage.type=="button") {
                     if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")){
-                      this.setState({inputVisible:false})
+
                     }
-                    this.fadeButtons()
+
                       this.setState({quick_reply:lastMessage.buttons})
                   }
                   else if (lastMessage.type=="generic") {
@@ -360,49 +189,15 @@ export default class Chat extends React.Component {
 
             }
           }
-        }
-        else{
-          this.removeLoading()
-        }
+
       });
 
 
 
   }
 
-  backhandler = () => {
-    const resetAction = NavigationActions.reset({
-       index: 0,
-       actions: [
-         NavigationActions.navigate({ routeName: 'Greeting'})
-       ]
-     })
-     this.props.navigation.dispatch(resetAction)
-       BackAndroid.removeEventListener('hardwareBackPress', this.backhandler);
-     return true
-  }
 
-  removeLoading(){
 
-      var randomTime =Math.floor(Math.random()*(18000-12000+1)+12000);
-      setTimeout(() => {
-        if(this._isMounted){
-          this.setState({
-            loadingVisible:false,
-          });
-
-          this.sendPayload("appstart")
-          let toast = Toast.show(falcilar[this.state.falciNo].name+' sohbete bağlandı!', {
-            duration: Toast.durations.SHORT,
-            position: 70,
-            shadow: true,
-            animation: true,
-            hideOnPress: true,
-          });
-        }
-      }, randomTime)
-
-  }
   onLoadEarlier() {
     this.setState((previousState) => {
       return {
@@ -434,63 +229,7 @@ export default class Chat extends React.Component {
     //this.answerDemo(messages);
   }
 
-  answerDemo(messages) {
-    if (messages.length > 0) {
-      if ((messages[0].image || messages[0].location) || !this._isAlright) {
-        this.setState((previousState) => {
-          return {
-            typingText: 'React Native is typing'
-          };
-        });
-      }
-    }
 
-    setTimeout(() => {
-      if (this._isMounted === true) {
-        if (messages.length > 0) {
-          if (messages[0].image) {
-            this.onReceive('Nice picture!');
-          } else if (messages[0].location) {
-            this.onReceive('My favorite place');
-          } else {
-            if (!this._isAlright) {
-              this._isAlright = true;
-              this.onReceive('Alright');
-            }
-          }
-        }
-      }
-
-      this.setState((previousState) => {
-        return {
-          typingText: null,
-        };
-      });
-    }, 1000);
-  }
-
-  onReceive(text) {
-    this.setState((previousState) => {
-      return {
-        messages: GiftedChat.append(previousState.messages, {
-          _id: Math.round(Math.random() * 1000000),
-          text: text,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: 'React Native',
-            avatar: 'https://facebook.github.io/react/img/logo_og.png',
-          },
-        }),
-      };
-    });
-  }
-
-  sendMessageToBack = (message) => {
-    this.setState({buttons:null,quick_reply:null})
-    Backend.sendMessage(message);
-    whoosh.play();
-  }
   renderCustomActions(props) {
 
       return (
@@ -598,13 +337,13 @@ export default class Chat extends React.Component {
 
           {this.state.quick_reply.map(function(reply, index) {
             return (
-              <Animated.View key={index} style={{opacity:this.state.buttonOpacity}}>
-              <TouchableHighlight
-                onPress={() => {this.sendQuickPayload(reply)}}
-              style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
-                  <Text style={styles.footerText}>{reply.title}</Text>
+              <View key={index} >
+                <TouchableHighlight
+                  onPress={() => {this.sendQuickPayload(reply)}}
+                  style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
+                    <Text style={styles.footerText}>{reply.title}</Text>
                 </TouchableHighlight>
-                </Animated.View>
+              </View>
             );
           }.bind(this))}
 
@@ -616,19 +355,18 @@ export default class Chat extends React.Component {
     if(this.state.buttons){
       let bubblewidth = (Dimensions.get('window').width-25)/3
       if(this.state.buttons.length>2){bubblewidth = (Dimensions.get('window').width-25)/4}
-      this.fadeButtons()
         return (
           <View style={styles.quickContainer}>
 
             {this.state.buttons.map(function(reply, index) {
                 return (
-                <Animated.View  key={index} style={{opacity:this.state.buttonOpacity}}>
-                <TouchableHighlight
-                  onPress={() => {this.sendPayload(reply)}}
-                   style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
-                    <Text style={styles.footerText}>{reply.title}</Text>
+                <View  key={index} >
+                  <TouchableHighlight
+                    onPress={() => {this.sendPayload(reply)}}
+                     style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
+                      <Text style={styles.footerText}>{reply.title}</Text>
                   </TouchableHighlight>
-                  </Animated.View>
+                </View>
                 );
             }.bind(this))}
 
@@ -650,7 +388,7 @@ export default class Chat extends React.Component {
             messages={this.state.messages}
 
             onSend={(message) => {
-              this.sendMessageToBack(message)
+
             }}
             loadEarlier={false}
             user={{
@@ -665,30 +403,11 @@ export default class Chat extends React.Component {
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}
             renderInputToolbar={this.renderInputToolbar}
+            minInputToolbarHeight={0}
             renderMessage={props => <CustomMessage {...props} />}
             >
 
             </GiftedChat>
-
-            <Modal
-              animationType={"none"}
-              transparent={false}
-              visible={this.state.loadingVisible}
-              onRequestClose={() => {}}
-              >
-              <Image source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null, resizeMode:'stretch',justifyContent:'center' }}>
-                 <View style={{ height: 100,backgroundColor:'white',justifyContent:'center' }}>
-                  <Text style={{textAlign:'center'}}>
-                    Uygun falcı aranıyor...
-                    </Text>
-                   <ActivityIndicator
-                     animating={true}
-                     style={[styles.centering, {height: 80}]}
-                     size="large"
-                   />
-                 </View>
-               </Image>
-            </Modal>
 
             <Elements
               transparent={true}

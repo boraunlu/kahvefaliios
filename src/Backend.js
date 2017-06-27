@@ -18,6 +18,8 @@ class Backend {
   lastKeyLoaded=null;
   userAvatar=null;
   falci:null;
+  userName:null;
+  lastMessageref=null;
   // initialize Firebase Backend
 
 
@@ -32,7 +34,10 @@ class Backend {
       if (user) {
         this.setUid(user.uid);
         this.messagesRef = firebase.database().ref('messages/'+user.uid);
-        this.setAvatar(user.photoURL)
+        if(user.photoURL){
+          this.setAvatar('')
+        }
+        this.setName(user.displayName)
       } else {
 
       }
@@ -44,6 +49,8 @@ class Backend {
   setFalci(value) {
     return new Promise((resolve, reject) => {
       this.falci = value;
+      this.messagesRef=firebase.database().ref('messages/'+this.uid+'/'+value);
+      this.lastMessageref= firebase.database().ref('messages/'+this.uid+'/lastMessage/'+value);
       resolve(value)
     })
 
@@ -51,11 +58,24 @@ class Backend {
   setAvatar(value) {
     this.userAvatar = value;
   }
+  setName(value) {
+    this.userName = value;
+  }
   getUid() {
     return this.uid;
   }
   getAvatar() {
     return this.userAvatar;
+  }
+  getName() {
+    if(this.userName){
+      return this.userName;
+    }
+    else{
+      var user = firebase.auth().currentUser;
+      return user.displayName
+    }
+
   }
   logOut(){
     firebase.auth().signOut();
@@ -130,8 +150,7 @@ class Backend {
   deleteData(){
     var deleteref = firebase.database().ref('messages/'+this.getUid());
     deleteref.remove()
-    var deleteref2 = firebase.database().ref('messages/'+this.getUid()+'lastMessage');
-      deleteref2.remove()
+
   }
   saveNewUser(token){
     this.messagesRef = firebase.database().ref('messages/'+this.getUid());
@@ -148,50 +167,82 @@ class Backend {
   //var uploadImage = (uri, imageName, mime) => {}
 
 
-    loadInitialMessages = (callback) => {
+  loadInitialMessages = (callback) => {
 
 
-      const loadInitial = (data) => {
-        const messages = data.val();
-        var callbackobj = [];
-        var simdi = moment()
-        var saat = simdi.hour();
-        if(messages!==null){
-          var counter = 0;
-          var uzunluk = Object.keys(messages).length
-          Object.keys(messages).forEach((key) => {
-              //console.log("keyler "+key)
-              counter=counter+1;
-              if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
-              var message=messages[key];
+    const loadInitial = (data) => {
+      const messages = data.val();
+      var callbackobj = [];
+      var simdi = moment()
+      var saat = simdi.hour();
+      if(messages!==null){
+        var counter = 0;
+        var uzunluk = Object.keys(messages).length
+        Object.keys(messages).forEach((key) => {
+            //console.log("keyler "+key)
+            counter=counter+1;
+            if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
+            var message=messages[key];
 
-              if(message.type!=="typing"){
-                message._id=key;
-
-                var createdAt = moment(message.createdAt)
-                if(saat>2){
-                  if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.hour()>2){
-                      callbackobj.unshift(message)
-                  }
+            if(message.type!=="typing"){
+              message._id=key;
+              callbackobj.unshift(message)
+              /*
+              var createdAt = moment(message.createdAt)
+              if(saat>2){
+                if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.hour()>2){
+                    callbackobj.unshift(message)
                 }
-                else{
-                  if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.dayOfYear()==simdi.dayOfYear()-1){
-                      callbackobj.unshift(message)
-                  }
-                }
-
               }
-          });
-        }
-        else{
-          this.lastKeyLoaded="asdf"
-        }
+              else{
+                if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.dayOfYear()==simdi.dayOfYear()-1){
+                    callbackobj.unshift(message)
+                }
+              }*/
 
-        callback(callbackobj);
+            }
+        });
+      }
+      else{
+        this.lastKeyLoaded="asdf"
+      }
 
-      };
-      this.messagesRef.child(this.falci).limitToLast(50).once('value',loadInitial);
-    }
+      callback(callbackobj);
+
+    };
+    this.messagesRef.limitToLast(50).once('value',loadInitial);
+  }
+
+  loadOldMessages = (falciNo) => {
+    return new Promise((resolve, reject) => {
+      var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/'+falciNo);
+      lastmessagesref.once('value')
+      .then(function(dataSnapshot) {
+        const messages = dataSnapshot.val();
+        var callbackobj = [];
+        var counter = 0;
+        var uzunluk = Object.keys(messages).length
+        Object.keys(messages).forEach((key) => {
+            //console.log("keyler "+key)
+            counter=counter+1;
+            if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
+            var message=messages[key];
+
+            if(message.type!=="typing"){
+              message._id=key;
+              callbackobj.unshift(message)
+
+            }
+        });
+        resolve(callbackobj)
+      })
+      .catch((error) => {
+        reject(error)
+      })
+
+    })
+   }
+
 
 newfortune = () => {this.lastKeyLoaded="asdf"}
 
@@ -299,7 +350,7 @@ loadMessages = (callback) => {
 
     };
   }
-    this.messagesRef.child(this.falci).limitToLast(1).on('child_added', onReceive);
+    this.messagesRef.limitToLast(1).on('child_added', onReceive);
     //this.messagesRef.limitToLast(20).once('value',loadInitial);
   }
 
@@ -329,45 +380,46 @@ loadMessages = (callback) => {
       user:  {
         _id: this.getUid(),
         name: 'user',
-        // avatar: 'https://facebook.github.io/react/img/logo_og.png',
+        avatar: this.userAvatar,
       },
-      avatar: this.userAvatar,
+
       createdAt: firebase.database.ServerValue.TIMESTAMP,
     });
   }
 
   sendMessage = (message) => {
 
+    var lastmessagetext=''
+
     if(message){
-    if(message[0].text){
-      for (let i = 0; i < message.length; i++) {
-          /*
-          this.messagesRef.push({
-            type: "text",
-            text: message[i].text,
-            user: message[i].user,
-            avatar: this.userAvatar,
-            createdAt: firebase.database.ServerValue.TIMESTAMP,
-          });*/
+      if(message[0].text){
+        for (let i = 0; i < message.length; i++) {
+
+            this.messagesRef.push({
+              type: "text",
+              text: message[i].text,
+              user: message[i].user,
+              createdAt: firebase.database.ServerValue.TIMESTAMP,
+            });
 
 
-        fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uid: this.uid,
-            text: message[i].text,
-            type:"text"
+          fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: this.uid,
+              text: message[i].text,
+              type:"text"
+            })
           })
-        })
-        .then(function(response){});
+          .then(function(response){});
+        }
+        lastmessagetext=message[0].text
       }
-      //console.log(message);
-    }
-    else if (message[0].image) {
+      else if (message[0].image) {
 
         if(message.length>1){
           var imagepusharray=[];
@@ -376,7 +428,6 @@ loadMessages = (callback) => {
               type: "image",
               image: message[i].image,
               user: message[i].user,
-              avatar: this.userAvatar,
               createdAt: firebase.database.ServerValue.TIMESTAMP,
             });
             this.uploadImage(message[i].image).then((imagerl)=>{
@@ -405,7 +456,6 @@ loadMessages = (callback) => {
             type: "image",
             image: message[0].image,
             user: message[0].user,
-            avatar: this.userAvatar,
             createdAt: firebase.database.ServerValue.TIMESTAMP,
           });
           this.uploadImage(message[0].image).then((imagerl) =>{
@@ -424,8 +474,9 @@ loadMessages = (callback) => {
           })
           //console.log(imagerl)
         }
-
+        lastmessagetext="Fotoğraf"
       }
+      this.lastMessageref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,text:lastmessagetext})
     }
   }
   // close the connection to the Backend

@@ -64,6 +64,7 @@ export default class Login extends React.Component {
       name:null,
       formData:{},
       keyboardOn:false,
+      googleToken:null
   };
   this.navigateto = this.navigateto.bind(this);
   this._navigateTo = this._navigateTo.bind(this);
@@ -88,29 +89,16 @@ export default class Login extends React.Component {
   gugilsignin = () => {
     GoogleSignin.signIn()
     .then((user) => {
-      console.log(user);
 
-      var credential = firebase.auth.GoogleAuthProvider.credential(user.idToken);
+
+      if(user.name){
+        this.setState({name:capitalizeFirstLetter(getFirstWord(user.name))})
+      }
+      this.setState({anonacik:true,googleToken:user.idToken})
+
       // Sign in with credential from the Google user.
 
-      firebase.auth().signInWithCredential(credential).then(function(user2) {
-          /*if(error){
 
-          var errorCode = error.code;
-          var errorMessage = error.message;
-          // The email of the user's account used.
-          var email = error.email;
-          // The firebase.auth.AuthCredential type that was used.
-          var credential = error.credential;
-        }
-        else{*/
-          alert(JSON.stringify(user2))
-          if(user.name){
-            this.setState({name:capitalizeFirstLetter(getFirstWord(user.name))})
-          }
-          this.setState({anonacik:true})
-
-      }.bind(this))
     })
     .catch((err) => {
       console.log('WRONG SIGNIN', err);
@@ -161,7 +149,15 @@ _keyboardDidShow = (event) => {
 
                 // Sign in with credential from the Google user.
                 firebase.auth().signInWithCredential(credential).then(function(user){
-
+                  if(user.providerData){
+                    if(user.providerData[0]){
+                      if(user.providerData[0].photoURL){
+                        user.updateProfile({
+                          photoURL:user.providerData[0].photoURL
+                        })
+                      }
+                    }
+                  }
                   fetch('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
                     method: 'POST',
                     headers: {
@@ -256,31 +252,32 @@ _keyboardDidShow = (event) => {
         Alert.alert('Kahve Falı Sohbeti','Lütfen cinsiyetini girer misin?')
       }
       else{
+        var credential = firebase.auth.GoogleAuthProvider.credential(this.state.googleToken);
+        firebase.auth().signInWithCredential(credential).then(function(user) {
 
-          var user = firebase.auth().currentUser;
+          user.updateProfile({
+            displayName: this.state.name,
 
-            user.updateProfile({
-              displayName: this.state.name,
-
-            }).then(function() {
-              fetch('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
-                method: 'POST',
-                headers: {
-                  'Accept': 'application/json',
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  uid: user.uid,
-                  name: this.state.name,
-                  gender:this.state.gender
-                })
+          }).then(function() {
+            fetch('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                uid: user.uid,
+                name: this.state.name,
+                gender:this.state.gender
               })
-              .then((response) => this._navigateTo('Swipers'))
-            }.bind(this), function(error) {
-            // An error happened.
-            });
+            })
+            .then((response) => this._navigateTo('Swipers'))
+          }.bind(this), function(error) {
+          // An error happened.
+          });
 
 
+        }.bind(this))
       }
     }
   }

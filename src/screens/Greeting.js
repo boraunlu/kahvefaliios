@@ -60,7 +60,7 @@ export default class Greeting extends React.Component {
     if(destination=="Chat"){
       if(this.state.userData){
         if(this.state.userData.currentFalci==null){
-          var randomnumber = Math.floor(Math.random() * (14)) + 0;
+          var randomnumber = Math.floor(Math.random() * 14);
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
               index: 0,
@@ -140,6 +140,7 @@ export default class Greeting extends React.Component {
   }
   componentDidUpdate(){
     if(this.state.userData!==null){this.fadeButtons();}
+
   }
 
   componentDidMount() {
@@ -222,7 +223,7 @@ componentWillUnmount() {
             </View>
 
 
-            <View style={{borderColor:'white',borderWidth:1}}>
+            <Animated.View style={{borderColor:'white',borderWidth:1,opacity:this.state.buttonOpacity}}>
               <View style={{flexDirection:'row'}}>
                 <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateto('Chat',0)}}>
                   <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
@@ -290,7 +291,7 @@ componentWillUnmount() {
                   </Image>
                 </TouchableOpacity>
               </View>
-            </View>
+            </Animated.View>
           </View>
 
 

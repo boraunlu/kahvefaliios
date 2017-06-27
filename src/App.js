@@ -9,6 +9,7 @@ import codePush from "react-native-code-push";
 
 import Login from './screens/Login';
 import Chat from './screens/Chat';
+import ChatOld from './screens/ChatOld';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
@@ -21,9 +22,8 @@ import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigat
 
 const MainScreenNavigator = TabNavigator({
   Greeting: {screen:Greeting},
-    Mesajlar: {screen:Mesajlar},
+  Mesajlar: {screen:Mesajlar},
   Odeme: {screen:Odeme},
-
   Profil: {screen:Profil},
 },{
   lazy:true
@@ -31,16 +31,12 @@ const MainScreenNavigator = TabNavigator({
 
 let kahvefaliapp = StackNavigator({
     Home: {screen:Home},
-  Login: { screen: Login },
-
-  Greeting: { screen: MainScreenNavigator },
-
+    Login: { screen: Login },
+    Greeting: { screen: MainScreenNavigator },
     Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
-Swipers: {screen:Swipers},
-
-
-
+    ChatOld: {screen:ChatOld},
+    Swipers: {screen:Swipers},
 });
 
 

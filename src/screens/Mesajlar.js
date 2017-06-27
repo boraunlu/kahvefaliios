@@ -36,6 +36,10 @@ export default class Mesajlar extends React.Component {
        ),
     };
 
+    navigateto = (destination,falciNo) => {
+      const { navigate } = this.props.navigation;
+      navigate( destination,{falciNo:falciNo} )
+    }
 
   componentDidMount() {
     Backend.getLastMessages().then((snapshot) => {
@@ -62,11 +66,17 @@ export default class Mesajlar extends React.Component {
     else{
       var messages = this.state.messages
       return (
-      {
-
-
-        }
-        );
+         Object.keys(messages).map(function (key) {
+           console.log('key: ', key);  // Returns key: 1 and key: 2
+           return (
+             <TouchableHighlight key={key} onPress={() => {this.navigateto('ChatOld',key)}}>
+               <Text>
+                {falcilar[key].name+" "+messages[key].text}
+               </Text>
+             </TouchableHighlight>
+             );
+         }, this)
+      )
     }
   }
 
