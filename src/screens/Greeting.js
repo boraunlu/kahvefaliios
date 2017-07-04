@@ -11,6 +11,7 @@ import {
   Dimensions,
   Animated,
   Easing,
+  Alert,
   BackAndroid,
   ScrollView
 } from 'react-native';
@@ -22,13 +23,23 @@ import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
+require('../components/data/falcilar.js');
+import moment from 'moment';
+var esLocale = require('moment/locale/tr');
+moment.locale('tr', esLocale);
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+function generateRandom(uzunluk, mevcut) {
+    var num = Math.floor(Math.random() * falcilar.length);
+    return (num === mevcut ) ? generateRandom(uzunluk, mevcut) : num;
+}
 
 export default class Greeting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      profPhoto:'http://www.omnovia.com/wp/wp-content/uploads/2015/04/analyst-placeholder-avatar.png',
       userName:'',
       user:null,
       userData:null,
@@ -36,7 +47,6 @@ export default class Greeting extends React.Component {
       animatedBubble: new Animated.Value(0),
       buttonOpacity: new Animated.Value(0),
       greetingMessage:"...",
-
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -45,7 +55,6 @@ export default class Greeting extends React.Component {
 
   static navigationOptions = {
       title: 'Kahve Falı Sohbeti',
-
       tabBarLabel: 'Ana Sayfa',
        tabBarIcon: ({ tintColor }) => (
          <Icon name="home" color={tintColor} size={25} />
@@ -53,43 +62,41 @@ export default class Greeting extends React.Component {
     };
 
 
+  navigateToAktif = (falciNo) => {
+    const { navigate } = this.props.navigation;
 
-  navigateto = (destination) => {
+
+      Backend.setFalci(falciNo).then(() => {
+        const resetAction = NavigationActions.reset({
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false,falciNo:falciNo}})
+          ]
+        })
+        this.props.navigation.dispatch(resetAction)
+      })
+
+  }
+  navigateto = (destination,falciNo,falType) => {
     this.greetingMounted=false;
     const { navigate } = this.props.navigation;
     if(destination=="Chat"){
-      if(this.state.userData){
-        if(this.state.userData.currentFalci==null){
-          var randomnumber = Math.floor(Math.random() * 14);
+
+          var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
               index: 0,
               actions: [
-                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:true,falciNo:randomnumber}})
+                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:true,falciNo:randomnumber,falType:falType}})
               ]
             })
             this.props.navigation.dispatch(resetAction)
           })
-
           //navigate('Chat',{newFortune:false})
-        }
-        else{
-
-          Backend.setFalci(this.state.userData.currentFalci).then(() => {
-            const resetAction = NavigationActions.reset({
-              index: 0,
-              actions: [
-                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false,falciNo:this.state.userData.currentFalci}})
-              ]
-            })
-            this.props.navigation.dispatch(resetAction)
-          })
-        }
-      }
 
     }
     else{
-      navigate(destination)
+      navigate(destination,{falciNo:falciNo})
     }
   }
 
@@ -105,6 +112,175 @@ export default class Greeting extends React.Component {
       }
     ).start()
 
+  }
+
+  startGunluk = () => {
+    var userData =this.state.userData
+    if(!userData.appGunlukUsed&&!userData.aktif){
+      this.navigateto('Chat',0,0)
+    }else if(!userData.appGunlukUsed&&userData.aktif){
+      Alert.alert(
+        'Yeni Fal',
+        'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}},
+        ],
+      )
+    }
+    else if (userData.appGunlukUsed&&!userData.aktif) {
+      Alert.alert(
+        'Yeni Günlük Fal',
+        'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+            if(userData.credit<100){
+              alert('inapp')
+            }
+            else{
+              this.navigateto('Chat',0,0)
+              Backend.addCredits(-100)
+            }
+        }},
+        ],
+      )
+    }
+    else{
+      Alert.alert(
+        'Yeni Günlük Fal',
+        'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+            if(userData.credit<100){
+              alert('inapp')
+            }
+            else{
+              this.navigateto('Chat',0,0)
+              Backend.addCredits(-100)
+            }
+        }},
+        ],
+      )
+    }
+
+  }
+
+  startAsk = () => {
+    var userData =this.state.userData
+    if(userData.credit<100){
+      var messagebody = ''
+      userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 100 kredi ekleyelim mi?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen hesabına 100 kredi ekleyelim mi?'
+      Alert.alert(
+        'Aşk Falı',
+        messagebody,
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+              alert("inapp")
+          }},
+        ],
+      )
+    }
+    else{
+      var messagebody = ''
+      userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen aşk falına başlayalım mı?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?'
+      Alert.alert(
+        'Aşk Falı',
+        messagebody,
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+                this.navigateto('Chat',0,1);
+          }},
+        ],
+      )
+    }
+  }
+
+  startDetay = () => {
+    var userData =this.state.userData
+    if(userData.credit<150){
+      var messagebody = ''
+      userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 150 kredi ekleyelim mi?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen hesabına 150 kredi ekleyelim mi?'
+      Alert.alert(
+        'Detaylı Fal',
+        messagebody,
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+              alert("inapp")
+          }},
+        ],
+      )
+    }
+    else{
+      var messagebody = ''
+      userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen detaylı falına başlayalım mı?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?'
+      Alert.alert(
+        'Aşk Falı',
+        messagebody,
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+                this.navigateto('Chat',0,2);
+          }},
+        ],
+      )
+    }
+  }
+
+  startHand = () => {
+    var userData =this.state.userData
+    if(!userData.handUsed&&!userData.aktif){
+      this.navigateto('Chat',0,3)
+    }else if(!userData.handUsed&&userData.aktif){
+      Alert.alert(
+        'Yeni Fal',
+        'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp el falına bakmak istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,3)}},
+        ],
+      )
+    }
+    else if (userData.handUsed&&!userData.aktif) {
+      Alert.alert(
+        'El Falı',
+        'El falına sadece bir kere ücretsiz bakıyoruz. Hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+            if(userData.credit<25){
+              alert('inapp')
+            }
+            else{
+              this.navigateto('Chat',0,3)
+              Backend.addCredits(-25)
+            }
+        }},
+        ],
+      )
+    }
+    else{
+      Alert.alert(
+        'El Falı',
+        'El falına sadece bir kere ücretsiz bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
+        [
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {
+            if(userData.credit<100){
+              alert('inapp')
+            }
+            else{
+              this.navigateto('Chat',0,3)
+              Backend.addCredits(-25)
+            }
+        }},
+        ],
+      )
+    }
   }
   fadeButtons = () => {
     this.state.buttonOpacity.setValue(0)
@@ -191,7 +367,159 @@ componentWillUnmount() {
   //
 }
 
+  renderAktif = () => {
 
+    if(this.state.userData==null){
+      return null
+    }
+    else{
+      var userData = this.state.userData
+      if(userData.aktif== true){
+
+        return(
+          <View>
+          <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
+          <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+           <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+              <View>
+              <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+              <View style={{height:12,width:12,borderRadius:6,backgroundColor:'#00FF00',right:8,top:8,position:'absolute'}}></View>
+             </View>
+             <View style={{padding:10,flex:2}}>
+               <Text style={{fontWeight:'bold',fontSize:16}}>
+                 {falcilar[userData.currentFalci].name}
+                </Text>
+                <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                {capitalizeFirstLetter(userData.lastMessage.text)}
+               </Text>
+             </View>
+             <View style={{padding:20}}>
+               <Icon name="angle-right" color={'gray'} size={20} />
+               </View>
+           </View>
+
+          </TouchableHighlight>
+          </View>
+        )
+      }
+      else{
+        if(userData.lastMessage){
+          return(
+            <View>
+            <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Son Konuşman</Text></View>
+            <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+                <View>
+                <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+                <View style={{height:12,width:12,borderRadius:6,backgroundColor:'gray',right:8,top:8,position:'absolute'}}></View>
+               </View>
+               <View style={{padding:10,flex:2}}>
+                 <Text style={{fontWeight:'bold',fontSize:16}}>
+                   {falcilar[userData.currentFalci].name}
+                   <Text style={{fontStyle:'italic',fontWeight:'normal',fontSize:12,color:'gray'}}> (Sohbetten Ayrıldı)</Text>
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                  {capitalizeFirstLetter(userData.lastMessage.text)}
+                 </Text>
+               </View>
+               <View style={{padding:20}}>
+                 <Icon name="angle-right" color={'gray'} size={20} />
+                 </View>
+             </View>
+
+            </TouchableHighlight>
+            </View>
+          )
+        }
+        else{
+          return null
+        }
+
+      }
+    }
+  }
+
+  renderFalTypes = () => {
+    if(this.state.userData==null){
+      return null
+    }
+    else{
+      return(
+        <Animated.View style={{opacity:this.state.buttonOpacity}}>
+        <View style={{backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text></View>
+        <View style={{borderColor:'white',borderWidth:1}}>
+          <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startGunluk()}}>
+              <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
+
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    Günlük Fal
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Hergün 1 adet kahve falı bizden size hediye!
+                  </Text>
+                </View>
+              </Image>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startAsk()}}>
+              <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+                  <Text style={styles.faltypeyazi}>
+                    Aşk Falı
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Sırlar dökülsün, aşk konuşalım
+                  </Text>
+                </View>
+              </Image>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startDetay()}}>
+              <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
+              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
+                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                  <Text style={[styles.label]}>
+                    150
+                  </Text>
+                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                </View>
+                <Text style={styles.faltypeyazi}>
+                  Detaylı Fal
+                </Text>
+                <Text style={styles.faltypeyazikucuk}>
+                  Ortaya çıkmayan detay kalmasın
+                </Text>
+
+              </View>
+              </Image>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Backend.deleteData()}}>
+              <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
+              <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+                <Text style={styles.faltypeyazi}>
+                  El Falı
+                </Text>
+                <Text style={styles.faltypeyazikucuk}>
+                  Eliniz, kaderiniz...
+                </Text>
+              </View>
+              </Image>
+            </TouchableOpacity>
+          </View>
+        </View>
+        </Animated.View>
+      )
+    }
+  }
   render() {
 
     const buttonHeight = this.state.animatedButton.interpolate({
@@ -222,76 +550,9 @@ componentWillUnmount() {
 
             </View>
 
+            {this.renderAktif()}
+            {this.renderFalTypes()}
 
-            <Animated.View style={{borderColor:'white',borderWidth:1,opacity:this.state.buttonOpacity}}>
-              <View style={{flexDirection:'row'}}>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateto('Chat',0)}}>
-                  <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
-
-                    <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
-
-                      <Text style={styles.faltypeyazi}>
-                        Günlük Fal
-                      </Text>
-                      <Text style={styles.faltypeyazikucuk}>
-                        Hergün 1 adet kahve falı bizden size hediye!
-                      </Text>
-                    </View>
-                  </Image>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Backend.deleteData()}}>
-                  <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
-                    <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
-                      <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-                        <Text style={[styles.label]}>
-                          100
-                        </Text>
-                        <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                      </View>
-                      <Text style={styles.faltypeyazi}>
-                        Aşk Falı
-                      </Text>
-                      <Text style={styles.faltypeyazikucuk}>
-                        Sırlar dökülsün, aşk konuşalım
-                      </Text>
-                    </View>
-                  </Image>
-                </TouchableOpacity>
-              </View>
-              <View style={{flexDirection:'row'}}>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
-                  <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
-                  <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
-                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-                      <Text style={[styles.label]}>
-                        150
-                      </Text>
-                      <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                    </View>
-                    <Text style={styles.faltypeyazi}>
-                      Detaylı Fal
-                    </Text>
-                    <Text style={styles.faltypeyazikucuk}>
-                      Ortaya çıkmayan detay kalmasın
-                    </Text>
-
-                  </View>
-                  </Image>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.faltypecontainer} onPress={() => {alert("gunluk")}}>
-                  <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
-                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
-                    <Text style={styles.faltypeyazi}>
-                      El Falı
-                    </Text>
-                    <Text style={styles.faltypeyazikucuk}>
-                      Eliniz, kaderiniz...
-                    </Text>
-                  </View>
-                  </Image>
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
           </View>
 
 
@@ -377,4 +638,10 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontWeight:'bold'
   },
+  falciAvatar:{
+    height:40,
+    width:40,
+    margin:10,
+    borderRadius:20,
+  }
 });

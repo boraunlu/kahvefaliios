@@ -12,6 +12,7 @@ import {
   Image,
   BackAndroid,
   Animated,
+  Alert,
   Easing,
   ActivityIndicator,
 } from 'react-native';
@@ -90,7 +91,7 @@ export default class ChatOld extends React.Component {
     this.renderComposer = this.renderComposer.bind(this);
     this.renderInputToolbar = this.renderInputToolbar.bind(this);
     this.onLoadEarlier = this.onLoadEarlier.bind(this);
-    this.setnavigation = this.setnavigation.bind(this);
+    this.delete = this.delete.bind(this);
 
     this._isAlright = null;
   }
@@ -102,9 +103,36 @@ export default class ChatOld extends React.Component {
 
 
 
-  setnavigation(route){
+  delete(){
 
-    if(route=="Greeting"){
+    Alert.alert(
+      'Konuşmayı Sil',
+      'Bu konuşmayı kalıcı olarak silmek istediğine emin misin?',
+      [
+
+        {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+        {text: 'Evet', onPress: () => {Backend.deleteThread(this.state.falciNo); this.navigateto('Mesajlar')}},
+      ],
+    )
+
+  }
+
+
+
+  setModalVisibility(visible) {
+    ////console.log(visible);
+    this.setState(() => {
+      return {
+        modalVisible: visible,
+      };
+    });
+  }
+
+
+  navigateto = (route) => {
+    const { navigate } = this.props.navigation;
+
+    if(route=="Mesajlar"){
       const resetAction = NavigationActions.reset({
          index: 0,
          actions: [
@@ -118,22 +146,25 @@ export default class ChatOld extends React.Component {
       const { navigate } = this.props.navigation;
       navigate(route)
     }
+  }
+  setnavigation(route){
+
+    if(route=="Greeting"){
+      const resetAction = NavigationActions.reset({
+         index: 0,
+         actions: [
+           NavigationActions.navigate({ routeName: 'Greeting'})
+         ]
+       })
+       this.props.navigation.dispatch(resetAction)
+    }
+    else{
+      BackAndroid.removeEventListener('hardwareBackPress', this.backhandler);
+      const { navigate } = this.props.navigation;
+      navigate(route)
+    }
 
   }
-
-
-  setModalVisibility(visible) {
-    ////console.log(visible);
-    this.setState(() => {
-      return {
-        modalVisible: visible,
-      };
-    });
-  }
-
-
-
-
   componentWillMount() {
     this._isMounted = true;
     Backend.refreshLastLoaded();
@@ -160,8 +191,7 @@ export default class ChatOld extends React.Component {
   }
 
   componentDidMount() {
-
-
+    this.props.navigation.setParams({ delete: this.delete })
       Backend.loadOldMessages(this.state.falciNo).then((messages) => {
           if(this._isMounted){
                 this.setState((previousState) => {
@@ -314,11 +344,7 @@ export default class ChatOld extends React.Component {
   }
 
   renderFooter(props) {
-    if(this.state.modalVisible){
-      return(
-        <View style={{height:250}}></View>
-      )
-    }
+    
     if (this.state.typingText) {
       return (
         <View style={styles.footerContainer}>
@@ -339,7 +365,7 @@ export default class ChatOld extends React.Component {
             return (
               <View key={index} >
                 <TouchableHighlight
-                  onPress={() => {this.sendQuickPayload(reply)}}
+                  onPress={() => {}}
                   style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
                     <Text style={styles.footerText}>{reply.title}</Text>
                 </TouchableHighlight>
@@ -362,7 +388,7 @@ export default class ChatOld extends React.Component {
                 return (
                 <View  key={index} >
                   <TouchableHighlight
-                    onPress={() => {this.sendPayload(reply)}}
+                    onPress={() => {}}
                      style={[styles.quickBubble,{maxWidth:bubblewidth}]}>
                       <Text style={styles.footerText}>{reply.title}</Text>
                   </TouchableHighlight>
@@ -409,19 +435,6 @@ export default class ChatOld extends React.Component {
 
             </GiftedChat>
 
-            <Elements
-              transparent={true}
-              modalVisible={this.state.modalVisible}
-              keyboardHeight={this.state.keyboardHeight}
-              setModalVisibility={(visible) =>{
-                        this.setModalVisibility(visible)
-              }}
-              elements={this.state.modalElements}
-              sendPayload={(payload) => {
-                this.setModalVisibility(false)
-                this.sendPayload(payload)
-              }}
-            />
           </Image>
 
     );

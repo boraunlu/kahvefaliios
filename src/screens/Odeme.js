@@ -39,7 +39,7 @@ export default class Odeme extends React.Component {
       headerBackTitle:'Geri',
       tabBarLabel: 'Krediler',
        tabBarIcon: ({ tintColor }) => (
-         <Icon name="database" color={tintColor} size={15} />
+         <Icon name="database" color={tintColor} size={20} />
        ),
     };
 

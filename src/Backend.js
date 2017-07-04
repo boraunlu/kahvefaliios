@@ -152,6 +152,13 @@ class Backend {
     deleteref.remove()
 
   }
+  deleteThread(falciNo){
+
+    var deleteref2 =  firebase.database().ref('messages/'+this.getUid()+'/lastMessage/'+falciNo);
+      deleteref2.remove()
+      var deleteref = firebase.database().ref('messages/'+this.getUid()+'/'+falciNo);
+      deleteref.remove()
+  }
   saveNewUser(token){
     this.messagesRef = firebase.database().ref('messages/'+this.getUid());
     this.messagesRef.push({
@@ -354,22 +361,59 @@ loadMessages = (callback) => {
     //this.messagesRef.limitToLast(20).once('value',loadInitial);
   }
 
-  getCredits(){
-
+  addCredits(credit){
+    fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: this.uid,
+        credit: credit
+      })
+    })
   }
   // send the message to the Backend
   getLastMessages = () => {
     return new Promise((resolve, reject) => {
-      var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/lastMessage');
-      lastmessagesref.once('value')
-      .then(function(dataSnapshot) {
-        //alert(JSON.stringify(dataSnapshot))
-        resolve(dataSnapshot.val())
-      })
-      .catch((error) => {
-        reject(error)
-      })
+      var lastseenref = firebase.database().ref('messages/'+this.uid+'/lastSeen');
+      lastseenref.set({time:firebase.database.ServerValue.TIMESTAMP}).then(() => {
+        lastseenref.once('value').then((timesnapshot) => {
+          var currentTime = timesnapshot.val().time
 
+          var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/lastMessage');
+          lastmessagesref.once('value')
+          .then((dataSnapshot) => {
+            var response ={}
+            var aktif =null
+            var output = [];
+            var data = dataSnapshot.val()
+
+            for (var key in data) {
+                data[key].key = key;   // save key so you can access it from the array (will modify original data)
+                output.push(data[key]);
+            }
+            if(output.length>0){
+              output.sort(function(a,b) {
+                  return(b.createdAt - a.createdAt);
+              });
+
+              if(moment(currentTime).diff(moment(output[0].createdAt),"hours")<3){
+                aktif=output[0]
+                output.shift()
+              }
+
+            }
+            response.output = output
+            response.aktif =aktif
+            resolve(response)
+          })
+          .catch((error) => {
+            reject(error)
+          })
+        })
+      })
    })
 
   }

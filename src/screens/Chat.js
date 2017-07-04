@@ -21,6 +21,7 @@ import Toast from 'react-native-root-toast';
 
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
+import firebase from 'firebase'
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
 import CustomView from '../components/CustomView';
@@ -73,6 +74,7 @@ export default class Chat extends React.Component {
       initialLoaded:false,
       loadingVisible:this.props.navigation.state.params.newFortune,
       quick_reply: null,
+      falType:this.props.navigation.state.params.falType,
       buttons: null,
       falciNo:this.props.navigation.state.params.falciNo,
       shareLinkContent: shareLinkContent,
@@ -177,7 +179,9 @@ export default class Chat extends React.Component {
   sendPayload(payload){
 
     if(payload=="appstart"){
-      var epstart = "appstart"+this.state.falciNo
+      var epstart = this.state.falType+"appstart"+this.state.falciNo
+      var bilgiref2= firebase.database().ref('messages/'+Backend.getUid()+'/lastMessage/'+this.state.falciNo);
+      bilgiref2.set({createdAt:firebase.database.ServerValue.TIMESTAMP,text:"Yeni Mesaj"})
       Backend.sendPayload(epstart);
     }
     else{

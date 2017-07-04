@@ -22,6 +22,7 @@ import {
 
 import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import Video from 'react-native-video'
 //import Picker from 'react-native-picker'
@@ -64,7 +65,8 @@ export default class Login extends React.Component {
       name:null,
       formData:{},
       keyboardOn:false,
-      googleToken:null
+      googleToken:null,
+      spinnerVisible:false
   };
   this.navigateto = this.navigateto.bind(this);
   this._navigateTo = this._navigateTo.bind(this);
@@ -140,7 +142,7 @@ _keyboardDidShow = (event) => {
 
         } else {
           if(result.grantedPermissions){
-
+            this.setState({spinnerVisible:true})
             AccessToken.getCurrentAccessToken().then(
               (data) => {
                 // Build Firebase credential with the Facebook access token.
@@ -313,6 +315,7 @@ _keyboardDidShow = (event) => {
          style={styles.backgroundVideo}
          onError={() => {this.onVideoLoadError()}}
        />
+        <Spinner visible={this.state.spinnerVisible} textContent={"Giriş yapılıyor..."} textStyle={{color: '#DDD'}} />
 
             <View style={{paddingTop:10,paddingBottom:10,backgroundColor:'transparent'}}>
               <Text style={{paddingTop:40,color:'white',fontSize:40,textAlign:'center',fontFamily:'Courgette'}}>
