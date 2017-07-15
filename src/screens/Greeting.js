@@ -23,6 +23,8 @@ import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
@@ -61,6 +63,44 @@ export default class Greeting extends React.Component {
        ),
     };
 
+    pay = (falType) => {
+
+      var credit = 0;
+      switch (falType) {
+        case 0:
+            credit = 100;
+            break;
+        case 1:
+            credit = 100;
+            break;
+        case 2:
+            credit = 150;
+            break;
+        case 3:
+            credit = 25;
+            break;
+      }
+      var products = [
+         'com.grepsi.kahvefaliios.'+credit,
+      ];
+      InAppUtils.loadProducts(products, (error, products) => {
+        if(error){}
+        else{
+          var identifier = products[0].identifier
+          InAppUtils.purchaseProduct(identifier, (error, response) => {
+             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             if(error){}
+             else{
+               if(response && response.productIdentifier) {
+                  //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+                        this.navigateto('Chat',0,falType);
+               }
+             }
+          });
+        }
+      });
+
+    }
 
   navigateToAktif = (falciNo) => {
     const { navigate } = this.props.navigation;
@@ -78,10 +118,16 @@ export default class Greeting extends React.Component {
 
   }
   navigateto = (destination,falciNo,falType) => {
-    this.greetingMounted=false;
+
     const { navigate } = this.props.navigation;
     if(destination=="Chat"){
-
+      /*
+          if(this.state.userData.currentFalci==null){
+            var randomnumber = Math.floor(Math.random() * falcilar.length);
+          }
+          else{
+            var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
+          }*/
           var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
@@ -114,6 +160,8 @@ export default class Greeting extends React.Component {
 
   }
 
+
+
   startGunluk = () => {
     var userData =this.state.userData
     if(!userData.appGunlukUsed&&!userData.aktif){
@@ -123,8 +171,8 @@ export default class Greeting extends React.Component {
         'Yeni Fal',
         'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
-          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}},
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}, style: 'cancel'},
         ],
       )
     }
@@ -133,16 +181,16 @@ export default class Greeting extends React.Component {
         'Yeni Günlük Fal',
         'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
             if(userData.credit<100){
-              alert('inapp')
+              this.pay(0)
             }
             else{
               this.navigateto('Chat',0,0)
               Backend.addCredits(-100)
             }
-        }},
+        }, style: 'cancel'},
         ],
       )
     }
@@ -151,21 +199,22 @@ export default class Greeting extends React.Component {
         'Yeni Günlük Fal',
         'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
             if(userData.credit<100){
-              alert('inapp')
+              this.pay(0)
             }
             else{
               this.navigateto('Chat',0,0)
               Backend.addCredits(-100)
             }
-        }},
+        }, style:'cancel'},
         ],
       )
     }
 
   }
+
 
   startAsk = () => {
     var userData =this.state.userData
@@ -176,10 +225,10 @@ export default class Greeting extends React.Component {
         'Aşk Falı',
         messagebody,
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-              alert("inapp")
-          }},
+              this.pay(1)
+          }, style: 'cancel'},
         ],
       )
     }
@@ -190,10 +239,11 @@ export default class Greeting extends React.Component {
         'Aşk Falı',
         messagebody,
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
                 this.navigateto('Chat',0,1);
-          }},
+                Backend.addCredits(-100)
+          }, style: 'cancel'},
         ],
       )
     }
@@ -208,10 +258,10 @@ export default class Greeting extends React.Component {
         'Detaylı Fal',
         messagebody,
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-              alert("inapp")
-          }},
+              this.pay(2)
+          }, style: 'cancel'},
         ],
       )
     }
@@ -222,10 +272,11 @@ export default class Greeting extends React.Component {
         'Aşk Falı',
         messagebody,
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
                 this.navigateto('Chat',0,2);
-          }},
+                Backend.addCredits(-150)
+          }, style: 'cancel'},
         ],
       )
     }
@@ -240,8 +291,8 @@ export default class Greeting extends React.Component {
         'Yeni Fal',
         'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp el falına bakmak istediğinden emin misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
-          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,3)}},
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,3)}, style: 'cancel'},
         ],
       )
     }
@@ -250,16 +301,16 @@ export default class Greeting extends React.Component {
         'El Falı',
         'El falına sadece bir kere ücretsiz bakıyoruz. Hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
             if(userData.credit<25){
-              alert('inapp')
+              this.pay(3)
             }
             else{
               this.navigateto('Chat',0,3)
               Backend.addCredits(-25)
             }
-        }},
+        }, style: 'cancel'},
         ],
       )
     }
@@ -268,16 +319,16 @@ export default class Greeting extends React.Component {
         'El Falı',
         'El falına sadece bir kere ücretsiz bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
         [
-          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(userData.credit<100){
-              alert('inapp')
+            if(userData.credit<25){
+              this.pay(3)
             }
             else{
               this.navigateto('Chat',0,3)
               Backend.addCredits(-25)
             }
-        }},
+        }, style: 'cancel'},
         ],
       )
     }
@@ -379,7 +430,7 @@ componentWillUnmount() {
         return(
           <View>
           <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
-          <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
            <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
               <View>
               <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
@@ -398,7 +449,7 @@ componentWillUnmount() {
                </View>
            </View>
 
-          </TouchableHighlight>
+          </TouchableOpacity>
           </View>
         )
       }
@@ -458,7 +509,7 @@ componentWillUnmount() {
                     Günlük Fal
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    Hergün 1 adet kahve falı bizden size hediye!
+                    Hergün 1 adet kahve falı bizden size <Text style={{fontWeight:'bold'}}>HEDİYE!</Text>
                   </Text>
                 </View>
               </Image>
@@ -502,9 +553,16 @@ componentWillUnmount() {
               </View>
               </Image>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Backend.deleteData()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startHand()}}>
               <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
               <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+                {this.state.userData.handUsed == true &&
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      25
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>}
                 <Text style={styles.faltypeyazi}>
                   El Falı
                 </Text>

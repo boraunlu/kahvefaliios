@@ -31,7 +31,8 @@ export default class Mesajlar extends React.Component {
     super(props);
     this.state = {
       messages: null,
-      aktifChat:null
+      aktifChat:null,
+      bizden:null,
 
   };
 }
@@ -63,7 +64,7 @@ export default class Mesajlar extends React.Component {
         })
 
     }
-    delete = (falciNo) => {
+    delete = (falciNo,index) => {
 
       Alert.alert(
         'Konuşmayı Sil',
@@ -71,22 +72,22 @@ export default class Mesajlar extends React.Component {
         [
 
           {text: 'Hayır', onPress: () => {}, style: 'cancel'},
-          {text: 'Evet', onPress: () => {Backend.deleteThread(falciNo); this.removeThread(falciNo)}},
+          {text: 'Evet', onPress: () => {Backend.deleteThread(falciNo); this.removeThread(index)}},
         ],
       )
 
     }
 
-    removeThread = (falciNo) => {
+    removeThread = (index) => {
       var newList = this.state.messages;
-      delete newList[falciNo];
+      newList.splice(index, 1);
       this.setState({messages:newList})
     }
 
   componentDidMount() {
     Backend.getLastMessages().then((snapshot) => {
         if(snapshot.output.length==0){
-          this.setState({messages:"mesajyok"})
+          this.setState({messages:[]})
         }
         else{
             this.setState({messages:snapshot.output})
@@ -95,6 +96,10 @@ export default class Mesajlar extends React.Component {
           this.setState({aktifChat:snapshot.aktif})
         }
 
+    })
+    Backend.getBizden().then((snapshot) => {
+
+      this.setState({bizden:snapshot})
     })
   }
 
@@ -110,7 +115,7 @@ export default class Mesajlar extends React.Component {
       return(
         <View>
         <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
-        <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateToAktif(this.state.aktifChat.key)}}>
+        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateToAktif(this.state.aktifChat.key)}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
             <Image source={{uri:falcilar[this.state.aktifChat.key].url}} style={styles.falciAvatar}></Image>
@@ -129,7 +134,7 @@ export default class Mesajlar extends React.Component {
              </View>
          </View>
 
-        </TouchableHighlight>
+        </TouchableOpacity>
         </View>
       )
     }
@@ -144,7 +149,7 @@ export default class Mesajlar extends React.Component {
         />
       )
     }
-    else if (this.state.messages=="mesajyok") {
+    else if (this.state.messages.length==0) {
       return(
         <Text style={{textAlign:'center',backgroundColor:'transparent'}}> Eski falın bulunmuyor </Text>
       )
@@ -155,7 +160,7 @@ export default class Mesajlar extends React.Component {
 
          messages.map(function (message,index) {
            return (
-             <TouchableHighlight key={message.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateto('ChatOld',message.key)}}>
+             <TouchableOpacity key={message.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateto('ChatOld',message.key)}}>
               <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <Image source={{uri:falcilar[message.key].url}} style={styles.falciAvatar}></Image>
 
@@ -167,14 +172,54 @@ export default class Mesajlar extends React.Component {
                    {capitalizeFirstLetter(moment(message.createdAt).calendar())}
                   </Text>
                 </View>
-                <TouchableHighlight onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
+                <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
-                </TouchableHighlight>
+                </TouchableOpacity>
               </View>
 
-             </TouchableHighlight>
+             </TouchableOpacity>
              );
          }, this)
+      )
+    }
+  }
+
+  renderBizden = () => {
+    if(this.state.bizden==null){
+      return null
+    }
+    else{
+      var data = this.state.bizden
+      var output =[]
+      for (var key in data) {
+          data[key].key = key;   // save key so you can access it from the array (will modify original data)
+          output.push(data[key]);
+      }
+      var lastBizden = output[output.length-1].text
+      return(
+        <View>
+        <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Bizden Gelenler</Text></View>
+        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden')}}>
+         <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+            <View>
+            <Image source={require('../static/images/anneLogo3.png')} style={styles.falciAvatar}></Image>
+
+           </View>
+           <View style={{padding:10,flex:2}}>
+             <Text style={{fontWeight:'bold',fontSize:16}}>
+               Nevin
+              </Text>
+              <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                {capitalizeFirstLetter(lastBizden)}
+             </Text>
+           </View>
+           <View style={{padding:20}}>
+             <Icon name="angle-right" color={'gray'} size={20} />
+             </View>
+         </View>
+
+        </TouchableOpacity>
+        </View>
       )
     }
   }
@@ -186,8 +231,10 @@ export default class Mesajlar extends React.Component {
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
           {this.renderAktif()}
+          {this.renderBizden()}
           <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}
+
         </ScrollView>
       </Image>
     );

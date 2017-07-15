@@ -10,6 +10,7 @@ import codePush from "react-native-code-push";
 import Login from './screens/Login';
 import Chat from './screens/Chat';
 import ChatOld from './screens/ChatOld';
+import ChatBizden from './screens/ChatBizden';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
@@ -36,6 +37,7 @@ let kahvefaliapp = StackNavigator({
     Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
     ChatOld: {screen:ChatOld},
+    ChatBizden: {screen:ChatBizden},
     Swipers: {screen:Swipers},
 });
 

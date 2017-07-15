@@ -35,7 +35,7 @@ class Backend {
         this.setUid(user.uid);
         this.messagesRef = firebase.database().ref('messages/'+user.uid);
         if(user.photoURL){
-          this.setAvatar('')
+          this.setAvatar(user.photoURL)
         }
         this.setName(user.displayName)
       } else {
@@ -303,6 +303,7 @@ loadMessages = (callback) => {
             user: {
               _id: message.user._id,
               name: message.user.name,
+              avatar: message.user.avatar,
             }
           }
         }
@@ -346,6 +347,7 @@ loadMessages = (callback) => {
             user: {
               _id: message.user._id,
               name: message.user.name,
+              avatar: message.user.avatar,
             }
           }
         }
@@ -423,7 +425,7 @@ loadMessages = (callback) => {
       text: message,
       user:  {
         _id: this.getUid(),
-        name: 'user',
+        name: this.userName,
         avatar: this.userAvatar,
       },
 
@@ -522,6 +524,21 @@ loadMessages = (callback) => {
       }
       this.lastMessageref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,text:lastmessagetext})
     }
+  }
+  getBizden = () => {
+    return new Promise((resolve, reject) => {
+          var response ={}
+          var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/bizden');
+          lastmessagesref.once('value')
+          .then((dataSnapshot) => {
+            resolve(dataSnapshot.val())
+          })
+          .catch((error) => {
+            reject(error)
+          })
+
+   })
+
   }
   // close the connection to the Backend
   closeChat() {

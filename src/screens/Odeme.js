@@ -35,7 +35,7 @@ export default class Odeme extends React.Component {
 }
 
   static navigationOptions = {
-      title: 'Ödeme',
+      title: 'Kredilerin',
       headerBackTitle:'Geri',
       tabBarLabel: 'Krediler',
        tabBarIcon: ({ tintColor }) => (
@@ -145,111 +145,122 @@ export default class Odeme extends React.Component {
 
         </View>
 
-        <View style={styles.descContainer}>
+        <View style={{flex:1}}>
+          <View style={{flex:1,backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
+          <Image style={styles.container2} source={require('../static/images/hazine.jpg')}>
+          <View style={{borderColor:'white',borderWidth:1}}>
             <View style={{flexDirection:'row'}}>
-          <Text style={styles.description}>Aşk Falı       :<Text style={styles.description2}> 100 Kredi</Text></Text><Image source={require('../static/images/coins.png')} style={styles.coin}/>
-              </View>
-            <View style={{flexDirection:'row'}}>
-          <Text style={styles.description}>Detaylı Fal  :<Text style={styles.description2}> 150 Kredi</Text></Text><Image source={require('../static/images/coins.png')} style={styles.coin}/>
+              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(100)}}>
 
-              </View>
 
-        </View>
-        <View style={styles.productsContainer}>
-          <Text  style={[styles.label2, {fontWeight: 'bold'}]}>
-            Kredi Al
-          </Text>
-          <ScrollView >
-          <TouchableOpacity onPress={() => {this.pay(100)}}>
-            <View style={styles.productRow}>
-                <View>
-                  <View style={{flexDirection:'row'}}>
-                    <Text style={[styles.label]}>
+                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
+
+                    <Text style={styles.faltypeyazi}>
                       100 Kredi
                     </Text>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                  </View>
-                  <Text style={[styles.underlabel]} >
+                    <Text style={styles.faltypeyazikucuk}>
                     +10 Kredi Hediye
-                  </Text>
-                </View>
-                <Button style={styles.buyButton} color={'#1194F7'} onPress={() => {this.pay(100)}} title={"6.99 TL"}>
-                </Button>
+                    </Text>
+                    <View style={styles.corner}>
+                      <Text style={[styles.label]}>
+                        6.99
+                      </Text>
+                      <Icon name="try" color={'#2f4f4f'} size={14} />
+                    </View>
+                  </View>
+
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(150)}}>
+
+                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+
+                    <Text style={styles.faltypeyazi}>
+                      150 Kredi
+                    </Text>
+                    <Text style={styles.faltypeyazikucuk}>
+                    +15 Kredi Hediye
+                    </Text>
+                    <View style={styles.corner}>
+                      <Text style={[styles.label]}>
+                        9.99
+                      </Text>
+                      <Icon name="try" color={'#2f4f4f'} size={14} />
+                    </View>
+                  </View>
+
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.pay(150)}}>
-            <View style={styles.productRow}>
-              <View>
-                <View style={{flexDirection:'row'}}>
-                  <Text style={[styles.label]}>
-                    150 Kredi
-                  </Text>
-                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                </View>
-                <Text style={[styles.underlabel]}>
-                  +15 Kredi Hediye
-                </Text>
-              </View>
-                <Button title={"9.99 TL"} style={styles.buyButton} onPress={() => {this.pay(150)}} color={'#1194F7'}>
-                </Button>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.pay(250)}}>
-            <View style={[styles.productRow,{elevation:5}]}>
-                <View>
-                  <Text style={{color:'white'}}>
-                    En çok tercih edilen!
-                  </Text>
-                  <View style={{flexDirection:'row'}}>
-                    <Text style={[styles.label,{fontWeight:'bold'}]}>
+            <View style={{flexDirection:'row'}}>
+              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(250)}}>
+
+
+                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+
+                    <Text style={styles.faltypeyazi}>
                       250 Kredi
                     </Text>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                  </View>
-                  <Text style={[styles.underlabel]}>
+                    <Text style={styles.faltypeyazikucuk}>
                     +25 Kredi Hediye
-                  </Text>
-                </View>
-                <Button title={"13.99 TL"} style={styles.buyButton} onPress={() => {this.pay(250)}} color={'#1194F7'}>
-                </Button>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.pay(250)}}>
-            <View style={styles.productRow}>
-              <View>
-                <View style={{flexDirection:'row'}}>
-                  <Text style={[styles.label]}>
+                    </Text>
+                    <View style={styles.corner}>
+                      <Text style={[styles.label]}>
+                        13.99
+                      </Text>
+                      <Icon name="try" color={'#2f4f4f'} size={14} />
+                    </View>
+                  </View>
+
+              </TouchableOpacity>
+              </View>
+            <View style={{flexDirection:'row'}}>
+              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(500)}}>
+
+                <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
+
+                  <Text style={styles.faltypeyazi}>
                     500 Kredi
                   </Text>
-                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                </View>
-                <Text style={[styles.underlabel]}>
-                  +50 Kredi Hediye
-                </Text>
-              </View>
-                <Button title={"24.99 TL"} style={styles.buyButton} onPress={() => {this.pay(500)}} color={'#1194F7'}>
-                </Button>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.pay(1000)}}>
-            <View style={styles.productRow}>
-                <View>
-                  <View style={{flexDirection:'row'}}>
+
+
+                  <Text style={styles.faltypeyazikucuk}>
+                    +50 Kredi Hediye
+                  </Text>
+                  <View style={styles.corner}>
                     <Text style={[styles.label]}>
-                      1000 Kredi
+                      24.99
                     </Text>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                    <Icon name="try" color={'#2f4f4f'} size={14} />
                   </View>
-                  <Text style={[styles.underlabel]}>
+
+                </View>
+
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(1000)}}>
+
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.8)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    1000 Kredi
+
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
                     +100 Kredi Hediye
                   </Text>
+                  <View style={styles.corner}>
+                    <Text style={[styles.label]}>
+                      44.99
+                    </Text>
+                    <Icon name="try" color={'#2f4f4f'} size={14} />
+                  </View>
                 </View>
-                <Button title={"44.99 TL"} style={styles.buyButton} onPress={() => {this.pay(1000)}} color={'#1194F7'}>
-                </Button>
+
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          </ScrollView>
+          </View>
+          </Image>
         </View>
+
+
         </ScrollView>
       </Image>
 
@@ -265,7 +276,12 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'stretch',
     width: null,
-    padding:0,
+  },
+  container2: {
+    flex: 1,
+    // remove width and height to override fixed static size
+    width: null,
+    height: null,
   },
   buyButton:{
     color:'green'
@@ -280,10 +296,10 @@ const styles = StyleSheet.create({
    margin:5,flexDirection:'column',justifyContent:'center',paddingBottom:10,paddingTop:10, borderColor:'gray',flex:1
  },
   label: {
-    fontSize: 20,
-    color:'white',
-    textAlign:'center',
-    backgroundColor:'transparent'
+    fontSize: 13,
+    color:'#2f4f4f',
+    fontWeight:'bold',
+    textAlign:'center'
   },
   chattext:{
     fontSize:16,
@@ -292,8 +308,7 @@ const styles = StyleSheet.create({
   label2:{
     fontSize: 24,
     color:'white',
-    textAlign:'center',
-    backgroundColor:'transparent'
+    textAlign:'center'
   },
   headline:{
     fontSize: 30,
@@ -320,12 +335,30 @@ const styles = StyleSheet.create({
     color:'white',
     fontSize:20,
     fontWeight:'bold',
-    backgroundColor:'transparent'
   },
   description2:{
     color:'white',
     fontSize:20,
-    fontWeight:'normal',
-    backgroundColor:'transparent'
-  }
+    fontWeight:'normal'
+  },
+  faltypeyazi:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+  },
+  faltypeyazikucuk:{
+    textAlign: 'center',color:'white',fontSize:14
+  },
+  faltypecontainer:{
+    flex:1,
+    height:125,
+    borderWidth:1,
+    borderColor:'white'
+  },
+  faltypeimage:{
+    alignItems:'center',
+    alignSelf: 'stretch',
+    width: null,
+    height:123,
+    flexDirection:'column-reverse'
+  },
+  corner:{backgroundColor:'#dcdcdc',padding:5,flexDirection:'row',borderRadius:5,marginTop:5}
 });

@@ -22,6 +22,7 @@ import Toast from 'react-native-root-toast';
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
 import firebase from 'firebase'
+import Icon from 'react-native-vector-icons/FontAwesome';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
 import CustomView from '../components/CustomView';
@@ -100,9 +101,9 @@ export default class Chat extends React.Component {
     this._isAlright = null;
   }
   static navigationOptions = ({ navigation }) => ({
-    headerLeft:<Button title={"Sayfam"} onPress={() => {navigation.state.params.setnavigation('Greeting')}}/>,
+    headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#0c42fd'} size={25} onPress={() => {navigation.state.params.setnavigation('Greeting')}} />  ,
     headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
-    headerTitle:falcilar[navigation.state.params.falciNo].name,
+    headerTitle:<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:falcilar[navigation.state.params.falciNo].url}}></Image><Text style={{fontWeight:'bold'}}>{falcilar[navigation.state.params.falciNo].name}</Text></View>,
 
   })
 

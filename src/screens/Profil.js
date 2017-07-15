@@ -153,7 +153,7 @@ export default class Profil extends React.Component {
           </View>
           <View style={{paddingTop:5,marginBottom:10}}>
             <View style={{marginBottom:5}}>
-              <Button title={"Biz Kimiz"} color={'#3cb371'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
+              <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
             <View style={{marginBottom:5}}>
               <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
