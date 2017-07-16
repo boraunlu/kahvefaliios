@@ -97,7 +97,7 @@ export default class ChatOld extends React.Component {
   }
   static navigationOptions = ({ navigation }) => ({
 
-    headerTitle:falcilar[navigation.state.params.falciNo].name,
+    headerTitle:falcilar[navigation.state.params.falciNo].name+" (Ayrıldı)",
 
   })
 
@@ -344,7 +344,7 @@ export default class ChatOld extends React.Component {
   }
 
   renderFooter(props) {
-    
+
     if (this.state.typingText) {
       return (
         <View style={styles.footerContainer}>

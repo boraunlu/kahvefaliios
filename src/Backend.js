@@ -147,6 +147,10 @@ class Backend {
     })
 
   }
+  clearUnread(){
+      var unreadref =  firebase.database().ref('messages/'+this.getUid()+'/lastMessage/'+this.falci+'/');
+      unreadref.update({read:false})
+  }
   deleteData(){
     var deleteref = firebase.database().ref('messages/'+this.getUid());
     deleteref.remove()
@@ -194,18 +198,6 @@ class Backend {
             if(message.type!=="typing"){
               message._id=key;
               callbackobj.unshift(message)
-              /*
-              var createdAt = moment(message.createdAt)
-              if(saat>2){
-                if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.hour()>2){
-                    callbackobj.unshift(message)
-                }
-              }
-              else{
-                if(createdAt.dayOfYear()==simdi.dayOfYear()||createdAt.dayOfYear()==simdi.dayOfYear()-1){
-                    callbackobj.unshift(message)
-                }
-              }*/
 
             }
         });
@@ -216,7 +208,9 @@ class Backend {
 
       callback(callbackobj);
 
+
     };
+    this.clearUnread()
     this.messagesRef.limitToLast(50).once('value',loadInitial);
   }
 
@@ -353,14 +347,12 @@ loadMessages = (callback) => {
         }
 
         callback(callbackobj);
-
-
-      //console.log(message)
+        this.clearUnread()
 
     };
   }
     this.messagesRef.limitToLast(1).on('child_added', onReceive);
-    //this.messagesRef.limitToLast(20).once('value',loadInitial);
+
   }
 
   addCredits(credit){

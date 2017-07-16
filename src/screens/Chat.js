@@ -101,9 +101,9 @@ export default class Chat extends React.Component {
     this._isAlright = null;
   }
   static navigationOptions = ({ navigation }) => ({
-    headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#0c42fd'} size={25} onPress={() => {navigation.state.params.setnavigation('Greeting')}} />  ,
+    headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#1194F7'} size={25} onPress={() => {navigation.state.params.setnavigation('Greeting')}} />  ,
     headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
-    headerTitle:<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:falcilar[navigation.state.params.falciNo].url}}></Image><Text style={{fontWeight:'bold'}}>{falcilar[navigation.state.params.falciNo].name}</Text></View>,
+    headerTitle:<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:falcilar[navigation.state.params.falciNo].url}}></Image><Text style={{fontWeight:'bold',fontSize:20}}>{falcilar[navigation.state.params.falciNo].name}</Text></View>,
 
   })
 
@@ -269,9 +269,9 @@ export default class Chat extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    //console.log("chatunmounted")
+    Backend.closeChat()
     this.keyboardDidShowListener.remove();
-
+    
   }
 
   _keyboardDidShow = (event) => {

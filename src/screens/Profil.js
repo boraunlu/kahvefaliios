@@ -142,7 +142,7 @@ export default class Profil extends React.Component {
 
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView>
-          <View style={{elevation:3,paddingTop:15,backgroundColor:'white',flexDirection:'column'}}>
+          <View style={{elevation:3,paddingTop:15,marginTop:30,backgroundColor:'white',flexDirection:'column'}}>
             <View style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
             </View>
@@ -281,8 +281,9 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: null,
     alignItems:'center',
-    padding:10,
-    paddingTop:30
+    paddingRight:10,
+    paddingLeft:10,
+
   },
 
 });
