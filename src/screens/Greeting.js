@@ -24,6 +24,8 @@ import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
+import FCM from 'react-native-fcm';
+
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 import moment from 'moment';
@@ -45,6 +47,7 @@ export default class Greeting extends React.Component {
       userName:'',
       user:null,
       userData:null,
+      credit:null,
       animatedButton: new Animated.Value(0),
       animatedBubble: new Animated.Value(0),
       buttonOpacity: new Animated.Value(0),
@@ -77,7 +80,7 @@ export default class Greeting extends React.Component {
             credit = 150;
             break;
         case 3:
-            credit = 25;
+            credit = 50;
             break;
       }
       var products = [
@@ -183,7 +186,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(userData.credit<100){
+            if(this.state.credit<100){
               this.pay(0)
             }
             else{
@@ -201,7 +204,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(userData.credit<100){
+            if(this.state.credit<100){
               this.pay(0)
             }
             else{
@@ -218,7 +221,7 @@ export default class Greeting extends React.Component {
 
   startAsk = () => {
     var userData =this.state.userData
-    if(userData.credit<100){
+    if(this.state.credit<100){
       var messagebody = ''
       userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 100 kredi ekleyelim mi?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen hesabına 100 kredi ekleyelim mi?'
       Alert.alert(
@@ -251,7 +254,7 @@ export default class Greeting extends React.Component {
 
   startDetay = () => {
     var userData =this.state.userData
-    if(userData.credit<150){
+    if(this.state.credit<150){
       var messagebody = ''
       userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 150 kredi ekleyelim mi?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen hesabına 150 kredi ekleyelim mi?'
       Alert.alert(
@@ -299,16 +302,16 @@ export default class Greeting extends React.Component {
     else if (userData.handUsed&&!userData.aktif) {
       Alert.alert(
         'El Falı',
-        'El falına sadece bir kere ücretsiz bakıyoruz. Hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
+        'El falına sadece bir kere ücretsiz bakıyoruz. Hemen 50 kredi karşılığında bir el falı daha baktırmak ister misin?',
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(userData.credit<25){
+            if(this.state.credit<50){
               this.pay(3)
             }
             else{
               this.navigateto('Chat',0,3)
-              Backend.addCredits(-25)
+              Backend.addCredits(-50)
             }
         }, style: 'cancel'},
         ],
@@ -317,16 +320,16 @@ export default class Greeting extends React.Component {
     else{
       Alert.alert(
         'El Falı',
-        'El falına sadece bir kere ücretsiz bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 25 kredi karşılığında bir el falı daha baktırmak ister misin?',
+        'El falına sadece bir kere ücretsiz bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 50 kredi karşılığında bir el falı daha baktırmak ister misin?',
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(userData.credit<25){
+            if(this.state.credit<50){
               this.pay(3)
             }
             else{
               this.navigateto('Chat',0,3)
-              Backend.addCredits(-25)
+              Backend.addCredits(-50)
             }
         }, style: 'cancel'},
         ],
@@ -372,18 +375,11 @@ export default class Greeting extends React.Component {
 
   componentDidMount() {
     const { params } = this.props.navigation.state;
-    var greetingType='online';
+    FCM.setBadgeNumber(0);
+
+
     var greetingMessage="";
-
-
     var user = firebase.auth().currentUser;
-    if(params){
-      if(params.login){
-        if(params.login=="eski"){  greetingMessage="Hoşgeldin "+user.displayName+". Seni burada da görmek ne kadar güzel. Yeni fal türlerine baktırmak istersen veya kredi almak istersen gelmen gereken yer burası."}
-        else{greetingMessage="Hoşgeldin "+user.displayName+". Bambaşka bir fal deneyimine hazır mısın? Hemen 'Yeni Fal' tuşuna bas ve uygun durumda olan bir falcımızla sohbete başla!"}
-        this.setState({greetingMessage:greetingMessage});
-      }
-    }
     if(user.photoURL){
       this.setState({profPhoto:user.photoURL})
     }
@@ -403,7 +399,7 @@ export default class Greeting extends React.Component {
     .then((response) => response.json())
      .then((responseJson) => {
        //alert(JSON.stringify(responseJson));
-          this.setState({greetingMessage:responseJson.greeting,userData:responseJson});
+          this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit});
          //alert(JSON.stringify(responseJson))
 
      })
@@ -415,7 +411,6 @@ componentWillMount() {
 }
 componentWillUnmount() {
 
-  //
 }
 
   renderAktif = () => {
@@ -559,7 +554,7 @@ componentWillUnmount() {
                 {this.state.userData.handUsed == true &&
                     <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                     <Text style={[styles.label]}>
-                      25
+                      50
                     </Text>
                     <Image source={require('../static/images/coins.png')} style={styles.coin}/>
                   </View>}
@@ -569,6 +564,22 @@ componentWillUnmount() {
                 <Text style={styles.faltypeyazikucuk}>
                   Eliniz, kaderiniz...
                 </Text>
+              </View>
+              </Image>
+            </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Alert.alert("Rüya Tabiri","Çok yakında sizlerle, beklemede kalın...")}}>
+              <Image source={require('../static/images/ruya.jpg')} style={styles.faltypeimage}>
+              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+
+                <Text style={styles.faltypeyazi}>
+                  Rüya Tabiri
+                </Text>
+                <Text style={styles.faltypeyazikucuk}>
+                  Çok yakında...
+                </Text>
+
               </View>
               </Image>
             </TouchableOpacity>
@@ -611,6 +622,7 @@ componentWillUnmount() {
             {this.renderAktif()}
             {this.renderFalTypes()}
 
+
           </View>
 
 
@@ -627,7 +639,7 @@ componentWillUnmount() {
 const styles = StyleSheet.create({
   containerasd: {
     flex: 1,
-    // remove width and height to override fixed static size
+
     width: null,
     height: null,
 

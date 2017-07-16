@@ -10,7 +10,8 @@ import {
   ScrollView,
   Button,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -18,11 +19,10 @@ import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
+import {AdMobRewarded} from 'react-native-admob'
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-var products = [
-   'com.grepsi.kahvefaliios.25',
-];
+
 
 export default class Odeme extends React.Component {
   constructor(props) {
@@ -61,7 +61,24 @@ export default class Odeme extends React.Component {
              if(error){}
              else{
                if(response && response.productIdentifier) {
-                  //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
+                 var credittoadd = 0;
+                 switch (credit) {
+                   case 100:
+                       credittoadd = 110;
+                       break;
+                   case 150:
+                       credittoadd = 165;
+                       break;
+                   case 250:
+                       credittoadd = 300;
+                       break;
+                   case 500:
+                       credittoadd = 600;
+                       break;
+                   case 1000:
+                       credittoadd = 1250;
+                       break;
+                 }
                   fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
                     method: 'POST',
                     headers: {
@@ -70,14 +87,14 @@ export default class Odeme extends React.Component {
                     },
                     body: JSON.stringify({
                       uid: Backend.getUid(),
-                      credit: credit
+                      credit: credittoadd
                     })
                   })
                   .then((response) => {
                     alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
                     this.setState((previousState) => {
                       return {
-                        credit: previousState.credit+credit,
+                        credit: previousState.credit+credittoadd,
                       };
                     });
                   });
@@ -89,6 +106,19 @@ export default class Odeme extends React.Component {
 
     }
 
+    reklamGoster = () => {
+      Alert.alert(
+        'Bedava Kredi',
+        'Birazdan göstereceğimiz reklam videosunu sonuna kadar izleyerek kredi kazanabilirsin.',
+        [
+          {text: 'İstemiyorum', onPress: () => {}},
+          {text: 'Tamam', onPress: () => {
+            AdMobRewarded.showAd((error) => error && console.log(error));
+        }},
+        ],
+      )
+
+    }
 
   componentDidMount() {
     this.props.navigation.setParams({ setnavigation: this.setnavigation })
@@ -107,11 +137,35 @@ export default class Odeme extends React.Component {
      .then((responseJson) => {
       this.setState({credit:responseJson.credit})
      })
+
+     AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
+     AdMobRewarded.setTestDeviceID('EMULATOR');
+
+     AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
+       (type, amount) => {Backend.addCredits(20); Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!',); this.setState((prevState)=> {return {credit:prevState.credit+20}}); }
+     );
+
+     /*
+     AdMobRewarded.addEventListener('rewardedVideoDidFailToLoad',
+       (error) => alert('Reklam yüklenirken bir sorun oluştu.', error)
+     );*/
+     AdMobRewarded.addEventListener('rewardedVideoDidOpen',
+       () => {}
+     );
+     AdMobRewarded.addEventListener('rewardedVideoDidClose',
+       () => {
+         AdMobRewarded.requestAd((error) => error && console.log(error));
+       }
+     );
+     AdMobRewarded.addEventListener('rewardedVideoWillLeaveApplication',
+       () => {}
+     );
+
+     AdMobRewarded.requestAd((error) => error && console.log(error));
   }
 
   componentWillUnmount() {
-    //console.log("odemeunmount")
-
+    AdMobRewarded.removeAllListeners();
   }
 
 
@@ -144,7 +198,15 @@ export default class Odeme extends React.Component {
           </View>
 
         </View>
+        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.reklamGoster()}}>
+         <View style={{flexDirection:'row',justifyContent:'space-around',height:60,alignItems:'center'}}>
+          <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
+          <Text style={{color:'#2f4f4f',fontSize:20,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
+          <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
 
+         </View>
+
+        </TouchableOpacity>
         <View style={{flex:1}}>
           <View style={{flex:1,backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
           <Image style={styles.container2} source={require('../static/images/hazine.jpg')}>
@@ -195,12 +257,15 @@ export default class Odeme extends React.Component {
 
 
                   <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
-
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
+                      <Icon name="star" color={'yellow'} size={30} />
+                      <Text style={{color:'white'}}> Falseverlerin {"\n"} favorisi</Text>
+                    </View>
                     <Text style={styles.faltypeyazi}>
                       250 Kredi
                     </Text>
                     <Text style={styles.faltypeyazikucuk}>
-                    +25 Kredi Hediye
+                    +50 Kredi Hediye
                     </Text>
                     <View style={styles.corner}>
                       <Text style={[styles.label]}>
@@ -223,7 +288,7 @@ export default class Odeme extends React.Component {
 
 
                   <Text style={styles.faltypeyazikucuk}>
-                    +50 Kredi Hediye
+                    +100 Kredi Hediye
                   </Text>
                   <View style={styles.corner}>
                     <Text style={[styles.label]}>
@@ -244,7 +309,7 @@ export default class Odeme extends React.Component {
 
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    +100 Kredi Hediye
+                    +250 Kredi Hediye
                   </Text>
                   <View style={styles.corner}>
                     <Text style={[styles.label]}>

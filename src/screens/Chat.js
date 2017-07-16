@@ -148,7 +148,22 @@ export default class Chat extends React.Component {
     });
   }
 
-  pay = (credit) => {
+  pay = (credit2) => {
+    var credit = 0;
+    switch (credit2) {
+      case 25:
+          credit = 50;
+          break;
+      case 100:
+          credit = 100;
+          break;
+      case 150:
+          credit = 150;
+          break;
+      case 50:
+          credit = 50;
+          break;
+    }
     var products = [
        'com.grepsi.kahvefaliios.'+credit,
     ];
@@ -159,7 +174,7 @@ export default class Chat extends React.Component {
         InAppUtils.purchaseProduct(identifier, (error, response) => {
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
            if(error){
-             if(credit==25){
+             if(credit2==25){
                Backend.sendPayload("nohizlibak")
              }
              else{
@@ -168,8 +183,8 @@ export default class Chat extends React.Component {
            }
            else{
              if(response && response.productIdentifier) {
-                //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
-                Backend.sendPayload(credit+"baslat")
+                if(credit2==25){Backend.addCredits(25)}
+                Backend.sendPayload(credit2+"baslat")
              }
            }
         });
@@ -193,7 +208,7 @@ export default class Chat extends React.Component {
         }
         else if (payload.payload.includes("odeme")) {
           var credit= payload.payload.slice(5);
-          this.pay(credit)
+          this.pay(parseInt(credit))
           this.setState({inputVisible:true})
         }
         else if (payload.payload=="ben") {
@@ -271,7 +286,7 @@ export default class Chat extends React.Component {
     this._isMounted = false;
     Backend.closeChat()
     this.keyboardDidShowListener.remove();
-    
+
   }
 
   _keyboardDidShow = (event) => {
@@ -400,6 +415,14 @@ export default class Chat extends React.Component {
           let toast = Toast.show(falcilar[this.state.falciNo].name+' sohbete bağlandı!', {
             duration: Toast.durations.SHORT,
             position: 70,
+            shadow: true,
+            animation: true,
+            hideOnPress: true,
+          });
+          let toast2 = Toast.show('Aşağıya mesajınızı yazarak sohbet edebilirsiniz', {
+            duration: Toast.durations.LONG,
+            delay: 3000,
+            position: 0,
             shadow: true,
             animation: true,
             hideOnPress: true,
