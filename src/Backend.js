@@ -244,7 +244,19 @@ class Backend {
     })
    }
 
-
+setSharedWeek = () => {
+  fetch('https://eventfluxbot.herokuapp.com/appapi/setSharedWeek', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      uid: this.uid,
+      shared: true
+    })
+  })
+}
 newfortune = () => {this.lastKeyLoaded="asdf"}
 
   // retrieve the messages from the Backend
@@ -293,6 +305,20 @@ loadMessages = (callback) => {
             type:message.type,
             _id: data.key,
             image: message.image,
+            createdAt: new Date(message.createdAt),
+            user: {
+              _id: message.user._id,
+              name: message.user.name,
+              avatar: message.user.avatar,
+            }
+          }
+        }
+        else if (message.type=="action") {
+          callbackobj=
+          {
+            type:message.type,
+            _id: data.key,
+            action: message.action,
             createdAt: new Date(message.createdAt),
             user: {
               _id: message.user._id,
@@ -486,6 +512,21 @@ loadMessages = (callback) => {
                 })
               }
             })
+            .catch(error => {
+              imagepusharray=['https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg']
+              fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+                method: 'POST',
+                headers: {
+                  'Accept': 'application/json',
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  uid: this.uid,
+                  image: imagepusharray,
+                  type:"images"
+                })
+              })
+            })
           }
         }
         else{
@@ -506,6 +547,20 @@ loadMessages = (callback) => {
               body: JSON.stringify({
                 uid: this.uid,
                 image: imagerl,
+                type:"image"
+              })
+            })
+          })
+          .catch(error => {
+            fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                uid: this.uid,
+                image: 'https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg',
                 type:"image"
               })
             })

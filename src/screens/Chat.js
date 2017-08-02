@@ -13,6 +13,9 @@ import {
   BackAndroid,
   Animated,
   Easing,
+  Switch,
+  Alert,
+  TextInput,
   ActivityIndicator,
 } from 'react-native';
 import Sound from 'react-native-sound'
@@ -30,6 +33,8 @@ import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
 import { NativeModules } from 'react-native'
+import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import StarRating from 'react-native-star-rating';
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 
@@ -81,6 +86,9 @@ export default class Chat extends React.Component {
       shareLinkContent: shareLinkContent,
       keyboardHeight:300,
       inputVisible:true,
+      starCount: 0,
+      sikayet:"",
+      falseSwitchIsOn:true,
       buttonOpacity: new Animated.Value(0),
     };
 
@@ -102,14 +110,52 @@ export default class Chat extends React.Component {
   }
   static navigationOptions = ({ navigation }) => ({
     headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#1194F7'} size={25} onPress={() => {navigation.state.params.setnavigation('Greeting')}} />  ,
-    headerRight:<Button title={"Kredi Al"} onPress={() => {navigation.state.params.setnavigation('Odeme')}}/>,
+    headerRight:<Button title={"Puan Ver"} onPress={() => {navigation.state.params.showpopup()}}/>,
     headerTitle:<View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:falcilar[navigation.state.params.falciNo].url}}></Image><Text style={{fontWeight:'bold',fontSize:20}}>{falcilar[navigation.state.params.falciNo].name}</Text></View>,
 
   })
 
 
+  showpopup = () => {
+    this.popupDialog.show()
+  }
 
-  setnavigation(route){
+  onStarRatingPress = (rating) => {
+    this.setState({
+      starCount: rating
+    });
+  }
+
+  sendReview = () => {
+    if(this.state.starCount==0){
+      alert('Lütfen önce puan veriniz')
+    }
+    else{
+      if(this.state.starCount<3){
+        Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.")
+        this.popupDialog.dismiss()
+      }
+      else{
+        fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: Backend.getUid(),
+            star:this.state.starCount,
+            text:this.state.sikayet
+          })
+        })
+        Keyboard.dismiss()
+        this.popupDialog.dismiss()
+        this.popupDialog2.show()
+      }
+    }
+  }
+
+   setnavigation(route){
 
     if(route=="Greeting"){
       const resetAction = NavigationActions.reset({
@@ -192,6 +238,31 @@ export default class Chat extends React.Component {
     });
 
   }
+
+  payBahsis = (bahsis) => {
+    var products = [
+       'com.grepsi.kahvefaliios.bahsis'+bahsis,
+    ];
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){}
+      else{
+        var identifier = products[0].identifier
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               Backend.sendPayload('bahsis'+bahsis)
+               Alert.alert('Bahşiş',"Memnun kalmanıza çok sevindik. Bahşişiniz falcımıza iletiliyor.")
+             }
+           }
+        });
+      }
+    });
+  }
+
   sendPayload(payload){
 
     if(payload=="appstart"){
@@ -284,7 +355,7 @@ export default class Chat extends React.Component {
 
   componentWillUnmount() {
     this._isMounted = false;
-    Backend.closeChat()
+
     this.keyboardDidShowListener.remove();
 
   }
@@ -297,8 +368,7 @@ export default class Chat extends React.Component {
 
   componentDidMount() {
 
-    this.props.navigation.setParams({ setnavigation: this.setnavigation })
-
+    this.props.navigation.setParams({ showpopup: this.showpopup,setnavigation: this.setnavigation  })
       Backend.loadMessages((message) => {
         if(message!=={}){
           if(this._isMounted){
@@ -341,6 +411,13 @@ export default class Chat extends React.Component {
                   messages: GiftedChat.append(previousState.messages, message),
                 };
               });
+            }
+            else if (message.type=="action") {
+
+              if(message.action=="rate"){
+                this.showpopup()
+              }
+
             }
               whoosh.play();
           }
@@ -731,6 +808,71 @@ export default class Chat extends React.Component {
                 this.sendPayload(payload)
               }}
             />
+            <PopupDialog
+             dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Puan Ver" />}
+             width={'90%'}
+             height={320}
+             dialogStyle={{marginTop:-250}}
+             ref={(popupDialog) => { this.popupDialog = popupDialog; }}>
+            <View style={{margin:10,marginLeft:20,marginRight:20,flex:1}}>
+             <StarRating
+              disabled={false}
+              maxStars={5}
+              rating={this.state.starCount}
+              selectedStar={(rating) => this.onStarRatingPress(rating)}
+              starColor={'gold'}
+              />
+
+              <View style={{height:80,marginTop:10}}>
+                <Text style={{fontStyle:'italic',color:'gray'}}>(Zorunlu Değil)</Text>
+                <TextInput
+
+                  multiline = {true}
+                  underlineColorAndroid='rgba(0,0,0,0)'
+                  style={{flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+                  onChangeText={(text) => this.setState({sikayet:text})}
+
+                  placeholder={'Buraya falcımız ile ilgili yorumlarınızı yazabilirsiniz. Teşekkür ederiz!'}
+                  editable = {true}
+                />
+              </View>
+              <View style={{flexDirection:'row',justifyContent:'space-around',marginTop:10}}>
+                <Text> Falcı değerlendirmemi görebilsin </Text>
+                <Switch
+                  onValueChange={(value) => this.setState({falseSwitchIsOn: value})}
+                  value={this.state.falseSwitchIsOn} />
+              </View>
+              <View style={{marginTop:10}}>
+                <Button title={"Gönder"}  onPress={() => {this.sendReview()}}/>
+              </View>
+            </View>
+           </PopupDialog>
+            <PopupDialog
+              dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Bahşiş Ver" />}
+              width={'90%'}
+              height={'60%'}
+              dialogStyle={{marginTop:-200}}
+              ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}>
+             <View style={{margin:20,flex:1}}>
+                <Image style={{alignSelf:'center',height:50,width:50, borderRadius:25,marginBottom:10}} source={{uri:falcilar[this.state.falciNo].url}}></Image>
+                <Text style={{fontSize:16,color:'black'}}>{falcilar[this.state.falciNo].name+" falcımıza bahşiş vermek ister misin?"}</Text>
+                <View style={{flexDirection:'row',height:50,marginTop:15}}>
+
+                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(249,50,12, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(1)}}>
+                    <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>1.29 TL</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={{flexGrow:2,marginRight:10,marginLeft:10,backgroundColor:'rgba(60,179,113, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(2)}}>
+                    <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>3.49 TL</Text>
+                  </TouchableHighlight>
+                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(114,0,218, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(3)}}>
+                    <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>6.99 TL</Text>
+                  </TouchableHighlight>
+                </View>
+               <View style={{marginTop:40}}>
+                 <Button title={"Bahşiş vermek istemiyorum"}  onPress={() => {this.popupDialog2.dismiss(); Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.");}}/>
+               </View>
+             </View>
+            </PopupDialog>
           </Image>
 
     );

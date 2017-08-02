@@ -99,16 +99,21 @@ export default class CustomActions extends React.Component {
           {'Fotoğraflarım'}
         </NavTitle>
         <NavButton onPress={() => {
-          this.setPickerVisible(false);
+          if(this._images.length==0){
+            alert("Lütfen önce fotoğraf seçin")
+          }
+          else{
+            this.setPickerVisible(false);
 
-          const images = this.getImages().map((image) => {
-            return {
-              image: image.uri,
-            };
-          });
-          this.props.onSend(images);
-          console.log("imajlar"+JSON.stringify(images))
-          this.setImages([]);
+            const images = this.getImages().map((image) => {
+              return {
+                image: image.uri,
+              };
+            });
+            this.props.onSend(images);
+            console.log("imajlar"+JSON.stringify(images))
+            this.setImages([]);
+          }
         }}>
           <NavButtonText style={{
             color: '#000',

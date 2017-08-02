@@ -25,6 +25,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 import FCM from 'react-native-fcm';
+import * as Animatable from 'react-native-animatable';
 
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
@@ -492,14 +493,26 @@ componentWillUnmount() {
     else{
       return(
         <Animated.View style={{opacity:this.state.buttonOpacity}}>
-        <View style={{backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text></View>
+        <View style={{backgroundColor:'#dcdcdc',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
         <View style={{borderColor:'white',borderWidth:1}}>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startGunluk()}}>
               <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
-                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+                {this.state.userData.appGunlukUsed ? (
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>) : (
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
+                    <Animatable.Text style={[styles.label]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
 
+
+                  </View>
+                  )}
                   <Text style={styles.faltypeyazi}>
                     Günlük Fal
                   </Text>
@@ -509,6 +522,9 @@ componentWillUnmount() {
                 </View>
               </Image>
             </TouchableOpacity>
+
+          </View>
+          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startAsk()}}>
               <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
@@ -527,8 +543,6 @@ componentWillUnmount() {
                 </View>
               </Image>
             </TouchableOpacity>
-          </View>
-          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startDetay()}}>
               <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
               <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
@@ -548,6 +562,9 @@ componentWillUnmount() {
               </View>
               </Image>
             </TouchableOpacity>
+
+          </View>
+          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startHand()}}>
               <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
               <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
@@ -567,11 +584,9 @@ componentWillUnmount() {
               </View>
               </Image>
             </TouchableOpacity>
-          </View>
-          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Alert.alert("Rüya Tabiri","Çok yakında sizlerle, beklemede kalın...")}}>
               <Image source={require('../static/images/ruya.jpg')} style={styles.faltypeimage}>
-              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
 
                 <Text style={styles.faltypeyazi}>
                   Rüya Tabiri
@@ -608,14 +623,17 @@ componentWillUnmount() {
         <ScrollView style={{flex:1,padding:0}}>
           <View style={{borderBottomWidth:0,borderColor:'#1194F7',marginBottom:20}}>
             <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
-              <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
-              </Image>
-              <Animated.View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
+              <View>
+                <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
+                </Image>
+
+              </View>
+              <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
                 <Text style={{fontSize:16,color:'white'}}>
                   {this.state.greetingMessage}
                 </Text>
 
-              </Animated.View>
+              </View>
 
             </View>
 
@@ -701,6 +719,11 @@ const styles = StyleSheet.create({
     height:15,
     width:15,
     marginLeft:5,
+  },
+  coin2:{
+    height:13,
+    width:13,
+
   },
   label: {
     fontSize: 12,

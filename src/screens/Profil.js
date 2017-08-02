@@ -25,7 +25,7 @@ export default class Profil extends React.Component {
     this.state = {
 
       userData:null,
-      profPhoto:'https://image.freepik.com/free-vector/variety-of-user-avatars_23-2147542131.jpg',
+      profPhoto:'https://www.peerspace.com/web-templates/assets/images/no_avatar_placeholder.png',
       userName:null,
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
       email:'',
@@ -172,6 +172,7 @@ export default class Profil extends React.Component {
 
         <PopupDialog
          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Kullanım Koşulları" />}
+         dialogStyle={{marginTop:-250}}
          width={'90%'}
          height={'60%'}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
@@ -210,6 +211,7 @@ export default class Profil extends React.Component {
          </PopupDialog>
          <PopupDialog
           dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri & Şikayet" />}
+          dialogStyle={{marginTop:-250}}
           width={'90%'}
           height={'30%'}
           ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}
@@ -233,6 +235,7 @@ export default class Profil extends React.Component {
           </PopupDialog>
           <PopupDialog
            dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
+           dialogStyle={{marginTop:-250}}
            width={'90%'}
            height={'60%'}
            ref={(popupDialog) => { this.popupDialog3 = popupDialog; }}

@@ -254,6 +254,7 @@ _keyboardDidShow = (event) => {
         Alert.alert('Kahve Falı Sohbeti','Lütfen cinsiyetini girer misin?')
       }
       else{
+        this.setState({spinnerVisible:true})
         var credential = firebase.auth.GoogleAuthProvider.credential(this.state.googleToken);
         firebase.auth().signInWithCredential(credential).then(function(user) {
 

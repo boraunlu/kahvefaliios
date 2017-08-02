@@ -20,15 +20,27 @@ import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import { NavigationActions } from 'react-navigation'
 import {AdMobRewarded} from 'react-native-admob'
+import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-
+const shareModel = {
+         contentType: 'link',
+          contentUrl: "https://facebook.com/kahvefalisohbeti",
+  contentDescription: 'Kahve Falı Sohbeti!',
+};
+const shareLinkContent = {
+  contentType: 'link',
+  contentUrl: "https://facebook.com/kahvefalisohbeti",
+  contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
+};
 
 export default class Odeme extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       credit:null,
+      sharedWeek:null,
+      shareLinkContent: shareLinkContent,
   };
 
   this.setnavigation = this.setnavigation.bind(this);
@@ -105,6 +117,37 @@ export default class Odeme extends React.Component {
       });
 
     }
+    shareLinkWithShareDialog = () => {
+      if(this.state.sharedWeek==null){
+
+      }
+      else if (this.state.sharedWeek==true) {
+        Alert.alert("Bir hafta içinde sadece 1 kere paylaşarak kredi kazanabilirsin")
+      }
+      else{
+        var tmp = this;
+        ShareDialog.canShow(this.state.shareLinkContent).then(
+          function(canShow) {
+            if (canShow) {
+              Keyboard.dismiss()
+              return ShareDialog.show(tmp.state.shareLinkContent);
+            }
+          }
+        ).then((result) => {
+            if (result.isCancelled) {
+
+            } else {
+              Backend.addCredits(25);
+              Backend.setSharedWeek()
+              this.setState((prevState)=> {return {credit:prevState.credit+25,sharedWeek:true}});
+              setTimeout(function(){Alert.alert('Tebrikler','25 Kredi hesabınıza eklendi!')},1000)
+            }
+          },
+          (error) => {
+          }
+        );
+      }
+    }
 
     reklamGoster = () => {
       Alert.alert(
@@ -113,8 +156,8 @@ export default class Odeme extends React.Component {
         [
           {text: 'İstemiyorum', onPress: () => {}},
           {text: 'Tamam', onPress: () => {
-            AdMobRewarded.showAd((error) => error && console.log(error));
-        }},
+            AdMobRewarded.showAd((error) => error && alert("Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
+          }},
         ],
       )
 
@@ -135,11 +178,11 @@ export default class Odeme extends React.Component {
     })
     .then((response) => response.json())
      .then((responseJson) => {
-      this.setState({credit:responseJson.credit})
+      this.setState({credit:responseJson.credit,sharedWeek:responseJson.sharedToday})
      })
 
      AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
-     AdMobRewarded.setTestDeviceID('EMULATOR');
+     //AdMobRewarded.setTestDeviceID('EMULATOR');
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
        (type, amount) => {Backend.addCredits(20); Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!',); this.setState((prevState)=> {return {credit:prevState.credit+20}}); }
@@ -198,15 +241,19 @@ export default class Odeme extends React.Component {
           </View>
 
         </View>
-        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.reklamGoster()}}>
-         <View style={{flexDirection:'row',justifyContent:'space-around',height:60,alignItems:'center'}}>
-          <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
-          <Text style={{color:'#2f4f4f',fontSize:20,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
-          <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
-
-         </View>
-
-        </TouchableOpacity>
+        <View style={{marginBottom:20}}>
+          <View style={{backgroundColor:'#dcdcdc',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} >
+           <View style={{flexDirection:'row',justifyContent:'space-around',height:40,alignItems:'center'}}>
+            <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
+            <Text style={{color:'#2f4f4f',fontSize:20,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
+            <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
+           </View>
+          </View>
+          <View style={{flexDirection:'row',flex:1,height:60}}>
+            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{textAlign:'center',fontSize:18}}>Sayfayı Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={24} /></TouchableOpacity>
+            <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{textAlign:'center',fontSize:18}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={24} /></TouchableOpacity>
+          </View>
+        </View>
         <View style={{flex:1}}>
           <View style={{flex:1,backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
           <Image style={styles.container2} source={require('../static/images/hazine.jpg')}>
