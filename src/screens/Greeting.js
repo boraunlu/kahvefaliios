@@ -508,7 +508,7 @@ componentWillUnmount() {
                     <Image source={require('../static/images/coins.png')} style={styles.coin}/>
                   </View>) : (
                     <View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
-                    <Animatable.Text style={[styles.label]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
+                    <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
 
 
                   </View>

@@ -332,10 +332,11 @@ _keyboardDidShow = (event) => {
              <Text style={{fontSize:17,color:'white',fontWeight:'bold'}}>Facebook ile giriş yap</Text>
            </Icon.Button>
           </View>
-
-
           {this.renderanongiris()}
-          <TouchableHighlight style={{width:Dimensions.get('window').width,alignItems:'center',position: 'absolute',bottom: 0}} onPress={() => {this.navigateto('Kimiz')}}><Text style={{textAlign:'center',textDecorationLine:'underline',fontSize:16,paddingBottom:10}}>Biz Kimiz?</Text></TouchableHighlight>
+          <View style={{marginRight:0,marginLeft:0,backgroundColor:"rgba(0,0,0,0.7)",borderRadius:0,padding:5,marginTop:20}}>
+            <Text style={{color:'white',textAlign:'center'}}> Asla sizin adınıza paylaşım yapmayacağız ve kişisel bilgilerinizi başkalarıyla paylaşmayacağız.</Text>
+          </View>
+          <TouchableHighlight style={{width:Dimensions.get('window').width,alignItems:'center',position: 'absolute',bottom: 0}} onPress={() => {this.navigateto('Kimiz')}}><Text style={{textAlign:'center',textDecorationLine:'underline',fontWeight:'bold',color:'white',fontSize:16,paddingBottom:10}}>Biz Kimiz?</Text></TouchableHighlight>
       </View>
 
 
