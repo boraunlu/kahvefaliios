@@ -18,9 +18,10 @@ import firebase from 'firebase';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
-import { NavigationActions } from 'react-navigation'
 import {AdMobRewarded} from 'react-native-admob'
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const shareModel = {
@@ -34,16 +35,17 @@ const shareLinkContent = {
   contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
 };
 
+@inject("userStore")
+@observer
 export default class Odeme extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      credit:null,
-      sharedWeek:null,
+      credit:this.props.userStore.userCredit,
+      sharedWeek:this.props.userStore.sharedWeek,
       shareLinkContent: shareLinkContent,
   };
 
-  this.setnavigation = this.setnavigation.bind(this);
 }
 
   static navigationOptions = {
@@ -55,10 +57,7 @@ export default class Odeme extends React.Component {
        ),
     };
 
-    setnavigation(route){
-          const { navigate } = this.props.navigation;
-      navigate(route);
-    }
+
 
     pay = (credit) => {
       var products = [
@@ -104,11 +103,8 @@ export default class Odeme extends React.Component {
                   })
                   .then((response) => {
                     alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
-                    this.setState((previousState) => {
-                      return {
-                        credit: previousState.credit+credittoadd,
-                      };
-                    });
+
+                    this.props.userStore.increment(credittoadd)
                   });
                }
              }
@@ -139,7 +135,8 @@ export default class Odeme extends React.Component {
             } else {
               Backend.addCredits(25);
               Backend.setSharedWeek()
-              this.setState((prevState)=> {return {credit:prevState.credit+25,sharedWeek:true}});
+              this.setState({sharedWeek:true});
+              this.props.userStore.increment(25)
               setTimeout(function(){Alert.alert('Tebrikler','25 Kredi hesabınıza eklendi!')},1000)
             }
           },
@@ -164,8 +161,9 @@ export default class Odeme extends React.Component {
     }
 
   componentDidMount() {
-    this.props.navigation.setParams({ setnavigation: this.setnavigation })
+    
     Keyboard.dismiss()
+    /*
     fetch('https://eventfluxbot.herokuapp.com/webhook/getCredits', {
       method: 'POST',
       headers: {
@@ -180,12 +178,12 @@ export default class Odeme extends React.Component {
      .then((responseJson) => {
       this.setState({credit:responseJson.credit,sharedWeek:responseJson.sharedToday})
      })
-
+*/
      AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
      //AdMobRewarded.setTestDeviceID('EMULATOR');
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
-       (type, amount) => {Backend.addCredits(20); Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!',); this.setState((prevState)=> {return {credit:prevState.credit+20}}); }
+       (type, amount) => {Backend.addCredits(20); Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!',); this.props.userStore.increment(20) }
      );
 
      /*
@@ -223,19 +221,20 @@ export default class Odeme extends React.Component {
           <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
           </Image>
           <View style={{borderRadius:10,flexDirection:'row',backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
+
             <Text  style={[styles.chattext]}>
-              {'Mevcut Kredin:' + ' '}
-            </Text>
-            {this.state.credit!==null ? (
-              <Text  style={[styles.chattext]}>
-                {this.state.credit}
-              </Text>
-              ) : (
-                <ActivityIndicator
-                  animating={true}
-                  size="small"
-                />
-              )}
+          {'Mevcut Kredin:' + ' '}
+        </Text>
+        {this.props.userStore.userCredit!==null ? (
+          <Text  style={[styles.chattext]}>
+            {this.props.userStore.userCredit}
+          </Text>
+          ) : (
+            <ActivityIndicator
+              animating={true}
+              size="small"
+            />
+          )}
 
             <Image source={require('../static/images/coins.png')} style={{width:15, height: 15,marginLeft:5,marginTop:5}}/>
           </View>

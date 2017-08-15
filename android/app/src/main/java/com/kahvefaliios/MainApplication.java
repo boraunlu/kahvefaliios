@@ -3,13 +3,13 @@ package com.kahvefaliios;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.evollu.react.fcm.FIRMessagingPackage;
 import com.sbugert.rnadmob.RNAdMobPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.beefe.picker.PickerViewPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.bugsnag.BugsnagReactNative;
 import com.microsoft.codepush.react.CodePush;
-import com.evollu.react.fcm.FIRMessagingPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.zmxv.RNSound.RNSoundPackage;
 import com.brentvatne.react.ReactVideoPackage;
@@ -41,13 +41,13 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new FIRMessagingPackage(),
             new RNAdMobPackage(),
             new RNGoogleSigninPackage(),
             new PickerViewPackage(),
             new VectorIconsPackage(),
             BugsnagReactNative.getPackage(),
             new CodePush(getResources().getString(R.string.reactNativeCodePush_androidDeploymentKey), getApplicationContext(), BuildConfig.DEBUG),
-            new FIRMessagingPackage(),
             new RNFetchBlobPackage(),
             new RNSoundPackage(),
             new ReactVideoPackage(),

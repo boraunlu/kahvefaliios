@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  TouchableHighlight,
   View,
   Image,
   ScrollView,
@@ -50,15 +49,18 @@ static navigationOptions = {
 
 
     return (
-      <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true}>
+      <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true} showsPagination={false}>
          <View style={styles.slide1}>
-           <Image source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableHighlight></Image>
+           <Image source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableOpacity></Image>
          </View>
          <View style={styles.slide2}>
-           <Image source={require('../static/images/swipe2.png')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableHighlight></Image>
+           <Image source={require('../static/images/swipe2.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></Image>
+         </View>
+         <View style={styles.slide2}>
+           <Image source={require('../static/images/swipe3.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></Image>
          </View>
          <View style={styles.slide3}>
-           <Image source={require('../static/images/swipe3.png')} resizeMode={'cover'} style={styles.covers}><TouchableHighlight style={{flex:1}} onPress={() => {this._navigateTo('Greeting');}}><View></View></TouchableHighlight></Image>
+           <Image source={require('../static/images/swipe4.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this._navigateTo('Login');}}><View></View></TouchableOpacity></Image>
          </View>
        </Swiper>
     );

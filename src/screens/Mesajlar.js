@@ -15,8 +15,11 @@ import {
 
 import firebase from 'firebase';
 import Backend from '../Backend';
+import NotificationIcon from '../components/NotificationIcon';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 require('../components/data/falcilar.js');
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
@@ -26,13 +29,15 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+@inject("userStore")
+@observer
 export default class Mesajlar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       messages: null,
       aktifChat:null,
-      bizden:null,
+      lastBizden:null,
 
   };
 }
@@ -41,7 +46,8 @@ export default class Mesajlar extends React.Component {
       title: 'Mesajların',
       tabBarLabel: 'Mesajlar',
        tabBarIcon: ({ tintColor }) => (
-         <Icon name="comments" color={tintColor} size={25} />
+
+         <NotificationIcon tintColor={tintColor}/>
        ),
     };
 
@@ -93,13 +99,30 @@ export default class Mesajlar extends React.Component {
             this.setState({messages:snapshot.output})
         }
         if(snapshot.aktif){
+          if(snapshot.aktif.read==false){
+            this.props.userStore.setAktifUnread(1)
+
+          }
           this.setState({aktifChat:snapshot.aktif})
         }
 
     })
     Backend.getBizden().then((snapshot) => {
+      if(snapshot){
+        var data = snapshot
+        var output =[]
+        for (var key in data) {
+            data[key].key = key;   // save key so you can access it from the array (will modify original data)
+            output.push(data[key]);
+        }
+        var lastBizden = output[output.length-1]
+        if(lastBizden.read==false){
+              this.props.userStore.setBizdenUnread(1)
+        }
 
-      this.setState({bizden:snapshot})
+        this.setState({lastBizden:lastBizden.text})
+      }
+
     })
   }
 
@@ -130,7 +153,8 @@ export default class Mesajlar extends React.Component {
              </Text>
            </View>
            <View style={{padding:20}}>
-             <Icon name="angle-right" color={'gray'} size={20} />
+            {this.props.userStore.aktifUnread==1  ?    <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> :    <Icon name="angle-right" color={'gray'} size={20} />}
+
              </View>
          </View>
 
@@ -185,21 +209,15 @@ export default class Mesajlar extends React.Component {
   }
 
   renderBizden = () => {
-    if(this.state.bizden==null){
+    if(this.state.lastBizden==null){
       return null
     }
     else{
-      var data = this.state.bizden
-      var output =[]
-      for (var key in data) {
-          data[key].key = key;   // save key so you can access it from the array (will modify original data)
-          output.push(data[key]);
-      }
-      var lastBizden = output[output.length-1].text
+
       return(
         <View>
         <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Bizden Gelenler</Text></View>
-        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden')}}>
+        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden'); this.props.userStore.setBizdenUnread(0)}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
             <Image source={require('../static/images/anneLogo3.png')} style={styles.falciAvatar}></Image>
@@ -210,11 +228,12 @@ export default class Mesajlar extends React.Component {
                Nevin
               </Text>
               <Text numberOfLines={1} ellipsizeMode={'tail'}>
-                {capitalizeFirstLetter(lastBizden)}
+                {capitalizeFirstLetter(this.state.lastBizden)}
              </Text>
            </View>
            <View style={{padding:20}}>
-             <Icon name="angle-right" color={'gray'} size={20} />
+           {this.props.userStore.bizdenUnread==1 ?    <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> :    <Icon name="angle-right" color={'gray'} size={20} />}
+
              </View>
          </View>
 

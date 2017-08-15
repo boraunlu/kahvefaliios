@@ -35,6 +35,8 @@ import Elements from '../components/Elements';
 import { NativeModules } from 'react-native'
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import StarRating from 'react-native-star-rating';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 
@@ -66,6 +68,8 @@ class CustomMessage extends Message {
   }
 }
 
+@inject("userStore")
+@observer
 export default class Chat extends React.Component {
   constructor(props) {
     super(props);
@@ -361,8 +365,9 @@ export default class Chat extends React.Component {
   }
 
   _keyboardDidShow = (event) => {
+    /*
     var height= event.endCoordinates.height
-    this.setState({keyboardHeight: height});
+    this.setState({keyboardHeight: height});*/
 
   }
 
@@ -463,7 +468,7 @@ export default class Chat extends React.Component {
         }
       });
 
-
+      this.props.userStore.setAktifUnread(0)
 
   }
 

@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Platform,
-  AppRegistry
+  AppRegistry,
+
 } from 'react-native';
 
 
@@ -20,6 +21,8 @@ import Swipers from './screens/Swipers';
 import Profil from './screens/Profil';
 
 import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigation';
+import { Provider } from 'mobx-react';
+import stores from './stores';
 
 const MainScreenNavigator = TabNavigator({
   Greeting: {screen:Greeting},
@@ -27,10 +30,9 @@ const MainScreenNavigator = TabNavigator({
   Odeme: {screen:Odeme},
   Profil: {screen:Profil},
 },{
-  lazy:true
 });
 
-let kahvefaliapp = StackNavigator({
+let KahvefaliappNav = StackNavigator({
     Home: {screen:Home},
     Login: { screen: Login },
     Greeting: { screen: MainScreenNavigator },
@@ -41,8 +43,16 @@ let kahvefaliapp = StackNavigator({
     Swipers: {screen:Swipers},
 });
 
+export default class Kahvefaliapp extends Component {
+  render() {
+    return (
+      <Provider {...stores}>
+        <KahvefaliappNav />
+      </Provider>
+    );
+  }
+}
 
+//kahvefaliapp = codePush(kahvefaliapp)
 
-kahvefaliapp = codePush(kahvefaliapp)
-
-AppRegistry.registerComponent('kahvefaliios', () => kahvefaliapp);
+AppRegistry.registerComponent('kahvefaliios', () => Kahvefaliapp);

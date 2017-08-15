@@ -25,6 +25,8 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 import FCM from 'react-native-fcm';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 import * as Animatable from 'react-native-animatable';
 
 const { InAppUtils } = NativeModules
@@ -41,11 +43,12 @@ function generateRandom(uzunluk, mevcut) {
     return (num === mevcut ) ? generateRandom(uzunluk, mevcut) : num;
 }
 
+@inject("userStore")
+@observer
 export default class Greeting extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      userName:'',
       user:null,
       userData:null,
       credit:null,
@@ -187,7 +190,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(this.state.credit<100){
+            if(this.props.userStore.userCredit<100){
               this.pay(0)
             }
             else{
@@ -205,7 +208,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(this.state.credit<100){
+            if(this.props.userStore.userCredit<100){
               this.pay(0)
             }
             else{
@@ -222,7 +225,7 @@ export default class Greeting extends React.Component {
 
   startAsk = () => {
     var userData =this.state.userData
-    if(this.state.credit<100){
+    if(this.props.userStore.userCredit<100){
       var messagebody = ''
       userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 100 kredi ekleyelim mi?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen hesabına 100 kredi ekleyelim mi?'
       Alert.alert(
@@ -255,7 +258,7 @@ export default class Greeting extends React.Component {
 
   startDetay = () => {
     var userData =this.state.userData
-    if(this.state.credit<150){
+    if(this.props.userStore.userCredit<150){
       var messagebody = ''
       userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 150 kredi ekleyelim mi?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen hesabına 150 kredi ekleyelim mi?'
       Alert.alert(
@@ -307,7 +310,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(this.state.credit<50){
+            if(this.props.userStore.userCredit<50){
               this.pay(3)
             }
             else{
@@ -325,7 +328,7 @@ export default class Greeting extends React.Component {
         [
           {text: 'Hayır', onPress: () => {}},
           {text: 'Evet', onPress: () => {
-            if(this.state.credit<50){
+            if(this.props.userStore.userCredit<50){
               this.pay(3)
             }
             else{
@@ -378,15 +381,6 @@ export default class Greeting extends React.Component {
     const { params } = this.props.navigation.state;
     FCM.setBadgeNumber(0);
 
-
-    var greetingMessage="";
-    var user = firebase.auth().currentUser;
-    if(user.photoURL){
-      this.setState({profPhoto:user.photoURL})
-    }
-    if(user.displayName){
-        this.setState({userName:user.displayName})
-    }
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
       headers: {
@@ -394,7 +388,7 @@ export default class Greeting extends React.Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        uid: user.uid,
+        uid: Backend.getUid(),
       })
     })
     .then((response) => response.json())
@@ -402,6 +396,7 @@ export default class Greeting extends React.Component {
        //alert(JSON.stringify(responseJson));
           this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit});
          //alert(JSON.stringify(responseJson))
+         this.props.userStore.setUser(responseJson)
 
      })
   }
@@ -441,7 +436,8 @@ componentWillUnmount() {
                </Text>
              </View>
              <View style={{padding:20}}>
-               <Icon name="angle-right" color={'gray'} size={20} />
+              {userData.lastMessage.read ?      <Icon name="angle-right" color={'gray'} size={20} /> :  <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
+
                </View>
            </View>
 
@@ -470,6 +466,7 @@ componentWillUnmount() {
                  </Text>
                </View>
                <View style={{padding:20}}>
+
                  <Icon name="angle-right" color={'gray'} size={20} />
                  </View>
              </View>

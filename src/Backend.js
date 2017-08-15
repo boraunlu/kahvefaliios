@@ -88,7 +88,7 @@ class Backend {
        var imageName = "";
        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-       for( var i=0; i < 5; i++ ){
+       for( var i=0; i < 7; i++ ){
           imageName += possible.charAt(Math.floor(Math.random() * possible.length));
        }
        var mime ='image/jpg'
@@ -149,7 +149,7 @@ class Backend {
   }
   clearUnread(){
       var unreadref =  firebase.database().ref('messages/'+this.getUid()+'/lastMessage/'+this.falci+'/');
-      unreadref.update({read:false})
+      unreadref.update({read:true})
   }
   deleteData(){
     var deleteref = firebase.database().ref('messages/'+this.getUid());
@@ -192,13 +192,14 @@ class Backend {
         Object.keys(messages).forEach((key) => {
             //console.log("keyler "+key)
             counter=counter+1;
-            if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
+            if(counter==uzunluk){
+              this.lastKeyLoaded=key
+            }
             var message=messages[key];
 
             if(message.type!=="typing"){
               message._id=key;
               callbackobj.unshift(message)
-
             }
         });
       }
@@ -207,8 +208,6 @@ class Backend {
       }
 
       callback(callbackobj);
-
-
     };
     this.clearUnread()
     this.messagesRef.limitToLast(50).once('value',loadInitial);
@@ -226,7 +225,16 @@ class Backend {
         Object.keys(messages).forEach((key) => {
             //console.log("keyler "+key)
             counter=counter+1;
-            if(counter==uzunluk){console.log("thekey "+key); this.lastKeyLoaded=key}
+            if(counter==uzunluk){
+               this.lastKeyLoaded=key
+
+               //alert(key)
+               if(falciNo=="bizden"){
+                 var updates = {};
+                 updates['/' + key+'/read'] = true;
+                 lastmessagesref.update(updates)
+               }
+             }
             var message=messages[key];
 
             if(message.type!=="typing"){

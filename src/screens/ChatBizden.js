@@ -146,7 +146,7 @@ export default class ChatBizden extends React.Component {
 
       Backend.loadOldMessages('bizden').then((messages) => {
           if(this._isMounted){
-
+                
                 this.setState((previousState) => {
                   return{
                     initialLoaded:true,

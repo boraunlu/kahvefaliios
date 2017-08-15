@@ -171,7 +171,7 @@ _keyboardDidShow = (event) => {
                       token: token
                     })
                   })
-                  .then((response) => this._navigateTo('Swipers'))
+                  .then((response) => this._navigateTo('Greeting'))
 
                 }.bind(this))
                 .catch(function(error) {
@@ -274,7 +274,7 @@ _keyboardDidShow = (event) => {
                 gender:this.state.gender
               })
             })
-            .then((response) => this._navigateTo('Swipers'))
+            .then((response) => this._navigateTo('Greeting'))
           }.bind(this), function(error) {
           // An error happened.
           });

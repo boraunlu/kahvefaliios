@@ -12,6 +12,7 @@ target 'kahvefaliios' do
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod "Yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
+  pod 'Firebase/Core', '4.0.0'
   pod 'Firebase/Messaging'
   pod 'Firebase/AdMob'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'

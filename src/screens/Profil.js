@@ -17,14 +17,16 @@ import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
-
+@inject("userStore")
+@observer
 export default class Profil extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
 
-      userData:null,
       profPhoto:'https://www.peerspace.com/web-templates/assets/images/no_avatar_placeholder.png',
       userName:null,
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
@@ -106,6 +108,7 @@ export default class Profil extends React.Component {
     if(user.displayName){
         this.setState({userName:user.displayName})
     }
+    /*
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
       headers: {
@@ -122,7 +125,7 @@ export default class Profil extends React.Component {
           this.setState({userData:responseJson});
          //alert(JSON.stringify(responseJson))
 
-     })
+     })*/
   }
   logout = () => {
 
@@ -148,7 +151,7 @@ export default class Profil extends React.Component {
             </View>
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:16}}>{this.state.userName}</Text>
 
-            <UserData userData={this.state.userData} setDestination={(destination) =>{this.navigateto(destination)}}/>
+            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.navigateto(destination)}}/>
 
           </View>
           <View style={{paddingTop:5,marginBottom:10}}>
@@ -156,7 +159,7 @@ export default class Profil extends React.Component {
               <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
             <View style={{marginBottom:5}}>
-              <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
+              <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.props.userStore.increment();/*this.popupDialog2.show()*/}}/>
             </View>
             <View style={{marginBottom:5}}>
               <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>
