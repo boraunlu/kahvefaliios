@@ -64,8 +64,14 @@ PODS:
   - Protobuf (3.3.0)
   - React (0.47.1):
     - React/Core (= 0.47.1)
+  - React/BatchedBridge (0.47.1):
+    - React/Core
+    - React/cxxreact_legacy
   - React/Core (0.47.1):
     - Yoga (= 0.47.1.React)
+  - React/cxxreact_legacy (0.47.1):
+    - React/jschelpers_legacy
+  - React/jschelpers_legacy (0.47.1)
   - Yoga (0.47.1.React)
 
 DEPENDENCIES:
@@ -74,6 +80,7 @@ DEPENDENCIES:
   - Firebase/Core (= 4.0.0)
   - Firebase/Messaging
   - Google/SignIn
+  - React/BatchedBridge (from `../node_modules/react-native`)
   - React/Core (from `../node_modules/react-native`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -106,6 +113,6 @@ SPEC CHECKSUMS:
   React: f705239a901cb3f95445c34468e5b37b6f80a0d4
   Yoga: 13a12502dfabb4c75b914071dcb542af800deed4
 
-PODFILE CHECKSUM: 71cfb326d712bfca85205eec86547c2a5ffd39c9
+PODFILE CHECKSUM: 662787a013e0a315e5092f2cdb03f3ff9f5a8712
 
 COCOAPODS: 1.2.1

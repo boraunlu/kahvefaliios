@@ -372,13 +372,15 @@ export default class Greeting extends React.Component {
       }
     ).start()
   }
-  componentDidUpdate(){
-    if(this.state.userData!==null){this.fadeButtons();}
+  componentDidUpdate(prevProps,prevState){
+    if(prevState.userData==null&&this.state.userData!==null){
+      this.fadeButtons();
+    }
 
   }
 
   componentDidMount() {
-    const { params } = this.props.navigation.state;
+    //const { params } = this.props.navigation.state;
     FCM.setBadgeNumber(0);
 
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
@@ -397,6 +399,16 @@ export default class Greeting extends React.Component {
           this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit});
          //alert(JSON.stringify(responseJson))
          this.props.userStore.setUser(responseJson)
+
+     })
+
+
+     Backend.lastMessageUpdate((message) => {
+
+       this.props.userStore.setAktifLastMessage(message.text)
+       if(message.user==0){
+          this.props.userStore.setAktifUnread(1)
+       }
 
      })
   }
@@ -432,11 +444,11 @@ componentWillUnmount() {
                  {falcilar[userData.currentFalci].name}
                 </Text>
                 <Text numberOfLines={1} ellipsizeMode={'tail'}>
-                {capitalizeFirstLetter(userData.lastMessage.text)}
+                {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
                </Text>
              </View>
              <View style={{padding:20}}>
-              {userData.lastMessage.read ?      <Icon name="angle-right" color={'gray'} size={20} /> :  <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
+              {this.props.userStore.aktifUnread<1 ?      <Icon name="angle-right" color={'gray'} size={20} /> :  <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
 
                </View>
            </View>

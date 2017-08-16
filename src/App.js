@@ -53,6 +53,6 @@ export default class Kahvefaliapp extends Component {
   }
 }
 
-//kahvefaliapp = codePush(kahvefaliapp)
+Kahvefaliapp = codePush(Kahvefaliapp)
 
 AppRegistry.registerComponent('kahvefaliios', () => Kahvefaliapp);

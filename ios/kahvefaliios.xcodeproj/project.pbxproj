@@ -310,20 +310,6 @@
 			remoteGlobalIDString = 79078959C5EE7837C59FAC3659A1AD32;
 			remoteInfo = Yoga;
 		};
-		BD13C2731EF54C4E00751A94 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = CE5929DE64A06C4A6F084B7E2723AAA1;
-			remoteInfo = GTMOAuth2;
-		};
-		BD13C2751EF54C4E00751A94 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = C10B4179E1FE43E5BA43A6AE771E5333;
-			remoteInfo = GTMSessionFetcher;
-		};
 		BD13C2981EF54C4E00751A94 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7BB4B82396244156812DDDA4 /* RNGoogleSignin.xcodeproj */;
@@ -470,6 +456,13 @@
 			proxyType = 2;
 			remoteGlobalIDString = A15C300E1CD25C330074CB35;
 			remoteInfo = RNFetchBlob;
+		};
+		BD8A3C591F44D80200319BEC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 54265A5692EB9F80345CBFFEBE517201;
+			remoteInfo = Protobuf;
 		};
 		BDD534461ECCCD9C005E2FA4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -940,12 +933,11 @@
 			children = (
 				BDDAE2C91EC4DECC00D8BCB0 /* libCodePush.a */,
 				BD2D28EC1EBA5C9900C9108C /* libGoogleToolboxForMac.a */,
-				BD13C2741EF54C4E00751A94 /* libGTMOAuth2.a */,
-				BD13C2761EF54C4E00751A94 /* libGTMSessionFetcher.a */,
 				BD2D28EE1EBA5C9900C9108C /* libPods-kahvefaliios.a */,
 				BD2D28F01EBA5C9900C9108C /* libPods-kahvefaliios-tvOS.a */,
 				BD2D28F21EBA5C9900C9108C /* libPods-kahvefaliios-tvOSTests.a */,
 				BD2D28F41EBA5C9900C9108C /* libPods-kahvefaliiosTests.a */,
+				BD8A3C5A1F44D80200319BEC /* libProtobuf.a */,
 				BD0D20511EBB959E005312A4 /* libReact.a */,
 				BD0D20531EBB959E005312A4 /* libYoga.a */,
 			);
@@ -1534,20 +1526,6 @@
 			remoteRef = BD0D20521EBB959E005312A4 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		BD13C2741EF54C4E00751A94 /* libGTMOAuth2.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGTMOAuth2.a;
-			remoteRef = BD13C2731EF54C4E00751A94 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BD13C2761EF54C4E00751A94 /* libGTMSessionFetcher.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libGTMSessionFetcher.a;
-			remoteRef = BD13C2751EF54C4E00751A94 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		BD13C2991EF54C4E00751A94 /* libRNGoogleSignin.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1693,6 +1671,13 @@
 			fileType = archive.ar;
 			path = libRNFetchBlob.a;
 			remoteRef = BD724BBD1EB70BA3005B48F6 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD8A3C5A1F44D80200319BEC /* libProtobuf.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libProtobuf.a;
+			remoteRef = BD8A3C591F44D80200319BEC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BDD534471ECCCD9C005E2FA4 /* libBugsnagReactNative.a */ = {

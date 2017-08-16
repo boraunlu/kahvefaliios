@@ -149,7 +149,7 @@ export default class Mesajlar extends React.Component {
                {falcilar[this.state.aktifChat.key].name}
               </Text>
               <Text numberOfLines={1} ellipsizeMode={'tail'}>
-              {capitalizeFirstLetter(this.state.aktifChat.text)}
+              {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
              </Text>
            </View>
            <View style={{padding:20}}>

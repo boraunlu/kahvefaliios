@@ -389,6 +389,15 @@ loadMessages = (callback) => {
 
   }
 
+  lastMessageUpdate = (callback) => {
+
+    const onUpdate = (data) => {
+      callback(data.val())
+    }
+    firebase.database().ref('messages/'+this.uid+'/lastMessage').on('child_changed', onUpdate);
+
+  }
+
   addCredits(credit){
     fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
       method: 'POST',
@@ -577,7 +586,7 @@ loadMessages = (callback) => {
         }
         lastmessagetext="Fotoğraf"
       }
-      this.lastMessageref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,text:lastmessagetext})
+      this.lastMessageref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,user:this.uid,text:lastmessagetext})
     }
   }
   getBizden = () => {

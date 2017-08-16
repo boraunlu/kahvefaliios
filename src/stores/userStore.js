@@ -6,6 +6,7 @@ export default class UserStore {
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
   @observable sharedWeek= false;
+  @observable aktifLastMessage= '';
 
 
   @action increment(credittoadd) {
@@ -21,6 +22,14 @@ export default class UserStore {
     this.aktifUnread =value
   }
 
+  @action increaseAktifUnread() {
+    this.aktifUnread =this.aktifUnread+1
+  }
+
+  @action setAktifLastMessage(value) {
+    this.aktifLastMessage =value
+  }
+
   @computed get totalNoti() {
         return this.bizdenUnread + this.aktifUnread;
     }
@@ -29,6 +38,9 @@ export default class UserStore {
     this.user = user;
     this.userCredit=user.credit
     this.sharedWeek=user.sharedToday
+    if(user.lastMessage){
+      this.aktifLastMessage=user.lastMessage.text
+    }
   }
 
 }
