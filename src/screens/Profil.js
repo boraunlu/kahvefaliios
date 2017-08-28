@@ -50,6 +50,11 @@ export default class Profil extends React.Component {
         alert("Lütfen önce önerini veya şikayetini yaz")
       }
       else{
+        Alert.alert('Şikayet & Oneri','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
+        this.setState({text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'})
+        this.popupDialog2.dismiss(() => {
+          console.log('callback');
+        });
         fetch('https://eventfluxbot.herokuapp.com/sendMail', {
           method: 'POST',
           headers: {
@@ -62,11 +67,7 @@ export default class Profil extends React.Component {
           })
         })
         .then((response) => {
-          Alert.alert('Şikayet & Oneri','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
-          this.setState({text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'})
-          this.popupDialog2.dismiss(() => {
-            console.log('callback');
-          });
+
         })
       }
     }
@@ -76,6 +77,11 @@ export default class Profil extends React.Component {
         alert("Lütfen önce kendinden bahset")
       }
       else{
+        Alert.alert('Başvuru','Başvurunuz bize ulaşmıştır. Teşekkürler!')
+        this.setState({kendi:''})
+        this.popupDialog3.dismiss(() => {
+          console.log('callback');
+        });
         fetch('https://eventfluxbot.herokuapp.com/sendMail', {
           method: 'POST',
           headers: {
@@ -88,11 +94,7 @@ export default class Profil extends React.Component {
           })
         })
         .then((response) => {
-          Alert.alert('Başvuru','Başvurunuz bize ulaşmıştır. Teşekkürler!')
-          this.setState({kendi:''})
-          this.popupDialog3.dismiss(() => {
-            console.log('callback');
-          });
+
         })
       }
     }
@@ -159,7 +161,7 @@ export default class Profil extends React.Component {
               <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
             <View style={{marginBottom:5}}>
-              <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.props.userStore.increment();/*this.popupDialog2.show()*/}}/>
+              <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
             </View>
             <View style={{marginBottom:5}}>
               <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>

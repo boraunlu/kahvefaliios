@@ -171,7 +171,15 @@ _keyboardDidShow = (event) => {
                       token: token
                     })
                   })
-                  .then((response) => this._navigateTo('Greeting'))
+                  .then((response) => response.json())
+                  .then((responseJson) => {
+                    this.setState({spinnerVisible:false})
+                    this._navigateTo('Greeting')
+                    if(responseJson.cevap=="ilk"){
+                      setTimeout(function(){Alert.alert('Hoşgeldiniz!','Hoşgeldin '+responseJson.username+'! Seni burada da görmek çok güzel. Hediye olarak 25 Kredin hesabına eklendi.')},200)
+
+                    }
+                  })
 
                 }.bind(this))
                 .catch(function(error) {

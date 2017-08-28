@@ -27,6 +27,8 @@ import { NativeModules } from 'react-native'
 import FCM from 'react-native-fcm';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+import Spinner from 'react-native-loading-spinner-overlay';
+import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
 
 const { InAppUtils } = NativeModules
@@ -56,6 +58,7 @@ export default class Greeting extends React.Component {
       animatedBubble: new Animated.Value(0),
       buttonOpacity: new Animated.Value(0),
       greetingMessage:"...",
+      spinnerVisible:false,
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -71,7 +74,7 @@ export default class Greeting extends React.Component {
     };
 
     pay = (falType) => {
-
+      this.setState({spinnerVisible:true})
       var credit = 0;
       switch (falType) {
         case 0:
@@ -91,10 +94,11 @@ export default class Greeting extends React.Component {
          'com.grepsi.kahvefaliios.'+credit,
       ];
       InAppUtils.loadProducts(products, (error, products) => {
-        if(error){}
+        if(error){this.setState({spinnerVisible:false})}
         else{
           var identifier = products[0].identifier
           InAppUtils.purchaseProduct(identifier, (error, response) => {
+            this.setState({spinnerVisible:false})
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
              if(error){}
              else{
@@ -276,7 +280,7 @@ export default class Greeting extends React.Component {
       var messagebody = ''
       userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen detaylı falına başlayalım mı?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?'
       Alert.alert(
-        'Aşk Falı',
+        'Detaylı Fal',
         messagebody,
         [
           {text: 'Hayır', onPress: () => {}},
@@ -382,7 +386,6 @@ export default class Greeting extends React.Component {
   componentDidMount() {
     //const { params } = this.props.navigation.state;
     FCM.setBadgeNumber(0);
-
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
       headers: {
@@ -501,7 +504,8 @@ componentWillUnmount() {
     }
     else{
       return(
-        <Animated.View style={{opacity:this.state.buttonOpacity}}>
+
+          <Animated.View style={{opacity:this.state.buttonOpacity}}>
         <View style={{backgroundColor:'#dcdcdc',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
         <View style={{borderColor:'white',borderWidth:1}}>
           <View style={{flexDirection:'row'}}>
@@ -534,7 +538,9 @@ componentWillUnmount() {
 
           </View>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startAsk()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupDialog.show(() => {
+  console.log('callback');
+});/*this.startAsk()*/}}>
               <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -629,7 +635,11 @@ componentWillUnmount() {
     return (
 
       <Image source={require('../static/images/splash4.png')} style={styles.containerasd}>
+
+        <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
+
         <ScrollView style={{flex:1,padding:0}}>
+
           <View style={{borderBottomWidth:0,borderColor:'#1194F7',marginBottom:20}}>
             <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
               <View>
@@ -654,6 +664,37 @@ componentWillUnmount() {
 
 
         </ScrollView>
+        <PopupDialog
+          dialogTitle={<DialogTitle title="AŞK FALI" />}
+          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+          dialogStyle={{marginTop:-150}}
+          dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
+          width={'80%'}
+          height={'40%'}
+        >
+          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+
+              <Text style={styles.faltypeyazipopup}>
+                Sırlar dökülsün, aşk konuşalım
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Detaylı aşk yorumları{'\n'}
+                {'\u2022'} İlişki tavsiyeleri{'\n'}
+                {'\u2022'} Sıra beklemek yok{'\n'}
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup2}>Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+              <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white',position:'absolute',bottom:0}}>
+                <TouchableOpacity  onPress={() => {}} style={{flex:1,height:30,flexGrow:2,borderRightWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center'}}>EVET</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  onPress={() => {}} style={{flex:1,height:30,flexGrow:2,borderLeftWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center'}}>HAYIR</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Image>
+        </PopupDialog>
       </Image>
 
     );
@@ -715,8 +756,17 @@ const styles = StyleSheet.create({
   faltypeyazi:{
     textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
   },
+  faltypeyazipopup:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:20,marginBottom:15
+  },
   faltypeyazikucuk:{
     textAlign: 'center',color:'white',fontSize:14
+  },
+  faltypeyazikucukpopup:{
+    color:'white',fontSize:14,marginLeft:25
+  },
+  faltypeyazikucukpopup2:{
+    flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',backgroundColor:'rgba(0, 0, 0, 0.2)',alignSelf:'stretch',textAlign:'center'
   },
   buttontext2:{
     color:'white',

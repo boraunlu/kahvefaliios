@@ -29,6 +29,10 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function replaceGecenHafta(string) {
+    return string.replace("geçen hafta ","")
+}
+
 @inject("userStore")
 @observer
 export default class Mesajlar extends React.Component {
@@ -193,7 +197,7 @@ export default class Mesajlar extends React.Component {
                     {falcilar[message.key].name}
                    </Text>
                    <Text>
-                   {capitalizeFirstLetter(moment(message.createdAt).calendar())}
+                   {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>

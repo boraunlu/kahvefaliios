@@ -37,6 +37,7 @@ import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import StarRating from 'react-native-star-rating';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+import Spinner from 'react-native-loading-spinner-overlay';
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 
@@ -94,6 +95,7 @@ export default class Chat extends React.Component {
       sikayet:"",
       falseSwitchIsOn:true,
       buttonOpacity: new Animated.Value(0),
+      spinnerVisible: false
     };
 
 
@@ -137,6 +139,19 @@ export default class Chat extends React.Component {
     else{
       if(this.state.starCount<3){
         Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.")
+        fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: Backend.getUid(),
+            star:this.state.starCount,
+            text:this.state.sikayet,
+            falci:this.state.falciNo
+          })
+        })
         this.popupDialog.dismiss()
       }
       else{
@@ -149,7 +164,8 @@ export default class Chat extends React.Component {
           body: JSON.stringify({
             uid: Backend.getUid(),
             star:this.state.starCount,
-            text:this.state.sikayet
+            text:this.state.sikayet,
+            falci:this.state.falciNo
           })
         })
         Keyboard.dismiss()
@@ -244,14 +260,17 @@ export default class Chat extends React.Component {
   }
 
   payBahsis = (bahsis) => {
+    this.setState({spinnerVisible:true})
     var products = [
        'com.grepsi.kahvefaliios.bahsis'+bahsis,
     ];
     InAppUtils.loadProducts(products, (error, products) => {
-      if(error){}
+      if(error){this.setState({spinnerVisible:false})}
       else{
+
         var identifier = products[0].identifier
         InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
            if(error){
 
@@ -755,7 +774,7 @@ export default class Chat extends React.Component {
 
         <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
 
-
+          <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <GiftedChat
             messages={this.state.messages}
 

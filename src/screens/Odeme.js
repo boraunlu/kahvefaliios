@@ -22,6 +22,7 @@ import {AdMobRewarded} from 'react-native-admob'
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const shareModel = {
@@ -44,6 +45,7 @@ export default class Odeme extends React.Component {
       credit:this.props.userStore.userCredit,
       sharedWeek:this.props.userStore.sharedWeek,
       shareLinkContent: shareLinkContent,
+      spinnerVisible:false
   };
 
 }
@@ -60,14 +62,16 @@ export default class Odeme extends React.Component {
 
 
     pay = (credit) => {
+      this.setState({spinnerVisible:true})
       var products = [
          'com.grepsi.kahvefaliios.'+credit,
       ];
       InAppUtils.loadProducts(products, (error, products) => {
-        if(error){}
+        if(error){this.setState({spinnerVisible:false})}
         else{
           var identifier = products[0].identifier
           InAppUtils.purchaseProduct(identifier, (error, response) => {
+            this.setState({spinnerVisible:false})
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
              if(error){}
              else{
@@ -114,10 +118,10 @@ export default class Odeme extends React.Component {
 
     }
     shareLinkWithShareDialog = () => {
-      if(this.state.sharedWeek==null){
+      if(this.props.userStore.sharedWeek==null){
 
       }
-      else if (this.state.sharedWeek==true) {
+      else if (this.props.userStore.sharedWeek==true) {
         Alert.alert("Bir hafta içinde sadece 1 kere paylaşarak kredi kazanabilirsin")
       }
       else{
@@ -130,14 +134,13 @@ export default class Odeme extends React.Component {
             }
           }
         ).then((result) => {
-            if (result.isCancelled) {
 
-            } else {
-              Backend.addCredits(25);
+            if (result.postId) {
+              Backend.addCredits(20);
               Backend.setSharedWeek()
               this.setState({sharedWeek:true});
-              this.props.userStore.increment(25)
-              setTimeout(function(){Alert.alert('Tebrikler','25 Kredi hesabınıza eklendi!')},1000)
+              this.props.userStore.increment(20)
+              setTimeout(function(){Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!')},1000)
             }
           },
           (error) => {
@@ -161,7 +164,7 @@ export default class Odeme extends React.Component {
     }
 
   componentDidMount() {
-    
+
     Keyboard.dismiss()
     /*
     fetch('https://eventfluxbot.herokuapp.com/webhook/getCredits', {
@@ -183,7 +186,7 @@ export default class Odeme extends React.Component {
      //AdMobRewarded.setTestDeviceID('EMULATOR');
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
-       (type, amount) => {Backend.addCredits(20); Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!',); this.props.userStore.increment(20) }
+       (type, amount) => {Backend.addCredits(10); Alert.alert('Tebrikler','10 Kredi hesabınıza eklendi!',); this.props.userStore.increment(10) }
      );
 
      /*
@@ -216,6 +219,7 @@ export default class Odeme extends React.Component {
     return (
 
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
       <ScrollView>
         <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:15,alignSelf:'stretch'}}>
           <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>

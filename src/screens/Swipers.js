@@ -49,7 +49,7 @@ static navigationOptions = {
 
 
     return (
-      <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true} showsPagination={false}>
+      <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true} >
          <View style={styles.slide1}>
            <Image source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableOpacity></Image>
          </View>

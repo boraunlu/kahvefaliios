@@ -496,7 +496,7 @@ loadMessages = (callback) => {
               type:"text"
             })
           })
-          .then(function(response){});
+          .then(function(response){alert(message[i].text)});
         }
         lastmessagetext=message[0].text
       }
@@ -511,7 +511,10 @@ loadMessages = (callback) => {
               user: message[i].user,
               createdAt: firebase.database.ServerValue.TIMESTAMP,
             });
+
+            /*
             this.uploadImage(message[i].image).then((imagerl)=>{
+
               imagepusharray.push(imagerl);
               if(i==message.length-1){
                 //alert(imagepusharray)
@@ -543,8 +546,21 @@ loadMessages = (callback) => {
                   type:"images"
                 })
               })
-            })
+            })*/
           }
+          imagepusharray=['https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg']
+          fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: this.uid,
+              image: imagepusharray,
+              type:"images"
+            })
+          })
         }
         else{
 
@@ -554,6 +570,19 @@ loadMessages = (callback) => {
             user: message[0].user,
             createdAt: firebase.database.ServerValue.TIMESTAMP,
           });
+          fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: this.uid,
+              image: 'https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg',
+              type:"image"
+            })
+          })
+          /*
           this.uploadImage(message[0].image).then((imagerl) =>{
             fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
               method: 'POST',
@@ -581,7 +610,7 @@ loadMessages = (callback) => {
                 type:"image"
               })
             })
-          })
+          })*/
           //console.log(imagerl)
         }
         lastmessagetext="Fotoğraf"
