@@ -8,6 +8,7 @@ import {
   TouchableHighlight,
   Button,
   TextInput,
+  Keyboard,
   Alert
 } from 'react-native';
 
@@ -51,6 +52,7 @@ export default class Profil extends React.Component {
       }
       else{
         Alert.alert('Şikayet & Oneri','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
+        Keyboard.dismiss()
         this.setState({text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'})
         this.popupDialog2.dismiss(() => {
           console.log('callback');
@@ -79,6 +81,7 @@ export default class Profil extends React.Component {
       else{
         Alert.alert('Başvuru','Başvurunuz bize ulaşmıştır. Teşekkürler!')
         this.setState({kendi:''})
+        Keyboard.dismiss()
         this.popupDialog3.dismiss(() => {
           console.log('callback');
         });

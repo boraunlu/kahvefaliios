@@ -135,7 +135,7 @@ export default class CustomActions extends React.Component {
       <View
         style={[styles.wrapper, this.props.wrapperStyle]}
       >
-      <Icon name="camera" color="#696969" size={15} />
+      <Icon name="camera" color="#696969" size={17} />
 
       </View>
     );
@@ -161,7 +161,7 @@ export default class CustomActions extends React.Component {
             imagesPerRow={4}
             callback={this.selectImages}
             selected={[]}
-            emptyText={"Fotoğrafın bulunmuyor ya da uygulamamıza gerekli izni vermemişsin. Çekilmiş fotoğraflarından göndermek istersen telefonunun ayarlar bölümünden uygulamamıza fotoğraflarına erişim izni verebilirsin. Teşekkürler!"}
+            emptyText={"Yükleniyor... \n \n Eğer çok uzun sürüyorsa uygulamamıza fotoğraflarına erişim izni vermemiş olabilirsiniz. Teşekkürler!"}
           />
         </Modal>
         <Modal
@@ -184,21 +184,21 @@ export default class CustomActions extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: 26,
-    height: 26,
+    width: 28,
+    height: 28,
     marginLeft: 10,
     marginBottom: 10,
   },
   wrapper: {
-    borderRadius: 13,
-    borderColor: '#b2b2b2',
+    borderRadius: 14,
+    borderColor: '#696969',
     borderWidth: 2,
     flex: 1,
     alignItems:'center',
     paddingTop:3
   },
   iconText: {
-    color: '#b2b2b2',
+    color: '#696969',
     fontWeight: 'bold',
     fontSize: 16,
     backgroundColor: 'transparent',

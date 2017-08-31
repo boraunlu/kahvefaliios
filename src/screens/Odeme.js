@@ -11,7 +11,7 @@ import {
   Button,
   Dimensions,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -32,7 +32,7 @@ const shareModel = {
 };
 const shareLinkContent = {
   contentType: 'link',
-  contentUrl: "https://facebook.com/kahvefalisohbeti",
+  contentUrl: "http://www.falsohbeti.com/indir",
   contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
 };
 

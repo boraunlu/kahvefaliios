@@ -260,6 +260,17 @@ export default class Greeting extends React.Component {
     }
   }
 
+  startAsk2 = () => {
+
+    if(this.props.userStore.userCredit<100){
+              this.pay(1)
+    }
+    else{
+      Backend.addCredits(-100)
+      this.navigateto('Chat',0,1);
+    }
+  }
+
   startDetay = () => {
     var userData =this.state.userData
     if(this.props.userStore.userCredit<150){
@@ -290,6 +301,16 @@ export default class Greeting extends React.Component {
           }, style: 'cancel'},
         ],
       )
+    }
+  }
+
+  startDetay2 = () => {
+    if(this.props.userStore.userCredit<150){
+              this.pay(2)
+    }
+    else{
+      Backend.addCredits(-150)
+      this.navigateto('Chat',0,2);
     }
   }
 
@@ -538,9 +559,7 @@ componentWillUnmount() {
 
           </View>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupDialog.show(() => {
-  console.log('callback');
-});/*this.startAsk()*/}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupAsk.show()}}>
               <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -558,7 +577,7 @@ componentWillUnmount() {
                 </View>
               </Image>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startDetay()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupDetay.show()}}>
               <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
               <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
                 <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -666,14 +685,14 @@ componentWillUnmount() {
         </ScrollView>
         <PopupDialog
           dialogTitle={<DialogTitle title="AŞK FALI" />}
-          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+          ref={(popupDialog) => { this.popupAsk = popupDialog; }}
           dialogStyle={{marginTop:-150}}
           dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
           width={'80%'}
-          height={'40%'}
+          height={'60%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
 
               <Text style={styles.faltypeyazipopup}>
                 Sırlar dökülsün, aşk konuşalım
@@ -683,13 +702,79 @@ componentWillUnmount() {
                 {'\u2022'} İlişki tavsiyeleri{'\n'}
                 {'\u2022'} Sıra beklemek yok{'\n'}
               </Text>
-              <Text style={styles.faltypeyazikucukpopup2}>Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+              <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                <Text style={styles.faltypeyazikucukpopup2}>Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                  <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Image>
+        </PopupDialog>
+        <PopupDialog
+          dialogTitle={<DialogTitle title="DETAYLI KAHVE FALI" />}
+          ref={(popupDialog) => { this.popupDetay = popupDialog; }}
+          dialogStyle={{marginTop:-150}}
+          dialogAnimation = { new SlideAnimation({ slideFrom: 'right' }) }
+          width={'80%'}
+          height={'60%'}
+        >
+          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
+
+              <Text style={styles.faltypeyazipopup}>
+                Ortaya çıkmayan detay kalmasın
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Hayatınızdaki her konuya dair detaylı yorumlar{'\n'}
+                {'\u2022'} Ruh haliniz incelensin{'\n'}
+                {'\u2022'} Sıra beklemek yok{'\n'}
+              </Text>
+              <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                <Text style={styles.faltypeyazikucukpopup2}>Detaylı Kahve Falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                  <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Image>
+        </PopupDialog>
+        <PopupDialog
+          dialogTitle={<DialogTitle title="EL FALI" />}
+          ref={(popupDialog) => { this.popupEl = popupDialog; }}
+          dialogStyle={{marginTop:-150}}
+          dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
+          width={'80%'}
+          height={'60%'}
+        >
+          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+
+              <Text style={styles.faltypeyazipopup}>
+                Eliniz, kaderiniz...
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Hayatınızdaki her konuya dair detaylı yorumlar{'\n'}
+                {'\u2022'} Ruh haliniz incelenir{'\n'}
+                {'\u2022'} Sıra beklemek yok{'\n'}
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup2}>Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
               <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white',position:'absolute',bottom:0}}>
-                <TouchableOpacity  onPress={() => {}} style={{flex:1,height:30,flexGrow:2,borderRightWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center'}}>EVET</Text>
+                <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center'}}>Hayır</Text>
                 </TouchableOpacity>
-                <TouchableOpacity  onPress={() => {}} style={{flex:1,height:30,flexGrow:2,borderLeftWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center'}}>HAYIR</Text>
+                <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:2,borderLeftWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
                 </TouchableOpacity>
               </View>
             </View>
