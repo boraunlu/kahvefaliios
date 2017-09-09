@@ -105,6 +105,7 @@ export default class Greeting extends React.Component {
                if(response && response.productIdentifier) {
                   //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
                         this.navigateto('Chat',0,falType);
+                        Backend.addCredits(0,"greeting"+credit)
                }
              }
           });
@@ -689,7 +690,7 @@ componentWillUnmount() {
           dialogStyle={{marginTop:-150}}
           dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
           width={'80%'}
-          height={'60%'}
+          height={'50%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
@@ -722,7 +723,7 @@ componentWillUnmount() {
           dialogStyle={{marginTop:-150}}
           dialogAnimation = { new SlideAnimation({ slideFrom: 'right' }) }
           width={'80%'}
-          height={'60%'}
+          height={'50%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
@@ -755,7 +756,7 @@ componentWillUnmount() {
           dialogStyle={{marginTop:-150}}
           dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
           width={'80%'}
-          height={'60%'}
+          height={'50%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>

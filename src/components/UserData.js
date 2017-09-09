@@ -1,13 +1,18 @@
 import React, { Component } from 'react';
 import {ActivityIndicator, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Picker from 'react-native-picker';
 
 require('../components/data/falcilar.js');
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
-
+@inject("userStore")
+@observer
 export default class UserData extends Component {
 
 
@@ -16,11 +21,79 @@ export default class UserData extends Component {
 
   }
 
+  initMeslekPicker = () => {
+
+   var meslekArray=["Öğrenci", "Çalışıyor","Çalışmıyor","İş arıyor"];
+
+   Picker.init({
+       pickerData: meslekArray,
+       selectedValue: [this.props.userStore.meslek],
+       pickerTitleText:'İş Durumunuz',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+
+       onPickerConfirm: data => {
+           this.props.userStore.changeMeslek(data)
+       },
+
+   });
+  }
+
+  initiliskiPicker = () => {
+
+   var iliskiArray=["İlişkisi Yok", "Sevgilisi Var","Evli"];
+
+   Picker.init({
+       pickerData: iliskiArray,
+       selectedValue: [this.props.userStore.meslek],
+       pickerTitleText:'İlişki Durumunuz',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+       onPickerConfirm: data => {
+           this.props.userStore.changeIliski(data)
+       },
+
+   });
+  }
+
+  initAgePicker = () => {
+
+    let agedata = [];
+    for(var i=12;i<70;i++){
+        agedata.push(i);
+    }
+
+   Picker.init({
+       pickerData: agedata,
+       selectedValue: [this.props.userStore.age],
+       pickerTitleText:'Yaşınız',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+       onPickerConfirm: data => {
+
+           this.props.userStore.changeAge(data[0])
+       },
+
+   });
+  }
+
+  componentDidUpdate = () => {
+
+
+
+  }
+
   renderUserData(){
-    if (this.props.userData) {
+    if (this.props.userStore.user) {
+
       return (
         <View >
+        <View style={styles.thirdrow}>
+          <TouchableOpacity onPress={() => {this.initAgePicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşında" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
+          <TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
 
+        </View>
         <View style={styles.secondrow}>
           <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistiklerin</Text>
           <View style={styles.secondinner}>
@@ -55,6 +128,7 @@ export default class UserData extends Component {
             <Text style={{fontWeight:'bold',marginBottom:5}}>En son fal baktığın tarih: <Text style={{fontWeight:'normal'}}>{moment(this.props.userData.lastUsed).format('LLL')}</Text></Text>
             <Text style={{fontWeight:'bold'}}>Kredin: <Text style={{fontWeight:'normal'}}>{this.props.userData.credit ? this.props.userData.credit : 0}</Text></Text>
         </View>
+
         </View>
       );
     } else {

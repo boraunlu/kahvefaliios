@@ -265,6 +265,27 @@ setSharedWeek = () => {
     })
   })
 }
+
+setProfile = (age,iliski,meslek) => {
+
+  fetch('https://eventfluxbot.herokuapp.com/appapi/setProfile', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      uid: this.uid,
+      age: age,
+      iliski: iliski,
+      meslek: meslek,
+    })
+  })
+  //alert("age "+age+" iliski "+iliski+" meslek "+meslek)
+
+}
+
+
 newfortune = () => {this.lastKeyLoaded="asdf"}
 
   // retrieve the messages from the Backend
@@ -398,17 +419,28 @@ loadMessages = (callback) => {
 
   }
 
-  addCredits(credit){
-    fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
+  addCredits(credit,from){
+    var messageBody ={}
+    if(from){
+      messageBody={
+        uid: this.uid,
+        credit: credit,
+        from:from,
+      }
+    }
+    else{
+      messageBody={
+        uid: this.uid,
+        credit: credit,
+      }
+    }
+    fetch('https://eventfluxbot.herokuapp.com/appapi/addCredits', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        uid: this.uid,
-        credit: credit
-      })
+      body: JSON.stringify(messageBody)
     })
   }
   // send the message to the Backend

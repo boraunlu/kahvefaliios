@@ -251,6 +251,7 @@ export default class Chat extends React.Component {
              if(response && response.productIdentifier) {
                 if(credit2==25){Backend.addCredits(25)}
                 Backend.sendPayload(credit2+"baslat")
+                Backend.addCredits(0,"chat"+credit2)
              }
            }
         });
@@ -278,6 +279,7 @@ export default class Chat extends React.Component {
            else{
              if(response && response.productIdentifier) {
                Backend.sendPayload('bahsis'+bahsis)
+               Backend.addCredits(0,"bahsis"+bahsis)
                Alert.alert('Bahşiş',"Memnun kalmanıza çok sevindik. Bahşişiniz falcımıza iletiliyor.")
              }
            }
@@ -872,29 +874,27 @@ export default class Chat extends React.Component {
             </View>
            </PopupDialog>
             <PopupDialog
-              dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Bahşiş Ver" />}
+              dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Bahşiş" />}
               width={'90%'}
-              height={'60%'}
+              height={320}
               dialogStyle={{marginTop:-200}}
               ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}>
              <View style={{margin:20,flex:1}}>
                 <Image style={{alignSelf:'center',height:50,width:50, borderRadius:25,marginBottom:10}} source={{uri:falcilar[this.state.falciNo].url}}></Image>
-                <Text style={{fontSize:16,color:'black'}}>{falcilar[this.state.falciNo].name+" falcımıza bahşiş vermek ister misin?"}</Text>
+                <Text style={{fontSize:16,color:'black'}}>{"Falını beğendiysen "+falcilar[this.state.falciNo].name+" falcımıza ufak bir bahşiş vermeye ne dersin?"}</Text>
                 <View style={{flexDirection:'row',height:50,marginTop:15}}>
 
-                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(249,50,12, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(1)}}>
+                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(60,179,113, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(1)}}>
                     <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>1.29 TL</Text>
                   </TouchableHighlight>
-                  <TouchableHighlight style={{flexGrow:2,marginRight:10,marginLeft:10,backgroundColor:'rgba(60,179,113, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(2)}}>
+                  <TouchableHighlight style={{flexGrow:2,marginRight:10,marginLeft:10,backgroundColor:'rgba(114,0,218, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(2)}}>
                     <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>3.49 TL</Text>
                   </TouchableHighlight>
-                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(114,0,218, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(3)}}>
-                    <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>6.99 TL</Text>
+                  <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(249,50,12, 0.8)',justifyContent:'center'}} onPress={() => {this.popupDialog2.dismiss(); Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.");}}>
+                    <Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>İstemiyorum</Text>
                   </TouchableHighlight>
                 </View>
-               <View style={{marginTop:40}}>
-                 <Button title={"Bahşiş vermek istemiyorum"}  onPress={() => {this.popupDialog2.dismiss(); Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.");}}/>
-               </View>
+
              </View>
             </PopupDialog>
           </Image>

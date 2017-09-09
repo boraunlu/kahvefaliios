@@ -9,7 +9,8 @@ import {
   Button,
   TextInput,
   Keyboard,
-  Alert
+  Alert,
+
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -18,6 +19,7 @@ import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import Picker from 'react-native-picker';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 
@@ -33,6 +35,7 @@ export default class Profil extends React.Component {
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
       email:'',
       kendi:'',
+      gender:'java'
   };
 }
 
@@ -113,6 +116,7 @@ export default class Profil extends React.Component {
     if(user.displayName){
         this.setState({userName:user.displayName})
     }
+
     /*
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
@@ -214,6 +218,7 @@ export default class Profil extends React.Component {
 
                ·  Kahve Falı Sohbeti uygulaması bu metindeki içeriği istediği zaman değiştirebileceğini beyan eder.{"\n"}
              </Text>
+
            </ScrollView>
            </View>
          </PopupDialog>
@@ -276,7 +281,8 @@ export default class Profil extends React.Component {
              <Button title={"Gönder"}  onPress={() => {this.sendBasvuru()}}/>
            </View>
          </View>
-           </PopupDialog>
+        </PopupDialog>
+
       </Image>
 
     );

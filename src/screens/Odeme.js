@@ -94,22 +94,11 @@ export default class Odeme extends React.Component {
                        credittoadd = 1250;
                        break;
                  }
-                  fetch('https://eventfluxbot.herokuapp.com/webhook/addCredits', {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      uid: Backend.getUid(),
-                      credit: credittoadd
-                    })
-                  })
-                  .then((response) => {
-                    alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
 
+
+                    Backend.addCredits(credittoadd,"kredisayfası")
                     this.props.userStore.increment(credittoadd)
-                  });
+                    alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
                }
              }
           });
@@ -136,7 +125,7 @@ export default class Odeme extends React.Component {
         ).then((result) => {
 
             if (result.postId) {
-              Backend.addCredits(20);
+              Backend.addCredits(20,"facebookshare");
               Backend.setSharedWeek()
               this.setState({sharedWeek:true});
               this.props.userStore.increment(20)
@@ -156,7 +145,7 @@ export default class Odeme extends React.Component {
         [
           {text: 'İstemiyorum', onPress: () => {}},
           {text: 'Tamam', onPress: () => {
-            AdMobRewarded.showAd((error) => error && alert("Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
+            AdMobRewarded.showAd((error) => error && Alert.alert("Reklam Yok","Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
           }},
         ],
       )
@@ -186,7 +175,7 @@ export default class Odeme extends React.Component {
      //AdMobRewarded.setTestDeviceID('EMULATOR');
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
-       (type, amount) => {Backend.addCredits(10); Alert.alert('Tebrikler','10 Kredi hesabınıza eklendi!',); this.props.userStore.increment(10) }
+       (type, amount) => {Backend.addCredits(10,"reklam"); Alert.alert('Tebrikler','10 Kredi hesabınıza eklendi!',); this.props.userStore.increment(10) }
      );
 
      /*
