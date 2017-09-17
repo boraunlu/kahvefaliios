@@ -266,7 +266,7 @@ setSharedWeek = () => {
   })
 }
 
-setProfile = (age,iliski,meslek) => {
+setProfile = (name,age,iliski,meslek) => {
 
   fetch('https://eventfluxbot.herokuapp.com/appapi/setProfile', {
     method: 'POST',
@@ -276,6 +276,7 @@ setProfile = (age,iliski,meslek) => {
     },
     body: JSON.stringify({
       uid: this.uid,
+      name:name,
       age: age,
       iliski: iliski,
       meslek: meslek,
@@ -285,7 +286,19 @@ setProfile = (age,iliski,meslek) => {
 
 }
 
+appRated = () => {
+  fetch('https://eventfluxbot.herokuapp.com/webhook/appRated', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      uid: this.uid,
+    })
+  })
 
+}
 newfortune = () => {this.lastKeyLoaded="asdf"}
 
   // retrieve the messages from the Backend

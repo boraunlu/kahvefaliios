@@ -10,6 +10,7 @@ import {
   ScrollView,
   Button,
   Dimensions,
+  Linking,
   ActivityIndicator,
   Alert,
 } from 'react-native';
@@ -152,6 +153,29 @@ export default class Odeme extends React.Component {
 
     }
 
+    rateApp = () => {
+      if(this.props.userStore.user.appRated){
+        Alert.alert('Uyarı','Daha önce uygulamamıza puan ver')
+      }
+      else{
+        Alert.alert(
+          'Bedava Kredi',
+          'Uygulamamıza güzel bir puan vererek veya yorum yazarak 25 Kredi kazanabilirsiniz. Krediniz puan verdikten ortalama 15 dakika sonra yüklenecektir.',
+          [
+            {text: 'İstemiyorum', onPress: () => {}},
+            {text: 'Tamam', onPress: () => {
+              Linking.canOpenURL('itms-apps://itunes.apple.com/tr/app/kahve-fali-sohbeti/id1231962763').then(supported => {
+                if(supported){
+                  Linking.openURL('itms-apps://itunes.apple.com/tr/app/kahve-fali-sohbeti/id1231962763');
+                  Backend.appRated();
+                }
+              }, (err) => console.log(err));
+            }},
+          ],
+        )
+      }
+    }
+
   componentDidMount() {
 
     Keyboard.dismiss()
@@ -242,8 +266,9 @@ export default class Odeme extends React.Component {
            </View>
           </View>
           <View style={{flexDirection:'row',flex:1,height:60}}>
-            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{textAlign:'center',fontSize:18}}>Sayfayı Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={24} /></TouchableOpacity>
-            <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{textAlign:'center',fontSize:18}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={24} /></TouchableOpacity>
+            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
+            <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
+            {this.props.userStore.user ? this.props.userStore.user.appRated ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
           </View>
         </View>
         <View style={{flex:1}}>

@@ -3,7 +3,8 @@ import Backend from '../Backend';
 
 export default class UserStore {
   @observable user = null;
-  @observable userCredit= 50;
+  @observable userName = ' ';
+  @observable userCredit= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
   @observable sharedWeek= false;
@@ -108,9 +109,21 @@ export default class UserStore {
     return iliski
   }
 
+  @computed get profileIsValid() {
+    var isvalid =true
+    if(this.iliskiStatus==null||this.meslekStatus==null||this.age==null||this.userName.length<3){
+      isvalid=false
+    }
+    return isvalid
+  }
+  @action setUserName(name) {
+
+    this.userName=name.nametext
+  }
   @action setUser(user) {
     this.user = user;
     this.userCredit=user.credit
+    this.userName=user.name
     this.age=user.age
     this.sharedWeek=user.sharedToday
     if(user.lastMessage){

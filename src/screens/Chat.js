@@ -181,7 +181,7 @@ export default class Chat extends React.Component {
       const resetAction = NavigationActions.reset({
          index: 0,
          actions: [
-           NavigationActions.navigate({ routeName: 'Greeting'})
+           NavigationActions.navigate({ routeName: 'Greeting',params:{crredit:this.props.userStore.userCredit}})
          ]
        })
        this.props.navigation.dispatch(resetAction)

@@ -28,6 +28,8 @@ import FCM from 'react-native-fcm';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
+import Picker from 'react-native-picker';
+import ProfilePicker from '../components/ProfilePicker';
 import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
 
@@ -59,19 +61,24 @@ export default class Greeting extends React.Component {
       buttonOpacity: new Animated.Value(0),
       greetingMessage:"...",
       spinnerVisible:false,
+      checkValidation:false,
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
   this.springValue = new Animated.Value(0.1)
 }
 
-  static navigationOptions = {
-      title: 'Kahve Falı Sohbeti',
-      tabBarLabel: 'Ana Sayfa',
-       tabBarIcon: ({ tintColor }) => (
-         <Icon name="home" color={tintColor} size={25} />
+static navigationOptions = ({ navigation }) => ({
+    title: 'Kahve Falı Sohbeti',
+    tabBarLabel: 'Ana Sayfa',
+     tabBarIcon: ({ tintColor }) => (
+       <Icon name="home" color={tintColor} size={25} />
        ),
-    };
+     headerRight:
+      <TouchableOpacity  onPress={() => {navigation.state.params.odemeyegit("Odeme")}} style={{marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold',}}> {typeof navigation.state.params.crredit !== 'undefined' ? navigation.state.params.crredit : "   "}</Text></TouchableOpacity>,
+
+  })
+
 
     pay = (falType) => {
       this.setState({spinnerVisible:true})
@@ -172,7 +179,9 @@ export default class Greeting extends React.Component {
 
   }
 
-
+  changeValidation = () => {
+    this.setState({checkValidation:false})
+  }
 
   startGunluk = () => {
     var userData =this.state.userData
@@ -227,6 +236,63 @@ export default class Greeting extends React.Component {
 
   }
 
+  startGunluk2 = () => {
+    if(this.props.userStore.profileIsValid){
+      var userData =this.state.userData
+      if(!userData.appGunlukUsed&&!userData.aktif){
+        this.navigateto('Chat',0,0)
+      }else if(!userData.appGunlukUsed&&userData.aktif){
+        Alert.alert(
+          'Yeni Fal',
+          'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
+          [
+            {text: 'Hayır', onPress: () => {}},
+            {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}, style: 'cancel'},
+          ],
+        )
+      }
+      else if (userData.appGunlukUsed&&!userData.aktif) {
+        Alert.alert(
+          'Yeni Günlük Fal',
+          'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
+          [
+            {text: 'Hayır', onPress: () => {}},
+            {text: 'Evet', onPress: () => {
+              if(this.props.userStore.userCredit<100){
+                this.pay(0)
+              }
+              else{
+                this.navigateto('Chat',0,0)
+                Backend.addCredits(-100)
+              }
+          }, style: 'cancel'},
+          ],
+        )
+      }
+      else{
+        Alert.alert(
+          'Yeni Günlük Fal',
+          'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
+          [
+            {text: 'Hayır', onPress: () => {}},
+            {text: 'Evet', onPress: () => {
+              if(this.props.userStore.userCredit<100){
+                this.pay(0)
+              }
+              else{
+                this.navigateto('Chat',0,0)
+                Backend.addCredits(-100)
+              }
+          }, style:'cancel'},
+          ],
+        )
+      }
+      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+    }
+    else{
+      this.setState({checkValidation:true})
+    }
+  }
 
   startAsk = () => {
     var userData =this.state.userData
@@ -262,14 +328,24 @@ export default class Greeting extends React.Component {
   }
 
   startAsk2 = () => {
-
-    if(this.props.userStore.userCredit<100){
-              this.pay(1)
+    if(this.props.userStore.profileIsValid){
+      if(this.props.userStore.userCredit<100){
+                this.pay(1)
+      }
+      else{
+        Backend.addCredits(-100)
+        this.navigateto('Chat',0,1);
+      }
+      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
     }
     else{
-      Backend.addCredits(-100)
-      this.navigateto('Chat',0,1);
+      this.setState({checkValidation:true})
     }
+  }
+
+  onPickerError = (type) => {
+
+
   }
 
   startDetay = () => {
@@ -306,14 +382,21 @@ export default class Greeting extends React.Component {
   }
 
   startDetay2 = () => {
-    if(this.props.userStore.userCredit<150){
-              this.pay(2)
-    }
-    else{
-      Backend.addCredits(-150)
-      this.navigateto('Chat',0,2);
+    if(this.props.userStore.profileIsValid){
+        if(this.props.userStore.userCredit<150){
+                  this.pay(2)
+        }
+        else{
+          Backend.addCredits(-150)
+          this.navigateto('Chat',0,2);
+        }
+        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+      }
+    else {
+      this.setState({checkValidation:true})
     }
   }
+
 
   startHand = () => {
     var userData =this.state.userData
@@ -366,6 +449,35 @@ export default class Greeting extends React.Component {
       )
     }
   }
+
+  startHand2 = () => {
+
+
+    var userData =this.state.userData
+
+    if(this.props.userStore.profileIsValid){
+      if(userData.handUsed){
+        if(this.props.userStore.userCredit<50){
+                  this.pay(3)
+        }
+        else{
+          Backend.addCredits(-50)
+          this.navigateto('Chat',0,3);
+        }
+      }
+      else{
+        this.navigateto('Chat',0,3);
+      }
+
+        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+      }
+    else {
+      this.setState({checkValidation:true})
+    }
+
+  }
+
+
   fadeButtons = () => {
     this.state.buttonOpacity.setValue(0)
     Animated.timing(
@@ -398,15 +510,30 @@ export default class Greeting extends React.Component {
       }
     ).start()
   }
+
+
+
+
   componentDidUpdate(prevProps,prevState){
+
     if(prevState.userData==null&&this.state.userData!==null){
       this.fadeButtons();
+
+
     }
+    if(this.props.navigation.state.params.crredit){
+      if(this.props.navigation.state.params.crredit!==this.props.userStore.userCredit){
+        this.props.navigation.setParams({ crredit: this.props.userStore.userCredit })
+      }
+    }
+
+    //alert(this.props.userStore.userCredit)
 
   }
 
   componentDidMount() {
     //const { params } = this.props.navigation.state;
+
     FCM.setBadgeNumber(0);
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       method: 'POST',
@@ -424,6 +551,7 @@ export default class Greeting extends React.Component {
           this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit});
          //alert(JSON.stringify(responseJson))
          this.props.userStore.setUser(responseJson)
+         this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
 
      })
 
@@ -531,7 +659,7 @@ componentWillUnmount() {
         <View style={{backgroundColor:'#dcdcdc',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
         <View style={{borderColor:'white',borderWidth:1}}>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startGunluk()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupGunluk.show()}}>
               <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
@@ -600,7 +728,7 @@ componentWillUnmount() {
 
           </View>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startHand()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupHand.show()}}>
               <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
               <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
                 {this.state.userData.handUsed == true &&
@@ -685,32 +813,35 @@ componentWillUnmount() {
 
         </ScrollView>
         <PopupDialog
-          dialogTitle={<DialogTitle title="AŞK FALI" />}
-          ref={(popupDialog) => { this.popupAsk = popupDialog; }}
+
+          ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
           dialogStyle={{marginTop:-150}}
-          dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
+
           width={'80%'}
-          height={'50%'}
+          height={'70%'}
         >
-          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
+          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
 
               <Text style={styles.faltypeyazipopup}>
-                Sırlar dökülsün, aşk konuşalım
+                Her gün bekliyoruz
               </Text>
+              <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
               <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Detaylı aşk yorumları{'\n'}
-                {'\u2022'} İlişki tavsiyeleri{'\n'}
-                {'\u2022'} Sıra beklemek yok{'\n'}
+                {'\u2022'} Falcılarımız ile canlı sohbet edin{'\n'}
+                {'\u2022'} Kahve fotoğraflarınızı gönderin, yorumlasınlar{'\n'}
+                {'\u2022'} Keyfinize bakın{'\n'}
               </Text>
+
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
-                <Text style={styles.faltypeyazikucukpopup2}>Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
                 <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                  <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                  <TouchableOpacity  onPress={() => {this.popupGunluk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
                     <Text style={{textAlign:'center'}}>Hayır</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                  <TouchableOpacity  onPress={() => {this.startGunluk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -718,16 +849,60 @@ componentWillUnmount() {
           </Image>
         </PopupDialog>
         <PopupDialog
-          dialogTitle={<DialogTitle title="DETAYLI KAHVE FALI" />}
+
+          ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
+          dialogStyle={{marginTop:-150}}
+
+          width={'80%'}
+          height={'70%'}
+        >
+          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
+            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
+              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                <Text style={[styles.label]}>
+                  100
+                </Text>
+                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+              </View>
+              <Text style={styles.faltypeyazipopup}>
+                Sırlar dökülsün, aşk konuşalım
+              </Text>
+              <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Detaylı aşk yorumları{'\n'}
+                {'\u2022'} İlişki tavsiyeleri{'\n'}
+                {'\u2022'} Sıra beklemek yok{'\n'}
+              </Text>
+
+              <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                  <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Image>
+        </PopupDialog>
+        <PopupDialog
           ref={(popupDialog) => { this.popupDetay = popupDialog; }}
           dialogStyle={{marginTop:-150}}
-          dialogAnimation = { new SlideAnimation({ slideFrom: 'right' }) }
           width={'80%'}
-          height={'50%'}
+          height={'70%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
-
+            <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
+              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                <Text style={[styles.label]}>
+                  150
+                </Text>
+                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+              </View>
               <Text style={styles.faltypeyazipopup}>
                 Ortaya çıkmayan detay kalmasın
               </Text>
@@ -737,7 +912,8 @@ componentWillUnmount() {
                 {'\u2022'} Sıra beklemek yok{'\n'}
               </Text>
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
-                <Text style={styles.faltypeyazikucukpopup2}>Detaylı Kahve Falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
+              <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
                 <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
                   <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
                     <Text style={{textAlign:'center'}}>Hayır</Text>
@@ -751,32 +927,33 @@ componentWillUnmount() {
           </Image>
         </PopupDialog>
         <PopupDialog
-          dialogTitle={<DialogTitle title="EL FALI" />}
-          ref={(popupDialog) => { this.popupEl = popupDialog; }}
+
+          ref={(popupDialog) => { this.popupHand = popupDialog; }}
           dialogStyle={{marginTop:-150}}
-          dialogAnimation = { new SlideAnimation({ slideFrom: 'left' }) }
           width={'80%'}
-          height={'50%'}
+          height={'70%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
-
               <Text style={styles.faltypeyazipopup}>
-                Eliniz, kaderiniz...
+                Eliniz, kaderiniz
               </Text>
               <Text style={styles.faltypeyazikucukpopup}>
                 {'\u2022'} Hayatınızdaki her konuya dair detaylı yorumlar{'\n'}
-                {'\u2022'} Ruh haliniz incelenir{'\n'}
+                {'\u2022'} Ruh haliniz incelensin{'\n'}
                 {'\u2022'} Sıra beklemek yok{'\n'}
               </Text>
-              <Text style={styles.faltypeyazikucukpopup2}>Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?</Text>
-              <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white',position:'absolute',bottom:0}}>
-                <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center'}}>Hayır</Text>
-                </TouchableOpacity>
-                <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:2,borderLeftWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
-                </TouchableOpacity>
+              <View style={{position:'absolute',bottom:0,width:'100%'}}>
+              <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                  <TouchableOpacity  onPress={() => {this.popupHand.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity  onPress={() => {this.startHand2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                    <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </Image>
@@ -852,7 +1029,7 @@ const styles = StyleSheet.create({
     color:'white',fontSize:14,marginLeft:25
   },
   faltypeyazikucukpopup2:{
-    flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',backgroundColor:'rgba(0, 0, 0, 0.2)',alignSelf:'stretch',textAlign:'center'
+    flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
   },
   buttontext2:{
     color:'white',

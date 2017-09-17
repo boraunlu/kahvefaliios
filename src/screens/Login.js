@@ -300,7 +300,7 @@ _keyboardDidShow = (event) => {
   _navigateTo = (routeName: string,params) => {
       const resetAction = NavigationActions.reset({
         index: 0,
-        actions: [NavigationActions.navigate({ routeName,params: params })]
+        actions: [NavigationActions.navigate({ routeName,params: {crredit:' '} })]
       })
       this.props.navigation.dispatch(resetAction)
     }
