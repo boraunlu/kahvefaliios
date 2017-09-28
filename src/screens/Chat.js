@@ -6,6 +6,7 @@ import {
   Button,
   Keyboard,
   TouchableHighlight,
+  TouchableOpacity,
   Modal,
   View,
   Dimensions,
@@ -35,10 +36,12 @@ import Elements from '../components/Elements';
 import { NativeModules } from 'react-native'
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import StarRating from 'react-native-star-rating';
+import ProfilePicker from '../components/ProfilePicker';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 const { InAppUtils } = NativeModules
+import * as Animatable from 'react-native-animatable';
 require('../components/data/falcilar.js');
 
 
@@ -60,6 +63,11 @@ var whoosh = new Sound('yourturn.mp3', Sound.MAIN_BUNDLE, (error) => {
   }
   // loaded successfully
 });
+
+function generateRandom(uzunluk, mevcut) {
+    var num = Math.floor(Math.random() * falcilar.length);
+    return (num === mevcut ) ? generateRandom(uzunluk, mevcut) : num;
+}
 
 class CustomMessage extends Message {
   renderAvatar() {
@@ -95,7 +103,8 @@ export default class Chat extends React.Component {
       sikayet:"",
       falseSwitchIsOn:true,
       buttonOpacity: new Animated.Value(0),
-      spinnerVisible: false
+      spinnerVisible: false,
+      checkValidation:false,
     };
 
 
@@ -194,6 +203,28 @@ export default class Chat extends React.Component {
 
   }
 
+  navigateto = (destination,falciNo,falType) => {
+
+    const { navigate } = this.props.navigation;
+    if(destination=="Chat"){
+          var randomnumber = generateRandom(falcilar.length,this.props.userStore.user.currentFalci)
+          Backend.setFalci(randomnumber).then(() => {
+            const resetAction = NavigationActions.reset({
+              index: 0,
+              actions: [
+                NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:true,falciNo:randomnumber,falType:falType}})
+              ]
+            })
+            this.props.navigation.dispatch(resetAction)
+          })
+          //navigate('Chat',{newFortune:false})
+
+    }
+    else{
+      navigate(destination,{falciNo:falciNo})
+    }
+  }
+
   fadeButtons = () => {
     this.state.buttonOpacity.setValue(0)
     Animated.timing(
@@ -287,6 +318,88 @@ export default class Chat extends React.Component {
       }
     });
   }
+  startGunluk2 = () => {
+    if(this.props.userStore.profileIsValid){
+      var userData =this.props.userStore.user
+      if(!userData.appGunlukUsed){
+        this.navigateto('Chat',0,0)
+      }else {
+        if(this.props.userStore.userCredit<100){
+          this.pay(0)
+        }
+        else{
+          this.navigateto('Chat',0,0)
+          Backend.addCredits(-100)
+        }
+      }
+      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+    }
+    else{
+      this.setState({checkValidation:true})
+    }
+  }
+
+
+  startAsk2 = () => {
+    if(this.props.userStore.profileIsValid){
+      if(this.props.userStore.userCredit<100){
+                this.pay(1)
+      }
+      else{
+        Backend.addCredits(-100)
+        this.navigateto('Chat',0,1);
+      }
+      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+    }
+    else{
+      this.setState({checkValidation:true})
+    }
+  }
+
+
+
+  startDetay2 = () => {
+    if(this.props.userStore.profileIsValid){
+        if(this.props.userStore.userCredit<150){
+                  this.pay(2)
+        }
+        else{
+          Backend.addCredits(-150)
+          this.navigateto('Chat',0,2);
+        }
+        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+      }
+    else {
+      this.setState({checkValidation:true})
+    }
+  }
+
+  startHand2 = () => {
+
+
+    var userData =this.props.userStore.user
+
+    if(this.props.userStore.profileIsValid){
+      if(userData.handUsed){
+        if(this.props.userStore.userCredit<50){
+                  this.pay(3)
+        }
+        else{
+          Backend.addCredits(-50)
+          this.navigateto('Chat',0,3);
+        }
+      }
+      else{
+        this.navigateto('Chat',0,3);
+      }
+
+        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
+      }
+    else {
+      this.setState({checkValidation:true})
+    }
+
+  }
 
   sendPayload(payload){
 
@@ -295,6 +408,18 @@ export default class Chat extends React.Component {
       var bilgiref2= firebase.database().ref('messages/'+Backend.getUid()+'/lastMessage/'+this.state.falciNo);
       bilgiref2.set({createdAt:firebase.database.ServerValue.TIMESTAMP,text:"Yeni Mesaj"})
       Backend.sendPayload(epstart);
+    }
+    else if (payload.payload=='gunluk') {
+      this.popupGunluk.show()
+    }
+    else if (payload.payload=='love') {
+      this.popupAsk.show()
+    }
+    else if (payload.payload=='detay') {
+      this.popupDetay.show()
+    }
+    else if (payload.payload=='hand') {
+      this.popupHand.show()
     }
     else{
       if(payload.type=="postback"){
@@ -315,6 +440,7 @@ export default class Chat extends React.Component {
         }
 
         if(payload.payload=="nohizlibak"||payload.payload=="hizlibak"||payload.payload=="vazgecti"){this.setState({inputVisible:true})}
+
       }
       else{
         this.shareLinkWithShareDialog()
@@ -358,6 +484,7 @@ export default class Chat extends React.Component {
       }else{
         Backend.sendQuickPayload(payload.payload);
       }
+      if(payload.payload=='ratefortune'){this.setState({inputVisible:false});}
       Backend.addMessage(payload.title)
       this.setState((previousState) => {
         return {
@@ -415,6 +542,9 @@ export default class Chat extends React.Component {
                   messages: GiftedChat.append(previousState.messages, message),quick_reply:message.quick_reply
                 };
               });
+              if(message.quick_reply[0].payload=="ratefortune"){
+                this.setState({inputVisible:false})
+              }
             }
             else if (message.type=="button") {
               this.fadeButtons()
@@ -466,9 +596,15 @@ export default class Chat extends React.Component {
                 });
                 if(messages.length>0){
                   var lastMessage=messages[0]
+                  if(lastMessage.type=='action'){
+                    this.setState({inputVisible:false})
+                  }
                   if(lastMessage.type=="quick"){
                     this.fadeButtons()
                     this.setState({quick_reply:lastMessage.quick_reply})
+                    if(lastMessage.quick_reply[0].payload=="ratefortune"){
+                      this.setState({inputVisible:false})
+                    }
                   }
                   else if (lastMessage.type=="button") {
                     if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")){
@@ -491,6 +627,10 @@ export default class Chat extends React.Component {
 
       this.props.userStore.setAktifUnread(0)
 
+  }
+
+  changeValidation = () => {
+    this.setState({checkValidation:false})
   }
 
   backhandler = () => {
@@ -830,8 +970,15 @@ export default class Chat extends React.Component {
               }}
               elements={this.state.modalElements}
               sendPayload={(payload) => {
-                this.setModalVisibility(false)
-                this.sendPayload(payload)
+                if(payload.payload=='gunluk'||payload.payload=='love'||payload.payload=='detay'||payload.payload=='hand'){
+                  this.sendPayload(payload)
+                }
+                else{
+                  this.sendPayload(payload)
+                  this.setModalVisibility(false)
+                }
+
+
               }}
             />
             <PopupDialog
@@ -897,6 +1044,170 @@ export default class Chat extends React.Component {
 
              </View>
             </PopupDialog>
+            <PopupDialog
+
+              ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
+              dialogStyle={{marginTop:-150}}
+              overlayOpacity={0.75}
+              width={'80%'}
+              height={'65%'}
+            >
+              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
+                <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+                {this.props.userStore.user.appGunlukUsed ?
+                    (<View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>) :
+                    (<View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
+                    <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
+
+
+                  </View>)
+                  }
+                  <Text style={styles.faltypeyazipopup}>
+                    Günlük Fal
+                  </Text>
+                  <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    Falcılarımız ile canlı sohbet edin! Kahve fotoğraflarınızı gönderin, yorumlasınlar
+
+                  </Text>
+
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                    <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                    <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                      <TouchableOpacity  onPress={() => {this.popupGunluk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center'}}>Vazgeç</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity  onPress={() => {this.startGunluk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Image>
+            </PopupDialog>
+            <PopupDialog
+
+              ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
+              dialogStyle={{marginTop:-150}}
+              overlayOpacity={0.75}
+              width={'80%'}
+              height={'70%'}
+            >
+              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
+                <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+                  <Text style={styles.faltypeyazipopup}>
+                    Sırlar dökülsün, aşk konuşalım
+                  </Text>
+                  <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    {'\u2022'} Detaylı aşk yorumları{'\n'}
+                    {'\u2022'} İlişki tavsiyeleri{'\n'}
+                    {'\u2022'} Sıra beklemek yok{'\n'}
+                  </Text>
+
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                    <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                    <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                      <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center'}}>Vazgeç</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Image>
+            </PopupDialog>
+            <PopupDialog
+              ref={(popupDialog) => { this.popupDetay = popupDialog; }}
+              dialogStyle={{marginTop:-150}}
+              width={'80%'}
+              height={'70%'}
+              overlayOpacity={0.75}
+            >
+              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
+                <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      150
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+                  <Text style={styles.faltypeyazipopup}>
+                    Ortaya çıkmayan detay kalmasın
+                  </Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    {'\u2022'} Her konuya dair detaylı yorumlar{'\n'}
+                    {'\u2022'} Ruh haliniz incelensin{'\n'}
+                    {'\u2022'} Sıra beklemeyin{'\n'}
+                  </Text>
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                  <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                    <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                      <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center'}}>Vazgeç</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Image>
+            </PopupDialog>
+            <PopupDialog
+
+              ref={(popupDialog) => { this.popupHand = popupDialog; }}
+              dialogStyle={{marginTop:-150}}
+              width={'80%'}
+              height={'70%'}
+              overlayOpacity={0.75}
+            >
+              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
+                <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+                  {this.props.userStore.user.handUsed ?
+                      <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                      <Text style={[styles.label]}>
+                        50
+                      </Text>
+                      <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                    </View> :  null}
+                  <Text style={styles.faltypeyazipopup}>
+                    Eliniz, kaderiniz
+                  </Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    Elinizin fotoğrafını gönderin, falcılarımız ile sohbet ederek el falınıza baktırın!
+                  </Text>
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+                  <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+
+                    <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                      <TouchableOpacity  onPress={() => {this.popupHand.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center'}}>Hayır</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity  onPress={() => {this.startHand2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                </View>
+              </Image>
+            </PopupDialog>
           </Image>
 
     );
@@ -909,6 +1220,22 @@ const styles = StyleSheet.create({
     width:null,
     alignSelf:'stretch'
   },
+  coin:{
+    height:15,
+    width:15,
+    marginLeft:5,
+  },
+  coin2:{
+    height:13,
+    width:13,
+
+  },
+  label: {
+    fontSize: 12,
+    color:'white',
+    textAlign:'center',
+    fontWeight:'bold'
+  },
   quickContainer: {
     marginTop: 5,
     marginLeft: 10,
@@ -916,6 +1243,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: 'row',
     justifyContent:'space-around',
+  },
+  faltypeyazi:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+  },
+  faltypeyazipopup:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:20,marginBottom:15
+  },
+  faltypeyazikucuk:{
+    textAlign: 'center',color:'white',fontSize:14
+  },
+  faltypeyazikucukpopup:{
+    color:'white',fontSize:14,marginLeft:25
+  },
+  faltypeyazikucukpopup2:{
+    flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
   },
   quickBubble:{
     borderRadius:10,

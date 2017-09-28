@@ -873,6 +873,7 @@
 				BD724BC01EB71B04005B48F6 /* Fonts */,
 				B685E440FF2FDB06706CA1A6 /* Pods */,
 				480C89A712BF4BB39EB6D01D /* Resources */,
+				BDD33B6C1F7DA030002A4C5A /* Recovered References */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -1046,6 +1047,25 @@
 				BD724BCA1EB71B04005B48F6 /* Zocial.ttf */,
 			);
 			path = Fonts;
+			sourceTree = "<group>";
+		};
+		BDD33B6C1F7DA030002A4C5A /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				60A855BFCB224FD2BE6EDC2A /* libRCTFBSDK.a */,
+				A4CBC99F066E43AFBD8A504A /* libRCTCamera.a */,
+				1DC290A569F14026A7799668 /* libRCTVideo.a */,
+				BC6BF1927B3746D794038AD7 /* libRNSound.a */,
+				797413B5689C4AB8AD84898E /* libRNFetchBlob.a */,
+				3D152F100E094DDABEFF6DDD /* libInAppUtils.a */,
+				23F5639E35414CD991F2E436 /* libBugsnagReactNative.a */,
+				B9A843F246844C298AE1EBF7 /* libRNVectorIcons.a */,
+				7FC6753B25FC4A6683647980 /* libRCTBEEPickerManager.a */,
+				66634C9EA74E4DCA8E14EF98 /* libRNGoogleSignin.a */,
+				60CA432499CA472DBCF72064 /* libRNAdMobManager.a */,
+				D98A078599C745F892E2C71A /* libRNFIRMessaging.a */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 		BDD534411ECCCD9C005E2FA4 /* Products */ = {

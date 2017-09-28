@@ -258,21 +258,21 @@ export default class Odeme extends React.Component {
 
         </View>
         <View style={{marginBottom:20}}>
-          <View style={{backgroundColor:'#dcdcdc',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} >
-           <View style={{flexDirection:'row',justifyContent:'space-around',height:40,alignItems:'center'}}>
-            <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
-            <Text style={{color:'#2f4f4f',fontSize:20,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
-            <Image source={require('../static/images/coins.png')} style={{width:20, height: 20}}/>
+          <View style={{backgroundColor:'teal',padding:2,borderColor:'#c0c0c0'}} >
+           <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center'}}>
+            <Image source={require('../static/images/coins.png')} style={{width:17, height: 17}}/>
+            <Text style={{color:'white',fontSize:17,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
+            <Image source={require('../static/images/coins.png')} style={{width:17, height: 17}}/>
            </View>
           </View>
           <View style={{flexDirection:'row',flex:1,height:60}}>
             <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
             <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
-            {this.props.userStore.user ? this.props.userStore.user.appRated ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
+            {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
           </View>
         </View>
         <View style={{flex:1}}>
-          <View style={{flex:1,backgroundColor:'#dcdcdc',padding:2}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
+          <View style={{flex:1,backgroundColor:'teal',padding:2}}><Text style={{textAlign:'center',color:'white',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
           <Image style={styles.container2} source={require('../static/images/hazine.jpg')}>
           <View style={{borderColor:'white',borderWidth:1}}>
             <View style={{flexDirection:'row'}}>

@@ -7,6 +7,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@remobile/react-native-marquee": "^1.0.1",
     "bugsnag-react-native": "^2.2.3",
     "firebase": "^3.9.0",
     "mobx": "^3.2.2",

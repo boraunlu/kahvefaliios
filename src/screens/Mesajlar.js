@@ -141,7 +141,7 @@ export default class Mesajlar extends React.Component {
     else{
       return(
         <View>
-        <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
+        <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
         <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateToAktif(this.state.aktifChat.key)}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
@@ -220,7 +220,7 @@ export default class Mesajlar extends React.Component {
 
       return(
         <View>
-        <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Bizden Gelenler</Text></View>
+        <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bizden Gelenler</Text></View>
         <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden'); this.props.userStore.setBizdenUnread(0)}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
@@ -255,7 +255,7 @@ export default class Mesajlar extends React.Component {
         <ScrollView style={{flex:1}}>
           {this.renderAktif()}
           {this.renderBizden()}
-          <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Eski Falların</Text></View>
+          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}
 
         </ScrollView>

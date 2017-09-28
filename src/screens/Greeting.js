@@ -32,6 +32,7 @@ import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
 import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
+import Marquee from '@remobile/react-native-marquee';
 
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
@@ -62,6 +63,7 @@ export default class Greeting extends React.Component {
       greetingMessage:"...",
       spinnerVisible:false,
       checkValidation:false,
+      marquee:''
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -193,7 +195,7 @@ static navigationOptions = ({ navigation }) => ({
         'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
         [
           {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}},
         ],
       )
     }
@@ -229,7 +231,7 @@ static navigationOptions = ({ navigation }) => ({
               this.navigateto('Chat',0,0)
               Backend.addCredits(-100)
             }
-        }, style:'cancel'},
+        }},
         ],
       )
     }
@@ -239,53 +241,16 @@ static navigationOptions = ({ navigation }) => ({
   startGunluk2 = () => {
     if(this.props.userStore.profileIsValid){
       var userData =this.state.userData
-      if(!userData.appGunlukUsed&&!userData.aktif){
+      if(!userData.appGunlukUsed){
         this.navigateto('Chat',0,0)
-      }else if(!userData.appGunlukUsed&&userData.aktif){
-        Alert.alert(
-          'Yeni Fal',
-          'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
-          [
-            {text: 'Hayır', onPress: () => {}},
-            {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}, style: 'cancel'},
-          ],
-        )
-      }
-      else if (userData.appGunlukUsed&&!userData.aktif) {
-        Alert.alert(
-          'Yeni Günlük Fal',
-          'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
-          [
-            {text: 'Hayır', onPress: () => {}},
-            {text: 'Evet', onPress: () => {
-              if(this.props.userStore.userCredit<100){
-                this.pay(0)
-              }
-              else{
-                this.navigateto('Chat',0,0)
-                Backend.addCredits(-100)
-              }
-          }, style: 'cancel'},
-          ],
-        )
-      }
-      else{
-        Alert.alert(
-          'Yeni Günlük Fal',
-          'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
-          [
-            {text: 'Hayır', onPress: () => {}},
-            {text: 'Evet', onPress: () => {
-              if(this.props.userStore.userCredit<100){
-                this.pay(0)
-              }
-              else{
-                this.navigateto('Chat',0,0)
-                Backend.addCredits(-100)
-              }
-          }, style:'cancel'},
-          ],
-        )
+      }else {
+        if(this.props.userStore.userCredit<100){
+          this.pay(0)
+        }
+        else{
+          this.navigateto('Chat',0,0)
+          Backend.addCredits(-100)
+        }
       }
       Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
     }
@@ -294,38 +259,6 @@ static navigationOptions = ({ navigation }) => ({
     }
   }
 
-  startAsk = () => {
-    var userData =this.state.userData
-    if(this.props.userStore.userCredit<100){
-      var messagebody = ''
-      userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 100 kredi ekleyelim mi?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen hesabına 100 kredi ekleyelim mi?'
-      Alert.alert(
-        'Aşk Falı',
-        messagebody,
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-              this.pay(1)
-          }, style: 'cancel'},
-        ],
-      )
-    }
-    else{
-      var messagebody = ''
-      userData.aktif ? messagebody = 'Aşk falına 100 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen aşk falına başlayalım mı?' : messagebody='Aşk falına 100 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?'
-      Alert.alert(
-        'Aşk Falı',
-        messagebody,
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-                this.navigateto('Chat',0,1);
-                Backend.addCredits(-100)
-          }, style: 'cancel'},
-        ],
-      )
-    }
-  }
 
   startAsk2 = () => {
     if(this.props.userStore.profileIsValid){
@@ -343,43 +276,7 @@ static navigationOptions = ({ navigation }) => ({
     }
   }
 
-  onPickerError = (type) => {
 
-
-  }
-
-  startDetay = () => {
-    var userData =this.state.userData
-    if(this.props.userStore.userCredit<150){
-      var messagebody = ''
-      userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen hesabına 150 kredi ekleyelim mi?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen hesabına 150 kredi ekleyelim mi?'
-      Alert.alert(
-        'Detaylı Fal',
-        messagebody,
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-              this.pay(2)
-          }, style: 'cancel'},
-        ],
-      )
-    }
-    else{
-      var messagebody = ''
-      userData.aktif ? messagebody = 'Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Mevcut konuşmanı sonlandırıp hemen detaylı falına başlayalım mı?' : messagebody='Detaylı kahve falına 150 Kredi karşılığında bakıyoruz. Hemen başlayalım mı?'
-      Alert.alert(
-        'Detaylı Fal',
-        messagebody,
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-                this.navigateto('Chat',0,2);
-                Backend.addCredits(-150)
-          }, style: 'cancel'},
-        ],
-      )
-    }
-  }
 
   startDetay2 = () => {
     if(this.props.userStore.profileIsValid){
@@ -408,7 +305,7 @@ static navigationOptions = ({ navigation }) => ({
         'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp el falına bakmak istediğinden emin misin?',
         [
           {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,3)}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,3)}},
         ],
       )
     }
@@ -426,7 +323,7 @@ static navigationOptions = ({ navigation }) => ({
               this.navigateto('Chat',0,3)
               Backend.addCredits(-50)
             }
-        }, style: 'cancel'},
+        }},
         ],
       )
     }
@@ -444,7 +341,7 @@ static navigationOptions = ({ navigation }) => ({
               this.navigateto('Chat',0,3)
               Backend.addCredits(-50)
             }
-        }, style: 'cancel'},
+        }},
         ],
       )
     }
@@ -512,7 +409,30 @@ static navigationOptions = ({ navigation }) => ({
   }
 
 
-
+ generatefalcisayisi = () => {
+   var saat = moment().hour()
+   var gun = moment().day()%3
+   var falcisayisi= 5
+   if(saat>7&&saat<11){
+     falcisayisi=4+gun
+   }
+   if(saat>10&&saat<16){
+     falcisayisi=6+gun
+   }
+   if(saat>15&&saat<22){
+     falcisayisi=8+gun
+   }
+   if(saat>21&&saat<25){
+     falcisayisi=5+gun
+   }
+   if(saat<4){
+     falcisayisi=2+gun
+   }
+   if(saat>3&&saat<8){
+     falcisayisi=1+gun
+   }
+   return falcisayisi
+ }
 
   componentDidUpdate(prevProps,prevState){
 
@@ -532,7 +452,8 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   componentDidMount() {
-    //const { params } = this.props.navigation.state;
+
+    this.generatefalcisayisi()
 
     FCM.setBadgeNumber(0);
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
@@ -547,8 +468,8 @@ static navigationOptions = ({ navigation }) => ({
     })
     .then((response) => response.json())
      .then((responseJson) => {
-       //alert(JSON.stringify(responseJson));
-          this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit});
+
+        this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit,marquee:"       Canlı falcı sayısı: "+this.generatefalcisayisi()+"     ||     "+responseJson.marquee});
          //alert(JSON.stringify(responseJson))
          this.props.userStore.setUser(responseJson)
          this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
@@ -585,7 +506,7 @@ componentWillUnmount() {
 
         return(
           <View>
-          <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
+          <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
           <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
            <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
               <View>
@@ -614,7 +535,7 @@ componentWillUnmount() {
         if(userData.lastMessage){
           return(
             <View>
-            <View style={{backgroundColor:'#dcdcdc'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontWeight:'bold'}}>Son Konuşman</Text></View>
+            <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Son Konuşman</Text></View>
             <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <View>
@@ -641,7 +562,11 @@ componentWillUnmount() {
           )
         }
         else{
-          return null
+          return (  <View style={styles.marqueeContainer}>
+          <Marquee speed={15} style={styles.marquee}>
+                  {this.state.marquee}
+              </Marquee>
+              </View>)
         }
 
       }
@@ -656,7 +581,7 @@ componentWillUnmount() {
       return(
 
           <Animated.View style={{opacity:this.state.buttonOpacity}}>
-        <View style={{backgroundColor:'#dcdcdc',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'#2f4f4f',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
+        <View style={{borderColor:'white',backgroundColor:'teal',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'white',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
         <View style={{borderColor:'white',borderWidth:1}}>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupGunluk.show()}}>
@@ -795,7 +720,7 @@ componentWillUnmount() {
                 </Image>
 
               </View>
-              <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
+              <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.6)',padding:10,width:Dimensions.get('window').width-85}}>
                 <Text style={{fontSize:16,color:'white'}}>
                   {this.state.greetingMessage}
                 </Text>
@@ -816,21 +741,32 @@ componentWillUnmount() {
 
           ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
           dialogStyle={{marginTop:-150}}
-
+          overlayOpacity={0.75}
           width={'80%'}
-          height={'70%'}
+          height={'65%'}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
+            {this.state.userData ? this.state.userData.appGunlukUsed ?
+                (<View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                <Text style={[styles.label]}>
+                  100
+                </Text>
+                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+              </View>) :
+                (<View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
+                <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
 
+
+              </View>) : null
+              }
               <Text style={styles.faltypeyazipopup}>
-                Her gün bekliyoruz
+                Günlük Fal
               </Text>
               <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
               <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Falcılarımız ile canlı sohbet edin{'\n'}
-                {'\u2022'} Kahve fotoğraflarınızı gönderin, yorumlasınlar{'\n'}
-                {'\u2022'} Keyfinize bakın{'\n'}
+                Falcılarımız ile canlı sohbet edin! Kahve fotoğraflarınızı gönderin, yorumlasınlar
+
               </Text>
 
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
@@ -838,7 +774,7 @@ componentWillUnmount() {
 
                 <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
                   <TouchableOpacity  onPress={() => {this.popupGunluk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
                   </TouchableOpacity>
                   <TouchableOpacity  onPress={() => {this.startGunluk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
                     <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
@@ -852,7 +788,7 @@ componentWillUnmount() {
 
           ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
           dialogStyle={{marginTop:-150}}
-
+          overlayOpacity={0.75}
           width={'80%'}
           height={'70%'}
         >
@@ -879,7 +815,7 @@ componentWillUnmount() {
 
                 <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
                   <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
                   </TouchableOpacity>
                   <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
                     <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>BAŞLA</Text>
@@ -894,6 +830,7 @@ componentWillUnmount() {
           dialogStyle={{marginTop:-150}}
           width={'80%'}
           height={'70%'}
+          overlayOpacity={0.75}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
             <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
@@ -907,16 +844,16 @@ componentWillUnmount() {
                 Ortaya çıkmayan detay kalmasın
               </Text>
               <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Hayatınızdaki her konuya dair detaylı yorumlar{'\n'}
+                {'\u2022'} Her konuya dair detaylı yorumlar{'\n'}
                 {'\u2022'} Ruh haliniz incelensin{'\n'}
-                {'\u2022'} Sıra beklemek yok{'\n'}
+                {'\u2022'} Sıra beklemeyin{'\n'}
               </Text>
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
               <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
 
                 <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
                   <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Hayır</Text>
+                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
                   </TouchableOpacity>
                   <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
                     <Text style={{textAlign:'center',fontWeight:'bold'}}>BAŞLA</Text>
@@ -932,16 +869,22 @@ componentWillUnmount() {
           dialogStyle={{marginTop:-150}}
           width={'80%'}
           height={'70%'}
+          overlayOpacity={0.75}
         >
           <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
+              {this.state.userData ? this.state.userData.handUsed ?
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                  <Text style={[styles.label]}>
+                    50
+                  </Text>
+                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                </View> : null : null}
               <Text style={styles.faltypeyazipopup}>
                 Eliniz, kaderiniz
               </Text>
               <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Hayatınızdaki her konuya dair detaylı yorumlar{'\n'}
-                {'\u2022'} Ruh haliniz incelensin{'\n'}
-                {'\u2022'} Sıra beklemek yok{'\n'}
+                Elinizin fotoğrafını gönderin, falcılarımız ile sohbet ederek el falınıza baktırın!
               </Text>
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
               <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
@@ -1020,13 +963,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
   },
   faltypeyazipopup:{
-    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:20,marginBottom:15
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22,marginTop:20,marginBottom:15
   },
   faltypeyazikucuk:{
     textAlign: 'center',color:'white',fontSize:14
   },
   faltypeyazikucukpopup:{
-    color:'white',fontSize:14,marginLeft:25
+    color:'white',fontSize:18,marginLeft:25,marginRight:5
   },
   faltypeyazikucukpopup2:{
     flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
@@ -1052,6 +995,22 @@ const styles = StyleSheet.create({
     color:'white',
     textAlign:'center',
     fontWeight:'bold'
+  },
+  marqueeContainer:{
+    flex:1,
+    marginBottom:15,
+    paddingVertical:5,
+    backgroundColor:'rgba(0, 0, 0, 0.6)',
+    borderTopWidth:1,
+    borderBottomWidth:1,
+    borderColor:'white'
+  },
+  marquee: {
+
+      fontSize: 16,
+      color:'white',
+      backgroundColor: 'transparent',
+      overflow: 'hidden',
   },
   falciAvatar:{
     height:40,

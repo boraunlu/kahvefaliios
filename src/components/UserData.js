@@ -88,12 +88,6 @@ export default class UserData extends Component {
 
       return (
         <View >
-        <View style={styles.thirdrow}>
-          <TouchableOpacity onPress={() => {this.initAgePicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşında" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
-          <TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={{flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'sienna',width:'100%',height:30,borderRadius:5}}><Text style={{fontWeight:'bold',backgroundColor:'transparent',color:'white'}}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Icon name="chevron-down" color={'white'} size={14} /></TouchableOpacity>
-
-        </View>
         <View style={styles.secondrow}>
           <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistiklerin</Text>
           <View style={styles.secondinner}>

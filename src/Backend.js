@@ -482,8 +482,10 @@ loadMessages = (callback) => {
               });
 
               if(moment(currentTime).diff(moment(output[0].createdAt),"hours")<3){
-                aktif=output[0]
-                output.shift()
+                if(!output[0].text.includes('--- ')){
+                  aktif=output[0]
+                  output.shift()
+                }
               }
 
             }
