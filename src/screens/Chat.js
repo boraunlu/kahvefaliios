@@ -484,7 +484,6 @@ export default class Chat extends React.Component {
       }else{
         Backend.sendQuickPayload(payload.payload);
       }
-      if(payload.payload=='ratefortune'){this.setState({inputVisible:false});}
       Backend.addMessage(payload.title)
       this.setState((previousState) => {
         return {
@@ -548,7 +547,7 @@ export default class Chat extends React.Component {
             }
             else if (message.type=="button") {
               this.fadeButtons()
-              if(message.buttons[0].payload=="hizlibak"||message.buttons[0].payload.includes("odeme")){
+              if(message.buttons[0].payload=="hizlibak"||message.buttons[0].payload.includes("odeme")||message.buttons[0].payload=="ratefortune"){
                 this.setState({inputVisible:false})
               }
               this.setState((previousState) => {
@@ -607,7 +606,7 @@ export default class Chat extends React.Component {
                     }
                   }
                   else if (lastMessage.type=="button") {
-                    if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")){
+                    if(lastMessage.buttons[0].payload=="hizlibak"||lastMessage.buttons[0].payload.includes("odeme")||lastMessage.buttons[0].payload=="ratefortune"){
                       this.setState({inputVisible:false})
                     }
                     this.fadeButtons()

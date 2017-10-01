@@ -1,11 +1,17 @@
 PODS:
-  - CodePush (2.0.3):
-    - CodePush/Core (= 2.0.3)
-    - CodePush/SSZipArchive (= 2.0.3)
+  - CodePush (5.1.2):
+    - CodePush/Base64 (= 5.1.2)
+    - CodePush/Core (= 5.1.2)
+    - CodePush/JWT (= 5.1.2)
+    - CodePush/SSZipArchive (= 5.1.2)
     - React
-  - CodePush/Core (2.0.3):
+  - CodePush/Base64 (5.1.2):
     - React
-  - CodePush/SSZipArchive (2.0.3):
+  - CodePush/Core (5.1.2):
+    - React
+  - CodePush/JWT (5.1.2):
+    - React
+  - CodePush/SSZipArchive (5.1.2):
     - React
   - Firebase/AdMob (4.0.0):
     - Firebase/Core
@@ -93,7 +99,7 @@ EXTERNAL SOURCES:
     :path: ../node_modules/react-native/ReactCommon/yoga
 
 SPEC CHECKSUMS:
-  CodePush: 2e2ffb214ddd52d13ab67e134945811f8ba316f2
+  CodePush: f64f269aab1280395eaa0e90066f33ec53e633bf
   Firebase: 284eea779b73fdff309791817da7c68bff8dd572
   FirebaseAnalytics: 6f08e746f7d66f5452931bc2e822b5df9c66b64a
   FirebaseCore: 85ad466044c2f013cdb167f85d426d15b128114a
