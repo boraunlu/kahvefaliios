@@ -89,7 +89,7 @@ export default class UserData extends Component {
       return (
         <View >
         <View style={styles.secondrow}>
-          <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistiklerin</Text>
+          <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistikleri</Text>
           <View style={styles.secondinner}>
             <View >
               <View style={{height:21,borderColor:'#1194F7',borderBottomWidth:1}}>

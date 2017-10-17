@@ -70,7 +70,7 @@ export default class Odeme extends React.Component {
       InAppUtils.loadProducts(products, (error, products) => {
         if(error){this.setState({spinnerVisible:false})}
         else{
-          var identifier = products[0].identifier
+          var identifier = 'com.grepsi.kahvefaliios.'+credit
           InAppUtils.purchaseProduct(identifier, (error, response) => {
             this.setState({spinnerVisible:false})
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
@@ -126,11 +126,11 @@ export default class Odeme extends React.Component {
         ).then((result) => {
 
             if (result.postId) {
-              Backend.addCredits(20,"facebookshare");
+              Backend.addCredits(15,"facebookshare");
               Backend.setSharedWeek()
-              this.setState({sharedWeek:true});
-              this.props.userStore.increment(20)
-              setTimeout(function(){Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!')},1000)
+              this.props.userStore.setSharedTrue();
+              this.props.userStore.increment(15)
+              setTimeout(function(){Alert.alert('Tebrikler','15 Kredi hesabınıza eklendi!')},1000)
             }
           },
           (error) => {
@@ -160,7 +160,7 @@ export default class Odeme extends React.Component {
       else{
         Alert.alert(
           'Bedava Kredi',
-          'Uygulamamıza güzel bir puan vererek veya yorum yazarak 25 Kredi kazanabilirsiniz. Krediniz puan verdikten ortalama 15 dakika sonra yüklenecektir.',
+          'Uygulamamıza güzel bir puan vererek veya yorum yazarak 20 Kredi kazanabilirsiniz. Krediniz puan verdikten ortalama 15 dakika sonra yüklenecektir.',
           [
             {text: 'İstemiyorum', onPress: () => {}},
             {text: 'Tamam', onPress: () => {
@@ -168,6 +168,7 @@ export default class Odeme extends React.Component {
                 if(supported){
                   Linking.openURL('itms-apps://itunes.apple.com/tr/app/kahve-fali-sohbeti/id1231962763');
                   Backend.appRated();
+                  this.props.userStore.setAppRatedTrue()
                 }
               }, (err) => console.log(err));
             }},
@@ -199,7 +200,7 @@ export default class Odeme extends React.Component {
      //AdMobRewarded.setTestDeviceID('EMULATOR');
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
-       (type, amount) => {Backend.addCredits(10,"reklam"); Alert.alert('Tebrikler','10 Kredi hesabınıza eklendi!',); this.props.userStore.increment(10) }
+       (type, amount) => {Backend.addCredits(5,"reklam"); Alert.alert('Tebrikler','5 Kredi hesabınıza eklendi!',); this.props.userStore.increment(5) }
      );
 
      /*

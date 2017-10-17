@@ -464,6 +464,13 @@
 			remoteGlobalIDString = 54265A5692EB9F80345CBFFEBE517201;
 			remoteInfo = Protobuf;
 		};
+		BDD33BDE1F819879002A4C5A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 62B0414881DF43FA85D9956A /* CodePush.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = F886647B1F4ADB500036D01B;
+			remoteInfo = "CodePush-tvOS";
+		};
 		BDD534461ECCCD9C005E2FA4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = FB848502A33E49C6850AFDE3 /* BugsnagReactNative.xcodeproj */;
@@ -909,6 +916,7 @@
 			isa = PBXGroup;
 			children = (
 				BD0D20451EBB959E005312A4 /* libCodePush.a */,
+				BDD33BDF1F819879002A4C5A /* libCodePush.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1698,6 +1706,13 @@
 			fileType = archive.ar;
 			path = libProtobuf.a;
 			remoteRef = BD8A3C591F44D80200319BEC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BDD33BDF1F819879002A4C5A /* libCodePush.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libCodePush.a;
+			remoteRef = BDD33BDE1F819879002A4C5A /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BDD534471ECCCD9C005E2FA4 /* libBugsnagReactNative.a */ = {

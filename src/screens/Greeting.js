@@ -77,7 +77,7 @@ static navigationOptions = ({ navigation }) => ({
        <Icon name="home" color={tintColor} size={25} />
        ),
      headerRight:
-      <TouchableOpacity  onPress={() => {navigation.state.params.odemeyegit("Odeme")}} style={{marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold',}}> {typeof navigation.state.params.crredit !== 'undefined' ? navigation.state.params.crredit : "   "}</Text></TouchableOpacity>,
+      <View>{typeof navigation.state.params.crredit !== 'undefined' ? <TouchableOpacity  onPress={() => {navigation.state.params.odemeyegit("Odeme")}} style={{marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold',}}>{navigation.state.params.crredit}</Text></TouchableOpacity> : <View/>}</View>,
 
   })
 
@@ -105,7 +105,7 @@ static navigationOptions = ({ navigation }) => ({
       InAppUtils.loadProducts(products, (error, products) => {
         if(error){this.setState({spinnerVisible:false})}
         else{
-          var identifier = products[0].identifier
+          var identifier = 'com.grepsi.kahvefaliios.'+credit
           InAppUtils.purchaseProduct(identifier, (error, response) => {
             this.setState({spinnerVisible:false})
              // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
@@ -536,7 +536,7 @@ componentWillUnmount() {
           return(
             <View>
             <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Son Konuşman</Text></View>
-            <TouchableHighlight style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <View>
                 <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
@@ -557,7 +557,7 @@ componentWillUnmount() {
                  </View>
              </View>
 
-            </TouchableHighlight>
+            </TouchableOpacity>
             </View>
           )
         }

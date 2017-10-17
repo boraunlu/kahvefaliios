@@ -12,6 +12,7 @@ export default class UserStore {
   @observable age = null;
   @observable meslekStatus= null;
   @observable iliskiStatus= null;
+  @observable isAgent= false;
 
 
   @action increment(credittoadd) {
@@ -35,9 +36,15 @@ export default class UserStore {
     this.aktifLastMessage =value
   }
 
+  @action setSharedTrue() {
+    this.sharedWeek =true
+  }
+  @action setAppRatedTrue() {
+    this.user.appRated =true
+  }
   @action changeAge(value) {
     this.age=value
-    Backend.setProfile(value,this.iliskiStatus,this.meslekStatus)
+
   }
 
   @action changeMeslek(value) {
@@ -55,7 +62,7 @@ export default class UserStore {
       status=4;
     }
     this.meslekStatus=status
-    Backend.setProfile(this.age,this.iliskiStatus,status)
+
   }
   @action changeIliski(value) {
     var status="0"
@@ -67,7 +74,7 @@ export default class UserStore {
     }
 
     this.iliskiStatus=status
-    Backend.setProfile(this.age,status,this.meslekStatus)
+
   }
 
   @computed get totalNoti() {
@@ -134,6 +141,9 @@ export default class UserStore {
     }
     if(user.workStatus){
       this.meslekStatus = user.workStatus
+    }
+    if(user.isAgent){
+      this.isAgent = user.isAgent
     }
   }
 

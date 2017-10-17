@@ -267,7 +267,7 @@ export default class Chat extends React.Component {
     InAppUtils.loadProducts(products, (error, products) => {
       if(error){}
       else{
-        var identifier = products[0].identifier
+        var identifier = 'com.grepsi.kahvefaliios.'+credit
         InAppUtils.purchaseProduct(identifier, (error, response) => {
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
            if(error){
@@ -300,7 +300,7 @@ export default class Chat extends React.Component {
       if(error){this.setState({spinnerVisible:false})}
       else{
 
-        var identifier = products[0].identifier
+        var identifier = 'com.grepsi.kahvefaliios.bahsis'+bahsis
         InAppUtils.purchaseProduct(identifier, (error, response) => {
           this.setState({spinnerVisible:false})
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
@@ -484,6 +484,9 @@ export default class Chat extends React.Component {
       }else{
         Backend.sendQuickPayload(payload.payload);
       }
+      if(payload.payload=='continue'){
+        this.setState({inputVisible:true})
+      }
       Backend.addMessage(payload.title)
       this.setState((previousState) => {
         return {
@@ -595,9 +598,7 @@ export default class Chat extends React.Component {
                 });
                 if(messages.length>0){
                   var lastMessage=messages[0]
-                  if(lastMessage.type=='action'){
-                    this.setState({inputVisible:false})
-                  }
+
                   if(lastMessage.type=="quick"){
                     this.fadeButtons()
                     this.setState({quick_reply:lastMessage.quick_reply})

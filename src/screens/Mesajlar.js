@@ -42,7 +42,7 @@ export default class Mesajlar extends React.Component {
       messages: null,
       aktifChat:null,
       lastBizden:null,
-
+      tickets:null
   };
 }
 
@@ -58,6 +58,10 @@ export default class Mesajlar extends React.Component {
     navigateto = (destination,falciNo) => {
       const { navigate } = this.props.navigation;
       navigate( destination,{falciNo:falciNo} )
+    }
+    navigateToAgent = (destination,ticketKey) => {
+      const { navigate } = this.props.navigation;
+      navigate( destination,{ticketKey:ticketKey} )
     }
     navigateToAktif = (falciNo) => {
       const { navigate } = this.props.navigation;
@@ -128,6 +132,33 @@ export default class Mesajlar extends React.Component {
       }
 
     })
+/*
+    var ticketref= firebase.database().ref('tickets');
+    ticketref.orderByChild("status").equalTo(0).on('child_added',function(snapshot){
+
+      var obj = snapshot.val()
+      var res = Object.keys(obj)
+      // iterate over them and generate the array
+      .map(function(k) {
+        // generate the array element
+        return [k,obj[k]];
+      });
+
+      this.setState({tickets:res})
+    }.bind(this))
+
+    .then((dataSnapshot) => {
+      var obj = dataSnapshot.val()
+      var res = Object.keys(obj)
+      // iterate over them and generate the array
+      .map(function(k) {
+        // generate the array element
+        return [k,obj[k]];
+      });
+
+      this.setState({tickets:res})
+
+    })*/
   }
 
   componentWillUnmount() {
@@ -212,6 +243,46 @@ export default class Mesajlar extends React.Component {
     }
   }
 
+  renderAgent = () => {
+
+
+    if(this.props.userStore.isAgent){
+      if(this.state.tickets){
+        var tickets = this.state.tickets
+        return (
+           tickets.map(function (ticket,index) {
+             return (
+               <TouchableOpacity key={ticket[0]} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',ticket[0])}}>
+                <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+
+
+                  <View style={{padding:10,flex:2}}>
+                    <Text style={{fontWeight:'bold',fontSize:16}}>
+                      {ticket[1].text}
+                     </Text>
+                     <Text>
+                     {capitalizeFirstLetter(replaceGecenHafta(moment(ticket[1].createdAt).calendar()))}
+                    </Text>
+                  </View>
+
+                </View>
+
+               </TouchableOpacity>
+               );
+           }, this)
+        )
+
+      }
+    }
+    else {
+      return (<Text style={{fontWeight:'bold',fontSize:16}}>
+        baban
+       </Text>)
+    }
+
+
+  }
+
   renderBizden = () => {
     if(this.state.lastBizden==null){
       return null
@@ -257,7 +328,6 @@ export default class Mesajlar extends React.Component {
           {this.renderBizden()}
           <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}
-
         </ScrollView>
       </Image>
     );
