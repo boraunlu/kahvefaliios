@@ -46,7 +46,7 @@ export default class ChatBizden extends React.Component {
       quick_reply: null,
       buttons: null,
 
-      inputVisible:false,
+      inputVisible:true,
 
     };
 
@@ -146,7 +146,7 @@ export default class ChatBizden extends React.Component {
 
       Backend.loadOldMessages('bizden').then((messages) => {
           if(this._isMounted){
-                
+
                 this.setState((previousState) => {
                   return{
                     initialLoaded:true,
@@ -185,6 +185,17 @@ export default class ChatBizden extends React.Component {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
+    fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: Backend.getUid(),
+        text: messages[0].text
+      })
+    })
 
     // for demo purpose
     //this.answerDemo(messages);
@@ -273,7 +284,7 @@ export default class ChatBizden extends React.Component {
             messages={this.state.messages}
 
             onSend={(message) => {
-
+              this.onSend(message)
             }}
             loadEarlier={false}
             user={{

@@ -15,6 +15,7 @@ export default class UserStore {
   @observable isAgent= false;
 
 
+
   @action increment(credittoadd) {
     this.userCredit = this.userCredit+credittoadd;
 
@@ -127,6 +128,9 @@ export default class UserStore {
 
     this.userName=name.nametext
   }
+
+
+
   @action setUser(user) {
     this.user = user;
     this.userCredit=user.credit
@@ -144,6 +148,7 @@ export default class UserStore {
     }
     if(user.isAgent){
       this.isAgent = user.isAgent
+
     }
   }
 

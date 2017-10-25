@@ -13,6 +13,7 @@ import Chat from './screens/Chat';
 import ChatOld from './screens/ChatOld';
 import ChatBizden from './screens/ChatBizden';
 import ChatAgent from './screens/ChatAgent';
+import Social from './screens/Social';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
@@ -27,9 +28,11 @@ import stores from './stores';
 
 const MainScreenNavigator = TabNavigator({
   Greeting: {screen:Greeting},
+  Social: {screen:Social},
   Mesajlar: {screen:Mesajlar},
   Odeme: {screen:Odeme},
   Profil: {screen:Profil},
+
 },{
 });
 

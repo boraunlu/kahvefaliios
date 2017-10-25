@@ -73,7 +73,7 @@ export default class Odeme extends React.Component {
           var identifier = 'com.grepsi.kahvefaliios.'+credit
           InAppUtils.purchaseProduct(identifier, (error, response) => {
             this.setState({spinnerVisible:false})
-             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             
              if(error){}
              else{
                if(response && response.productIdentifier) {
@@ -99,7 +99,7 @@ export default class Odeme extends React.Component {
 
                     Backend.addCredits(credittoadd,"kredisayfası")
                     this.props.userStore.increment(credittoadd)
-                    alert('Teşekkürler!'+ credit+' Kredin hesabına eklendi.')
+                    alert('Teşekkürler!'+ credittoadd+' Kredin hesabına eklendi.')
                }
              }
           });

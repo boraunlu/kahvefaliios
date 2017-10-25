@@ -291,6 +291,35 @@ export default class Chat extends React.Component {
 
   }
 
+  payDevam = () => {
+    this.setState({spinnerVisible:true})
+    var products = [
+       'com.grepsi.kahvefaliios.100',
+    ];
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){this.setState({spinnerVisible:false})}
+      else{
+
+        var identifier = 'com.grepsi.kahvefaliios.100'
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               this.popupSoru.dismiss();
+               Backend.sendPayload('continuefal')
+               Backend.addCredits(0,"chat100"+bahsis)
+               //Alert.alert('Bahşiş',"Memnun kalmanıza çok sevindik. Bahşişiniz falcımıza iletiliyor.")
+             }
+           }
+        });
+      }
+    });
+  }
+
   payBahsis = (bahsis) => {
     this.setState({spinnerVisible:true})
     var products = [
@@ -399,6 +428,18 @@ export default class Chat extends React.Component {
       this.setState({checkValidation:true})
     }
 
+  }
+
+  continueFal = () => {
+    if(this.props.userStore.userCredit<100){
+      this.payDevam()
+    }
+    else{
+      this.popupSoru.dismiss();
+      Backend.sendQuickPayload('continuefal')
+      Backend.addCredits(-100)
+      this.props.userStore.increment(-100)
+    }
   }
 
   sendPayload(payload){
@@ -1208,6 +1249,43 @@ export default class Chat extends React.Component {
                 </View>
               </Image>
             </PopupDialog>
+            <PopupDialog
+
+              ref={(popupDialog) => { this.popupSoru = popupDialog; }}
+              dialogStyle={{marginTop:-150}}
+              width={'80%'}
+              height={'50%'}
+              overlayOpacity={0.75}
+            >
+              <Image style={{flex:1,width: null,height: null,alignItems:'center',}} source={require('../static/images/greenback.jpg')}>
+
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+                  <Image style={{height:56,width:56, borderRadius:28,marginTop:25,marginBottom:10}} source={require('../static/images/anneLogo3.png')}></Image>
+                  <Text style={styles.faltypeyazipopup}>
+                    Sorunuz mu var? {"\n"} Daha çok detay mı istiyorsunuz?
+                  </Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    Falcılarımın göremediği detayları ve cevaplayamadığı soruları bizzat ben sohbete bağlanıp cevaplayacağım.{"\n"}
+                  </Text>
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+
+                    <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                      <TouchableOpacity  onPress={() => {this.popupSoru.dismiss();Backend.sendPayload('finishfortune');}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center'}}>İstemiyorum</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity  onPress={() => {this.continueFal();}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                        <Text style={{textAlign:'center',fontWeight:'bold'}}>DEVAM ET</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
+              </Image>
+            </PopupDialog>
           </Image>
 
     );
@@ -1234,7 +1312,8 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color:'white',
     textAlign:'center',
-    fontWeight:'bold'
+    fontWeight:'bold',
+    backgroundColor:'transparent'
   },
   quickContainer: {
     marginTop: 5,
@@ -1248,13 +1327,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
   },
   faltypeyazipopup:{
-    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:20,marginBottom:15
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:15,marginBottom:5,backgroundColor:'transparent'
   },
   faltypeyazikucuk:{
     textAlign: 'center',color:'white',fontSize:14
   },
   faltypeyazikucukpopup:{
-    color:'white',fontSize:14,marginLeft:25
+    color:'white',fontSize:14,margin:10,backgroundColor:'transparent',textAlign: 'justify'
   },
   faltypeyazikucukpopup2:{
     flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'

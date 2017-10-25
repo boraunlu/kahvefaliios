@@ -42,7 +42,9 @@ export default class Mesajlar extends React.Component {
       messages: null,
       aktifChat:null,
       lastBizden:null,
-      tickets:null
+      tickets:null,
+      agentCheck:false,
+      activeTicket:null
   };
 }
 
@@ -59,9 +61,9 @@ export default class Mesajlar extends React.Component {
       const { navigate } = this.props.navigation;
       navigate( destination,{falciNo:falciNo} )
     }
-    navigateToAgent = (destination,ticketKey) => {
+    navigateToAgent = (destination,ticket) => {
       const { navigate } = this.props.navigation;
-      navigate( destination,{ticketKey:ticketKey} )
+      navigate( destination,{ticket:ticket} )
     }
     navigateToAktif = (falciNo) => {
       const { navigate } = this.props.navigation;
@@ -132,39 +134,61 @@ export default class Mesajlar extends React.Component {
       }
 
     })
-/*
+
+  }
+
+  componentDidUpdate(prevProps,prevState) {
+        //alert(prevProps.userStore.isAgent)
+    if(this.props.userStore.isAgent==true&&this.state.agentCheck==false){
+      this.setState({agentCheck:true})
+      this.trackTickets();
+      if(this.props.userStore.hasTicket){
+
+      }
+    }
+  }
+
+  componentWillMount() {
+//alert(this.props.userStore.isAgent)
+
+  }
+
+  trackTickets = () => {
     var ticketref= firebase.database().ref('tickets');
-    ticketref.orderByChild("status").equalTo(0).on('child_added',function(snapshot){
+    ticketref.orderByChild("status").equalTo(0).on('value',function(snapshot){
 
       var obj = snapshot.val()
-      var res = Object.keys(obj)
-      // iterate over them and generate the array
-      .map(function(k) {
-        // generate the array element
-        return [k,obj[k]];
-      });
 
+      var res =[]
+      for (var key in obj) {
+
+          obj[key].key = key;   // save key so you can access it from the array (will modify original data)
+          res.push(obj[key]);
+      }
       this.setState({tickets:res})
     }.bind(this))
 
-    .then((dataSnapshot) => {
-      var obj = dataSnapshot.val()
-      var res = Object.keys(obj)
-      // iterate over them and generate the array
-      .map(function(k) {
-        // generate the array element
-        return [k,obj[k]];
-      });
+    ticketref.orderByChild("status").equalTo(1).on('value',function(snapshot){
 
-      this.setState({tickets:res})
+      var obj = snapshot.val()
+      var agentID = Backend.getUid()
+      var res =[]
+      var ticketvar=false
+      for (var key in obj) {
+          if(obj[key].agentID==agentID){
+            obj[key].key = key;
+            this.setState({activeTicket:obj[key]})
+            ticketvar=true
+          }
 
-    })*/
+      }
+      if(!ticketvar){
+        this.setState({activeTicket:null})
+      }
+
+    }.bind(this))
   }
 
-  componentWillUnmount() {
-
-
-  }
   renderAktif = () => {
     if(this.state.aktifChat==null){
       return null
@@ -247,37 +271,95 @@ export default class Mesajlar extends React.Component {
 
 
     if(this.props.userStore.isAgent){
-      if(this.state.tickets){
-        var tickets = this.state.tickets
+
+        if(this.state.activeTicket){
+          return(
+            <View>
+            <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
+            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',this.state.activeTicket)}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+
+
+               <View style={{padding:10,flex:2}}>
+                 <Text style={{fontWeight:'bold',fontSize:16}}>
+                  Bu senin
+                  </Text>
+
+               </View>
+
+             </View>
+
+            </TouchableOpacity>
+            </View>
+          )
+        }
+        else{
+
+
+
+       var tickets = this.state.tickets
+       if(tickets){
+
+
         return (
+          <View>
+          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
+          {
            tickets.map(function (ticket,index) {
-             return (
-               <TouchableOpacity key={ticket[0]} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',ticket[0])}}>
-                <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+             if(index==0){
+               return (
+                 <TouchableOpacity key={ticket.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',ticket)}}>
+                  <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
 
 
-                  <View style={{padding:10,flex:2}}>
-                    <Text style={{fontWeight:'bold',fontSize:16}}>
-                      {ticket[1].text}
-                     </Text>
-                     <Text>
-                     {capitalizeFirstLetter(replaceGecenHafta(moment(ticket[1].createdAt).calendar()))}
-                    </Text>
+                    <View style={{padding:10,flex:2}}>
+                      <Text style={{fontWeight:'bold',fontSize:16}}>
+                        Cevapla
+                       </Text>
+                       <Text>
+                       {replaceGecenHafta(moment(ticket.createdAt).calendar())}
+                      </Text>
+                    </View>
+
                   </View>
 
-                </View>
+                 </TouchableOpacity>
+                 );
+             }else{
+               return (
+                 <TouchableOpacity key={ticket.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {}}>
+                  <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
 
-               </TouchableOpacity>
-               );
+
+                    <View style={{padding:10,flex:2}}>
+                      <Text style={{fontWeight:'bold',fontSize:16}}>
+                        Bekleyenler
+                       </Text>
+                       <Text>
+                       {replaceGecenHafta(moment(ticket.createdAt).calendar())}
+                      </Text>
+                    </View>
+
+                  </View>
+
+                 </TouchableOpacity>
+                 );
+             }
+
            }, this)
+         }
+         </View>
         )
 
+        }
+        else{
+          return(
+          <Text>Bekleyen Fal bulunmuyor</Text>)
+        }
       }
     }
     else {
-      return (<Text style={{fontWeight:'bold',fontSize:16}}>
-        baban
-       </Text>)
+      return (null)
     }
 
 
@@ -324,6 +406,7 @@ export default class Mesajlar extends React.Component {
     return (
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
+        {this.renderAgent()}
           {this.renderAktif()}
           {this.renderBizden()}
           <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
