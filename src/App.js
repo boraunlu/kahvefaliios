@@ -14,6 +14,7 @@ import ChatOld from './screens/ChatOld';
 import ChatBizden from './screens/ChatBizden';
 import ChatAgent from './screens/ChatAgent';
 import Social from './screens/Social';
+import SocialFal from './screens/SocialFal';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
@@ -43,6 +44,7 @@ let KahvefaliappNav = StackNavigator({
     Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
     ChatOld: {screen:ChatOld},
+    SocialFal: {screen:SocialFal},
     ChatBizden: {screen:ChatBizden},
     ChatAgent: {screen:ChatAgent},
     Swipers: {screen:Swipers},

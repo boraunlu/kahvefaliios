@@ -688,6 +688,20 @@ loadMessages = (callback) => {
       this.messagesRef.off();
     }
   }
+
+  addComment = (falid,comment) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/addComment', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        falid: falid,
+        comment: comment,
+      })
+    })
+  }
 }
 
 export default new Backend();
