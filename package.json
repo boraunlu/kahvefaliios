@@ -25,7 +25,7 @@
     "react-native-fcm": "^8.0.0",
     "react-native-fetch-blob": "^0.10.5",
     "react-native-form-generator": "^0.9.9",
-    "react-native-gifted-chat": "^0.2.5",
+    "react-native-gifted-chat": "^0.2.9",
     "react-native-google-signin": "^0.10.0",
     "react-native-in-app-utils": "^5.2.3",
     "react-native-loading-spinner-overlay": "^0.5.0",

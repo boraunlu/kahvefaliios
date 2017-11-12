@@ -24,6 +24,31 @@ function replaceGecenHafta(string) {
     return string.replace("geçen hafta ","")
 }
 
+function generatefalcisayisi() {
+  var saat = moment().hour()
+  var gun = moment().day()%3
+  var falcisayisi= 5
+  if(saat>7&&saat<11){
+    falcisayisi=4+gun
+  }
+  if(saat>10&&saat<16){
+    falcisayisi=6+gun
+  }
+  if(saat>15&&saat<22){
+    falcisayisi=8+gun
+  }
+  if(saat>21&&saat<25){
+    falcisayisi=5+gun
+  }
+  if(saat<4){
+    falcisayisi=2+gun
+  }
+  if(saat>3&&saat<8){
+    falcisayisi=1+gun
+  }
+  return falcisayisi*17
+}
+
 export default class Social extends React.Component {
   constructor(props) {
     super(props);
@@ -34,6 +59,7 @@ export default class Social extends React.Component {
 
   static navigationOptions = {
       title: 'Sosyal',
+      headerLeft:<View style={{flexDirection:'row',alignItems:'center'}}><Text>{"   ("+generatefalcisayisi()+") Online"}</Text><View style={{backgroundColor:'#00FF00',height:12,width:12,borderRadius:6,marginLeft:5}}></View></View>  ,
     };
 
 
@@ -42,6 +68,8 @@ export default class Social extends React.Component {
     const { navigate } = this.props.navigation;
     navigate( "SocialFal",{fal:fal} )
   }
+
+
 
   componentDidMount() {
     fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
@@ -83,24 +111,24 @@ export default class Social extends React.Component {
            var profile_pic=null
            sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'white',width:'100%',borderColor:'gray',flex:1,marginTop:5}} onPress={() => {this.navigateToFal(sosyal)}}>
-              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(255,255,255,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
+              <View style={{flexDirection:'row',height:70,}}>
 
               <Image source={profile_pic} style={styles.falciAvatar}></Image>
-                <View style={{padding:10,flex:2}}>
+                <View style={{padding:10,flex:1}}>
 
-                  <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',fontSize:16}}>
+                  <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>
                     {sosyal.question}
                    </Text>
                    <Text style={{fontWeight:'normal',fontSize:14}}>
-                     {sosyal.name} - <Text style={{color:'teal'}}>
+                     {sosyal.name} - <Text style={{color:'gray'}}>
                       {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
                      </Text>
                     </Text>
 
                 </View>
-                <View style={{padding:20,borderLeftWidth:1,borderColor:'teal'}}>
-                  <Text style={{color:'teal'}}>({sosyal.comments?sosyal.comments.length:0})</Text>
+                <View style={{padding:15,justifyContent:'center',width:50,borderColor:'teal'}}>
+                  <Text style={{color:'black'}}>({sosyal.comments?sosyal.comments.length:0})</Text>
                 </View>
               </View>
 
@@ -116,9 +144,9 @@ export default class Social extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
 
-        <ScrollView style={{flex:1,width:'100%'}}>
+        <View style={{flex:1,width:'100%'}}>
           <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
             <View>
               <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
@@ -132,9 +160,11 @@ export default class Social extends React.Component {
 
             </View>
           </View>
-          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Fallar</Text></View>
-          {this.renderSosyaller()}
-        </ScrollView>
+          <View style={{backgroundColor:'teal'}}><Text style={{margin:3,fontSize:17,textAlign:'center',color:'white',fontWeight:'bold'}}>Cevap Bekleyen Falseverler</Text></View>
+          <ScrollView style={{backgroundColor:'rgba(255,255,255,0.8)'}}>
+            {this.renderSosyaller()}
+          </ScrollView>
+        </View>
       </Image>
 
     );
