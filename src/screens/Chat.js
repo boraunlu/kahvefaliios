@@ -17,6 +17,7 @@ import {
   Switch,
   Alert,
   TextInput,
+  AsyncStorage,
   ActivityIndicator,
 } from 'react-native';
 import Sound from 'react-native-sound'
@@ -105,6 +106,10 @@ export default class Chat extends React.Component {
       buttonOpacity: new Animated.Value(0),
       spinnerVisible: false,
       checkValidation:false,
+      sosyalInput:'',
+      falPhotos:[],
+      keyboardDidShow:false,
+      anonimSwitchIsOn:true,
     };
 
 
@@ -132,7 +137,7 @@ export default class Chat extends React.Component {
 
 
   showpopup = () => {
-    this.popupDialog.show()
+    this.popupSosyal.show()
   }
 
   onStarRatingPress = (rating) => {
@@ -246,18 +251,19 @@ export default class Chat extends React.Component {
   }
 
   pay = (credit2) => {
+    this.setState({spinnerVisible:true})
     var credit = 0;
     switch (credit2) {
-      case 25:
-          credit = 50;
-          break;
-      case 100:
+      case 0:
           credit = 100;
           break;
-      case 150:
+      case 1:
+          credit = 100;
+          break;
+      case 2:
           credit = 150;
           break;
-      case 50:
+      case 3:
           credit = 50;
           break;
     }
@@ -265,10 +271,11 @@ export default class Chat extends React.Component {
        'com.grepsi.kahvefaliios.'+credit,
     ];
     InAppUtils.loadProducts(products, (error, products) => {
-      if(error){}
+      if(error){this.setState({spinnerVisible:false})}
       else{
         var identifier = 'com.grepsi.kahvefaliios.'+credit
         InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
            if(error){
              if(credit2==25){
@@ -347,6 +354,35 @@ export default class Chat extends React.Component {
       }
     });
   }
+
+  paySosyal = (urls) => {
+    this.setState({spinnerVisible:true})
+    var products = [
+       'com.grepsi.kahvefaliios.50',
+    ];
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){this.setState({spinnerVisible:false})}
+      else{
+
+        var identifier = 'com.grepsi.kahvefaliios.50'
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+               this.popupSosyal.dismiss()
+               setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
+             }
+           }
+        });
+      }
+    });
+  }
+
   startGunluk2 = () => {
     if(this.props.userStore.profileIsValid){
       var userData =this.props.userStore.user
@@ -376,6 +412,7 @@ export default class Chat extends React.Component {
       }
       else{
         Backend.addCredits(-100)
+        this.props.userStore.increment(-100)
         this.navigateto('Chat',0,1);
       }
       Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
@@ -394,6 +431,7 @@ export default class Chat extends React.Component {
         }
         else{
           Backend.addCredits(-150)
+          this.props.userStore.increment(-150)
           this.navigateto('Chat',0,2);
         }
         Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
@@ -415,6 +453,7 @@ export default class Chat extends React.Component {
         }
         else{
           Backend.addCredits(-50)
+          this.props.userStore.increment(-50)
           this.navigateto('Chat',0,3);
         }
       }
@@ -442,7 +481,56 @@ export default class Chat extends React.Component {
     }
   }
 
-  sendPayload(payload){
+  sendSosyal = () => {
+    if(this.state.sosyalInput.length<20){
+
+      Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
+    }
+    else{
+      if(this.state.sosyalInput.length>120){
+        Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
+      }
+      else{
+
+        this.setState({spinnerVisible:true})
+        Backend.uploadImages(this.state.falPhotos).then((urls) => {
+
+          this.setState({spinnerVisible:false})
+          if(this.state.falType==1||this.state.falType==2){
+            Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+            this.popupSosyal.dismiss()
+            setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
+          }
+          else{
+
+            if(this.props.userStore.userCredit<100){
+              this.paySosyal(urls)
+            }
+            else{
+              Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+              Backend.addCredits(-50)
+              this.props.userStore.increment(-50)
+              this.popupSosyal.dismiss()
+              setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
+            }
+          }
+        })
+        .catch(error => {
+          this.setState({spinnerVisible:false,sosyalInput:JSON.stringify(error.error)})
+          Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
+        })
+
+      }
+    }
+  }
+
+  sendPayload(payload,image){
+
+    if (payload.payload=='secdim') {
+
+      this.setState({falPhotos:[image]})
+      AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
+    }
 
     if(payload=="appstart"){
       var epstart = this.state.falType+"appstart"+this.state.falciNo
@@ -546,20 +634,26 @@ export default class Chat extends React.Component {
     });
 
     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+    this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
   }
 
   componentWillUnmount() {
     this._isMounted = false;
 
     this.keyboardDidShowListener.remove();
+    this.keyboardDidHideListener.remove();
 
   }
 
   _keyboardDidShow = (event) => {
-    /*
     var height= event.endCoordinates.height
-    this.setState({keyboardHeight: height});*/
+    this.setState({keyboardHeight: height,keyboardVisible:true});
 
+  }
+
+  _keyboardDidHide = () =>  {
+   // alert('Keyboard Hidden');
+   this.setState({keyboardVisible:false})
   }
 
   componentDidMount() {
@@ -666,6 +760,7 @@ export default class Chat extends React.Component {
         }
       });
 
+      AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
       this.props.userStore.setAktifUnread(0)
 
   }
@@ -801,6 +896,17 @@ export default class Chat extends React.Component {
   sendMessageToBack = (message) => {
     this.setState({buttons:null,quick_reply:null})
     Backend.sendMessage(message);
+    if(message[0].image){
+      var imajlar= this.state.falPhotos;
+      for (let i = 0; i < message.length ; i++) {
+        imajlar.push(message[i].image)
+      }
+      if(imajlar.length>3){
+        imajlar=imajlar.slice(3)
+      }
+      this.setState({falPhotos:imajlar})
+      AsyncStorage.setItem('falPhotos',JSON.stringify(imajlar));
+    }
     whoosh.play();
   }
   renderCustomActions(props) {
@@ -1010,12 +1116,12 @@ export default class Chat extends React.Component {
                         this.setModalVisibility(visible)
               }}
               elements={this.state.modalElements}
-              sendPayload={(payload) => {
+              sendPayload={(payload,image) => {
                 if(payload.payload=='gunluk'||payload.payload=='love'||payload.payload=='detay'||payload.payload=='hand'){
                   this.sendPayload(payload)
                 }
                 else{
-                  this.sendPayload(payload)
+                  this.sendPayload(payload,image)
                   this.setModalVisibility(false)
                 }
 
@@ -1153,9 +1259,10 @@ export default class Chat extends React.Component {
                   </Text>
                   <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
                   <Text style={styles.faltypeyazikucukpopup}>
+                    {'\u2022'} Falınızı sosyal panoda ücretsiz paylaşma imkanı{'\n'}
                     {'\u2022'} Detaylı aşk yorumları{'\n'}
                     {'\u2022'} İlişki tavsiyeleri{'\n'}
-                    {'\u2022'} Sıra beklemek yok{'\n'}
+
                   </Text>
 
                   <View style={{position:'absolute',bottom:0,width:'100%'}}>
@@ -1192,9 +1299,10 @@ export default class Chat extends React.Component {
                     Ortaya çıkmayan detay kalmasın
                   </Text>
                   <Text style={styles.faltypeyazikucukpopup}>
+                    {'\u2022'} Falınızı sosyal panoda ücretsiz paylaşma imkanı{'\n'}
                     {'\u2022'} Her konuya dair detaylı yorumlar{'\n'}
                     {'\u2022'} Ruh haliniz incelensin{'\n'}
-                    {'\u2022'} Sıra beklemeyin{'\n'}
+
                   </Text>
                   <View style={{position:'absolute',bottom:0,width:'100%'}}>
                   <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
@@ -1285,6 +1393,73 @@ export default class Chat extends React.Component {
                   </View>
 
               </Image>
+            </PopupDialog>
+            <PopupDialog
+
+              ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
+              dialogStyle={this.state.keyboardVisible?styles.marginKeyboardVisible:styles.marginKeyboardNotVisible}
+              width={'80%'}
+              height={450}
+              overlayOpacity={0.75}
+            >
+              <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center',paddingBottom:40}} >
+
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      50
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+                  <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
+                  <Text style={styles.faltypeyazipopup}>
+                    Siz sorun, diğer falseverlerimiz cevaplasın!
+                  </Text>
+                  <Text style={styles.faltypeyazikucukpopup}>
+                    Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 2 gün boyunca Sosyal Panomuzda yayınlayıp, diğer falseverlerin yorumuna sunalım.   {"\n"}
+                  </Text>
+                  <TextInput
+                    editable={true}
+                    multiline={true}
+                    value={this.state.sosyalInput}
+                    onChangeText={(text) => this.setState({sosyalInput:text})}
+                    placeholder={"Sorunu yaz"}
+                    style={{height:60,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
+                  />
+                  <View style={{flexDirection:'row',alignItems:'center',marginTop:10}}>
+                    <Text style={{color:'white'}}> Fotoğrafım Görünebilir </Text>
+                    <Switch
+                      onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
+                      value={this.state.anonimSwitchIsOn} />
+                      </View>
+                  <View style={{width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:120,paddingBottom:40}}>
+                  {
+                    this.state.falPhotos.map(function (foto,index) {
+
+                      return (
+                        <View style={{flex:1,height:50,margin:10}} key={index}>
+
+                         <Image source={{uri:foto}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
+
+
+                         </View>
+                        );
+                    }, this)}
+                  </View>
+                  <View style={{position:'absolute',bottom:0,width:'100%'}}>
+
+                   <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                     <TouchableOpacity  onPress={() => {this.popupSosyal.dismiss();Backend.sendPayload('finishfortune');}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                       <Text style={{textAlign:'center'}}>İstemiyorum</Text>
+                     </TouchableOpacity>
+                     <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                       <Text style={{textAlign:'center',fontWeight:'bold'}}>GÖNDER</Text>
+                     </TouchableOpacity>
+                   </View>
+                 </View>
+
+
+
+              </View>
             </PopupDialog>
           </Image>
 
@@ -1402,6 +1577,12 @@ const styles = StyleSheet.create({
   },
   pickerItem: {
     fontSize: 16,
+  },
+  marginKeyboardVisible:{
+    marginTop:-450
+  },
+  marginKeyboardNotVisible:{
+    marginTop:-100
   },
   centering: {
   alignItems: 'center',

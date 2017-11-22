@@ -9,13 +9,16 @@ import {
   TouchableHighlight,
   KeyboardAvoidingView,
   TextInput,
-  Keyboard
+  Keyboard,
+  Alert
 } from 'react-native';
 
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
+import Lightbox from 'react-native-lightbox';
+import Icon from 'react-native-vector-icons/FontAwesome';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 import { observable } from 'mobx';
@@ -31,6 +34,7 @@ function replaceGecenHafta(string) {
 }
 
 @inject("userStore")
+@inject("socialStore")
 @observer
 export default class SocialFal extends React.Component {
   constructor(props) {
@@ -40,6 +44,7 @@ export default class SocialFal extends React.Component {
       comments:null,
       keyboardHeight:0,
       inputHeight:40,
+      keyboardAcik:false,
       commentInput:''
   };
 }
@@ -55,6 +60,7 @@ export default class SocialFal extends React.Component {
   componentDidMount() {
     const { params } = this.props.navigation.state;
     this.setState({fal:params.fal,comments:params.fal.comments})
+
 
   }
 
@@ -89,14 +95,108 @@ export default class SocialFal extends React.Component {
     });
   }
 
-  addComment = () => {
-    var comment={comment:this.state.commentInput,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),photoURL:firebase.auth().currentUser.photoURL}
-
+  like = (index) => {
     var newcomments=this.state.comments
-    newcomments.push(comment)
-    this.setState({comments:newcomments,commentInput:''})
-    Keyboard.dismiss()
-    Backend.addComment(this.state.fal._id,comment)
+    if(newcomments[index].likes){
+      newcomments[index].likes.push(Backend.getUid())
+    }
+    else{
+      var likes=[Backend.getUid()]
+      newcomments[index].likes=likes
+    }
+    this.setState({comments:newcomments})
+    Backend.like(this.state.fal._id,index);
+
+  }
+
+  addComment = () => {
+    const { params } = this.props.navigation.state;
+    var index = params.index
+    if(this.state.commentInput.length<30){
+      Alert.alert("Kısa Yorum","Lütfen daha uzun bir yorum yapınız.")
+    }
+    else {
+      if(this.state.commentInput.length>400){
+        Alert.alert("Çok Uzun Yorum","Lütfen yorumunuzu biraz daha kısa tutun.")
+      }
+      else{
+        this.setState({commentInput:''})
+        var comment={comment:this.state.commentInput,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),photoURL:firebase.auth().currentUser.photoURL}
+        var newcomments=this.state.comments
+        newcomments.push(comment)
+        this.setState({comments:newcomments})
+        Keyboard.dismiss()
+        Backend.addComment(this.state.fal._id,comment)
+        this.props.socialStore.addComment(comment,index)
+        Alert.alert("Teşekkürler","Yorumunuz paylaşıldı!")
+      }
+    }
+
+
+  }
+  renderAktifStripe = () => {
+    if(this.state.fal)
+    {
+      var simdi = moment();
+      if(simdi.diff(this.state.fal.time,"days")>7)
+      {
+        return(
+          <View style={{backgroundColor:'red'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16,margin:3}}>Yeni Yoruma Kapalı</Text></View>
+        )
+      }
+    }
+  }
+
+  renderComments = () => {
+    if(this.state.comments.length>0){
+      return(
+        <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
+        {
+          this.state.comments.map(function (comment,index) {
+            var liked = false;
+            var likecount=0;
+            if(comment.likes){
+              var id = Backend.getUid()
+              for (var i = 0; i < comment.likes.length; i++) {
+                if(comment.likes[i]==id){
+                  liked=true;
+                  break;
+                }
+              }
+              likecount=comment.likes.length
+            }
+
+            return (
+              <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#f8fff8',borderColor:'gray'}}>
+                <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                <View style={{padding:10,flex:2}}>
+                  <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
+                    {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
+                     {capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+                    </Text>
+                  </Text>
+                  <Text style={{fontWeight:'normal',fontSize:14}}>
+                    {comment.comment}
+                  </Text>
+                </View>
+                <TouchableOpacity style={{width:25,alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked?this.like(index):null}}>
+                  {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
+                  <Text>{likecount}</Text>
+                </TouchableOpacity>
+              </View>
+              );
+          }, this)}
+          </ScrollView>
+      )
+    }
+    else{
+      return(
+        <View style={{flex:1}}>
+          <Text style={{textAlign:'center',marginTop:20,color:'black',fontSize:16}}>Haydi bu fala ilk yorum yapan sen ol 😉</Text>
+        </View>
+      )
+    }
+
 
   }
 
@@ -137,9 +237,10 @@ export default class SocialFal extends React.Component {
           <View style={{flex:1}}>
 
 
-            <View style={{alignItems:'center',backgroundColor:'white',justifyContent:'space-between',borderColor:'gray',borderBottomWidth:0}}>
+            <View style={{alignItems:'center',flexDirection:'row',backgroundColor:'white',justifyContent:'center',borderColor:'gray',borderBottomWidth:0,paddingTop:10}}>
               <Image source={profile_pic} style={styles.falciAvatar}></Image>
-              <View style={{alignItems:'center'}}>
+
+              <View style={{}}>
                 <Text style={{fontWeight:'bold',fontSize:17}}>
                   {fal.name}
                  </Text>
@@ -152,44 +253,28 @@ export default class SocialFal extends React.Component {
             </View>
             <View style={{alignItems:'center',borderColor:'gray',backgroundColor:'white',borderBottomWidth:0,padding:5}}>
 
-              <Text style={{fontWeight:'bold',fontStyle:'italic',fontSize:18,marginTop:10}}>
+              <Text style={{fontWeight:'bold',fontStyle:'italic',fontSize:18,marginTop:5}}>
                 {"''"+fal.question+"''"}
 
               </Text>
             </View>
-            <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:80}}>
+            <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:90,paddingBottom:10}}>
             {
               fal.photos.map(function (foto,index) {
 
                 return (
-                   <Image key={index} source={{uri:foto}} style={{flex:1,height:60,borderRadius:5,margin:10}}></Image>
+                  <View style={{flex:1,height:60,margin:10}} key={index}>
+                   <Lightbox navigator={null} renderContent={() => { return(<Image source={{uri:foto}} style={{flex:1,resizeMode:'contain'}}></Image>)}} style={{height:60}}>
 
+                    <Image source={{uri:foto}} style={{ height: 60,borderRadius:5,width:60,alignSelf:'center'}}></Image>
+                   </Lightbox>
+                   </View>
                   );
               }, this)}
             </View>
             <View style={{flex:1}}>
-              <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:16,margin:3}}>Yorumlar</Text></View>
-              <ScrollView style={{flex:1,backgroundColor:'white'}}>
-              {
-                this.state.comments.map(function (comment,index) {
-
-                  return (
-                    <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,borderColor:'gray'}}>
-                      <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
-                      <View style={{padding:10,flex:2}}>
-                        <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
-                          {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
-                           {capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
-                          </Text>
-                        </Text>
-                        <Text style={{fontWeight:'normal',fontSize:14}}>
-                          {comment.comment}
-                        </Text>
-                      </View>
-                    </View>
-                    );
-                }, this)}
-                </ScrollView>
+              <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18,margin:3}}>Yorumlar ({this.state.comments.length})</Text></View>
+              {this.renderComments()}
             </View>
 
           </View>
@@ -208,13 +293,14 @@ export default class SocialFal extends React.Component {
     }
     return (
 
-      <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
-
+      <View style={styles.container}>
+          {this.renderAktifStripe()}
           {this.renderBody()}
-          <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
+          <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight>0?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
             <TextInput
               editable={true}
               multiline={true}
+              value={this.state.commentInput}
               onChangeText={(text) => this.setState({commentInput:text})}
               placeholder={"Yorumunu yaz"}
               onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
@@ -226,7 +312,7 @@ export default class SocialFal extends React.Component {
           </KeyboardAvoidingView>
 
 
-      </Image>
+      </View>
 
     );
   }
@@ -238,11 +324,12 @@ export default class SocialFal extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignSelf: 'stretch',
-    width: null,
-    alignItems:'center',
     paddingBottom:36
 
+  },
+  contain: {
+    flex: 1,
+    height: 150,
   },
   falciAvatar:{
     height:50,

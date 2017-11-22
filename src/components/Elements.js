@@ -12,7 +12,7 @@ class Element extends Component {
 
   render(){
     return(
-      <TouchableOpacity style={{alignSelf:'stretch',padding:0, width:200,borderWidth:1, borderColor:'black'}} onPress={() => {this.props.sendPayload(this.props.payload)}}>
+      <TouchableOpacity style={{alignSelf:'stretch',padding:0, width:200,borderWidth:1, borderColor:'black'}} onPress={() => {this.props.sendPayload(this.props.payload,this.props.image)}}>
         <View style={{height:230,justifyContent:'space-between'}}>
           <Image source={{ uri: this.props.image}} style={{height:120,width:200}} ></Image>
           <View style={{padding:5,flexDirection:'column'}}>
@@ -20,7 +20,7 @@ class Element extends Component {
             <Text style={{textAlign:'center'}}>{this.props.subtitle}</Text>
           </View>
 
-          <Button title={"Seç"} onPress={() => {this.props.sendPayload(this.props.payload)}}/>
+          <Button title={"Seç"} onPress={() => {this.props.sendPayload(this.props.payload,this.props.image)}}/>
 
         </View>
       </TouchableOpacity>

@@ -35,6 +35,10 @@ const MainScreenNavigator = TabNavigator({
   Profil: {screen:Profil},
 
 },{
+  tabBarOptions: {
+   activeTintColor: 'teal',
+ },
+
 });
 
 let KahvefaliappNav = StackNavigator({

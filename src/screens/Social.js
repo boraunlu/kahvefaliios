@@ -6,11 +6,13 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
   Dimensions
 } from 'react-native';
 
 import firebase from 'firebase';
 import Backend from '../Backend';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
@@ -27,6 +29,7 @@ function replaceGecenHafta(string) {
 function generatefalcisayisi() {
   var saat = moment().hour()
   var gun = moment().day()%3
+  var dk = moment().minute()%10
   var falcisayisi= 5
   if(saat>7&&saat<11){
     falcisayisi=4+gun
@@ -46,20 +49,29 @@ function generatefalcisayisi() {
   if(saat>3&&saat<8){
     falcisayisi=1+gun
   }
-  return falcisayisi*17
+  return falcisayisi*17+dk
 }
 
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
+
+@inject("socialStore")
+@observer
 export default class Social extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sosyaller:null
+      sosyaller:null,
+      tek:null
   };
 }
 
   static navigationOptions = {
       title: 'Sosyal',
-      headerLeft:<View style={{flexDirection:'row',alignItems:'center'}}><Text>{"   ("+generatefalcisayisi()+") Online"}</Text><View style={{backgroundColor:'#00FF00',height:12,width:12,borderRadius:6,marginLeft:5}}></View></View>  ,
+      tabBarIcon: ({ tintColor }) => (
+        <Icon name="group" color={tintColor} size={22} />
+      ),
+      headerRight:<View style={{flexDirection:'row',alignItems:'center',marginRight:10}}><Text>{"   ("+generatefalcisayisi()+") Online"}</Text><View style={{backgroundColor:'#00FF00',height:12,width:12,borderRadius:6,marginLeft:5}}></View></View>  ,
     };
 
 
@@ -85,11 +97,9 @@ export default class Social extends React.Component {
     .then((response) => response.json())
      .then((responseJson) => {
 
-        this.setState({sosyaller:responseJson});
-         //alert(JSON.stringify(responseJson))
+        this.setState({tek:responseJson.tek});
 
-
-
+        this.props.socialStore.setSocials(responseJson.sosyals)
      })
   }
 
@@ -102,19 +112,54 @@ export default class Social extends React.Component {
 
   }
 
+  renderTek = () => {
+    if(this.state.tek){
+      var tek = this.state.tek
+      var profile_pic=null
+      tek.profile_pic?profile_pic={uri:tek.profile_pic}:tek.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+      return(
+        <View style={{height:70,marginBottom:20}}>
+
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1,height:70}} onPress={() => {this.navigateToFal(tek)}}>
+           <View style={{flexDirection:'row',height:70}}>
+
+           <Image source={profile_pic} style={styles.falciAvatar}></Image>
+             <View style={{padding:10,flex:1}}>
+
+               <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>
+                 {tek.question}
+                </Text>
+                <Text style={{fontWeight:'normal',fontSize:14}}>
+                  {tek.name} - <Text style={{color:'gray'}}>
+                   {capitalizeFirstLetter(replaceGecenHafta(moment(tek.time).calendar()))}
+                  </Text>
+                 </Text>
+
+             </View>
+             <View style={{padding:15,justifyContent:'center',width:60,borderColor:'teal'}}>
+               <Text style={{color:'black'}}>({tek.comments?tek.comments.length:0})</Text>
+             </View>
+           </View>
+
+          </TouchableOpacity>
+        </View>
+      )
+    }
+  }
+
   renderSosyaller = () => {
-    if(this.state.sosyaller){
-      var sosyaller = this.state.sosyaller
+    if(this.props.socialStore.socials){
+      var sosyaller = this.props.socialStore.socials
       return (
 
          sosyaller.map(function (sosyal,index) {
            var profile_pic=null
            sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'rgba(255,255,255,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
               <View style={{flexDirection:'row',height:70,}}>
 
-              <Image source={profile_pic} style={styles.falciAvatar}></Image>
+              <Image source={profile_pic} onError={(error) => {profile_pic=require('../static/images/femaleAvatar.png')}} style={styles.falciAvatar}></Image>
                 <View style={{padding:10,flex:1}}>
 
                   <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>
@@ -127,14 +172,23 @@ export default class Social extends React.Component {
                     </Text>
 
                 </View>
-                <View style={{padding:15,justifyContent:'center',width:50,borderColor:'teal'}}>
-                  <Text style={{color:'black'}}>({sosyal.comments?sosyal.comments.length:0})</Text>
+                <View style={{padding:15,justifyContent:'center',width:90,borderColor:'teal'}}>
+                  <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:20}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
                 </View>
               </View>
 
              </TouchableOpacity>
              );
          }, this)
+      )
+    }
+    else{
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
       )
     }
   }
@@ -160,8 +214,10 @@ export default class Social extends React.Component {
 
             </View>
           </View>
-          <View style={{backgroundColor:'teal'}}><Text style={{margin:3,fontSize:17,textAlign:'center',color:'white',fontWeight:'bold'}}>Cevap Bekleyen Falseverler</Text></View>
+            {this.renderTek()}
+          <View style={{backgroundColor:'teal'}}><Text style={{margin:3,fontSize:17,textAlign:'center',color:'white',fontWeight:'bold'}}>Yorum Bekleyen Falseverler ({this.props.socialStore.socials?this.props.socialStore.socials.length:0})</Text></View>
           <ScrollView style={{backgroundColor:'rgba(255,255,255,0.8)'}}>
+
             {this.renderSosyaller()}
           </ScrollView>
         </View>
@@ -187,6 +243,11 @@ const styles = StyleSheet.create({
     width:40,
     margin:10,
     borderRadius:20,
-  }
+  },
+    centering: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 8,
+  },
 
 });

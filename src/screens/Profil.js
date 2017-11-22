@@ -20,8 +20,18 @@ import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import Picker from 'react-native-picker';
+import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+
+var radio_props = [
+  {label: 'Falıma bakılmadı', value: 0 },
+  {label: 'Falların içeriğini beğenmedim', value: 1 },
+  {label: 'Fiyatları yüksek buldum', value: 2 },
+  {label: 'Uygulamanın dizaynını beğenmedim', value: 3 },
+  {label: 'Reklam İzleyemiyorum', value: 4 },
+  {label: 'Diğer', value: 5 },
+];
 
 @inject("userStore")
 @observer
@@ -35,7 +45,8 @@ export default class Profil extends React.Component {
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
       email:'',
       kendi:'',
-      gender:'java'
+      gender:'java',
+      radioValue:0,
   };
 }
 
@@ -153,7 +164,7 @@ export default class Profil extends React.Component {
     return (
 
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
-        <ScrollView>
+        <ScrollView style={{flex:1}}>
           <View style={{elevation:3,paddingTop:15,marginTop:30,backgroundColor:'white',flexDirection:'column'}}>
             <View style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
@@ -163,12 +174,17 @@ export default class Profil extends React.Component {
             <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.navigateto(destination)}}/>
 
           </View>
-          <View style={{paddingTop:5,marginBottom:10}}>
+          <View style={{paddingTop:5,marginBottom:10,flex:1}}>
             <View style={{marginBottom:5}}>
               <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
-            <View style={{marginBottom:5}}>
-              <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
+            <View style={{marginBottom:5,flexDirection:'row',flex:1,width:'100%'}}>
+              <View style={{marginRight:3,flexGrow:2}}>
+                <Button title={"Öneri"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
+              </View>
+              <View style={{marginLeft:3,flexGrow:2}}>
+                <Button title={"Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupSikayet.show()}}/>
+              </View>
             </View>
             <View style={{marginBottom:5}}>
               <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>
@@ -223,7 +239,7 @@ export default class Profil extends React.Component {
            </View>
          </PopupDialog>
          <PopupDialog
-          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri & Şikayet" />}
+          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
           dialogStyle={{marginTop:-250}}
           width={'90%'}
           height={'30%'}
@@ -237,16 +253,45 @@ export default class Profil extends React.Component {
             style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
             onChangeText={(text) => this.setState({text})}
 
-            placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
+            placeholder={'Buraya uygulamamızda görmek isteyeceğiniz yenilikleri yazabilirsiniz. Teşekkür ederiz!'}
             editable = {true}
           />
 
           <View style={{marginBottom:10}}>
             <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
           </View>
-        </View>
-          </PopupDialog>
-          <PopupDialog
+          </View>
+        </PopupDialog>
+        <PopupDialog
+         dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
+         dialogStyle={{marginTop:-250}}
+         width={'90%'}
+         height={'50%'}
+         ref={(popupDialog) => { this.popupSikayet = popupDialog; }}
+       >
+       <View style={{flex:1}}>
+         <RadioForm
+           radio_props={radio_props}
+           initial={0}
+           onPress={(value) => {this.setState({radioValue:value})}}
+         />
+         <TextInput
+
+           multiline = {true}
+
+           style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+           onChangeText={(text) => this.setState({text})}
+
+           placeholder={'Buraya uygulamamızda görmek isteyeceğiniz yenilikleri yazabilirsiniz. Teşekkür ederiz!'}
+           editable = {true}
+         />
+
+         <View style={{marginBottom:10}}>
+           <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
+         </View>
+       </View>
+       </PopupDialog>
+      <PopupDialog
            dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
            dialogStyle={{marginTop:-250}}
            width={'90%'}

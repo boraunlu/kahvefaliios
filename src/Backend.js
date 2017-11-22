@@ -88,7 +88,7 @@ class Backend {
        var imageName = "";
        var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-       for( var i=0; i < 7; i++ ){
+       for( var i=0; i < 13; i++ ){
           imageName += possible.charAt(Math.floor(Math.random() * possible.length));
        }
        var mime ='image/jpg'
@@ -175,7 +175,7 @@ class Backend {
     this.lastKeyLoaded=null;
   }
 
-  //var uploadImage = (uri, imageName, mime) => {}
+
 
 
   loadInitialMessages = (callback) => {
@@ -690,7 +690,7 @@ loadMessages = (callback) => {
   }
 
   addComment = (falid,comment) => {
-    fetch('https://eventfluxbot.herokuapp.com/appapi/addComment', {
+    fetch('https://eventfluxbot.herokuapp.com/webhook/addComment', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -701,6 +701,83 @@ loadMessages = (callback) => {
         comment: comment,
       })
     })
+  }
+
+  like = (falid,index) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/like', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        falid: falid,
+        index: index,
+        uid:this.getUid()
+      })
+    })
+  }
+
+  uploadImages = (images) => {
+    let urls = [];
+    return new Promise((resolve, reject) => {
+
+      var imageslength=images.length;
+      this.uploadImage(images[0])
+      .then((url)=>{
+        urls.push(url)
+        if(imageslength>1){
+          this.uploadImage(images[1])
+          .then((url)=>{
+            urls.push(url)
+            if(imageslength>2){
+              this.uploadImage(images[2])
+              .then((url)=>{
+                urls.push(url)
+                //this.postSosyal(question,urls,anonim)
+                resolve(urls)
+
+              })
+              .catch(error => {
+                reject(error)
+              })
+            }else {
+              //this.postSosyal(question,urls,anonim)
+              resolve(urls)
+            }
+          })
+          .catch(error => {
+            reject(error)
+          })
+        }
+        else {
+            //this.postSosyal(question,urls,anonim)
+            resolve(urls)
+        }
+      })
+      .catch(error => {
+        reject(error)
+      })
+
+   })
+
+  }
+
+  postSosyal = (question,images,anonim) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/postSosyal', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question: question,
+        photos: images,
+        anonim: !anonim,
+        uid:this.getUid()
+      })
+    })
+
   }
 }
 

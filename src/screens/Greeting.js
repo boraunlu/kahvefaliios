@@ -805,9 +805,10 @@ componentWillUnmount() {
               </Text>
               <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
               <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Falınızı sosyal panoda ücretsiz paylaşma imkanı{'\n'}
                 {'\u2022'} Detaylı aşk yorumları{'\n'}
                 {'\u2022'} İlişki tavsiyeleri{'\n'}
-                {'\u2022'} Sıra beklemek yok{'\n'}
+
               </Text>
 
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
@@ -844,9 +845,10 @@ componentWillUnmount() {
                 Ortaya çıkmayan detay kalmasın
               </Text>
               <Text style={styles.faltypeyazikucukpopup}>
+                {'\u2022'} Falınızı sosyal panoda ücretsiz paylaşma imkanı{'\n'}
                 {'\u2022'} Her konuya dair detaylı yorumlar{'\n'}
                 {'\u2022'} Ruh haliniz incelensin{'\n'}
-                {'\u2022'} Sıra beklemeyin{'\n'}
+
               </Text>
               <View style={{position:'absolute',bottom:0,width:'100%'}}>
               <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
