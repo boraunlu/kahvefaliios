@@ -128,7 +128,7 @@ export default class SocialFal extends React.Component {
         Keyboard.dismiss()
         Backend.addComment(this.state.fal._id,comment)
         this.props.socialStore.addComment(comment,index)
-        Alert.alert("Teşekkürler","Yorumunuz paylaşıldı!")
+        setTimeout(()=>{Alert.alert("Teşekkürler","Yorumunuz paylaşıldı!")},200)
       }
     }
 
@@ -293,25 +293,27 @@ export default class SocialFal extends React.Component {
     }
     return (
 
-      <View style={styles.container}>
+      <View style={styles.containerrr}>
+        <ScrollView>
           {this.renderAktifStripe()}
           {this.renderBody()}
-          <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight>0?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
-            <TextInput
-              editable={true}
-              multiline={true}
-              value={this.state.commentInput}
-              onChangeText={(text) => this.setState({commentInput:text})}
-              placeholder={"Yorumunu yaz"}
-              onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
-              style={{height:this.state.keyboardHeight>0?80:30,borderRadius:5,borderColor: 'gray', borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
-            />
-            <TouchableOpacity style={{padding:5,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
-              <Text style={{color:'teal'}}>Gönder</Text>
-            </TouchableOpacity>
-          </KeyboardAvoidingView>
 
 
+        </ScrollView>
+        <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight>0?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
+          <TextInput
+            editable={true}
+            multiline={true}
+            value={this.state.commentInput}
+            onChangeText={(text) => this.setState({commentInput:text})}
+            placeholder={"Yorumunu yaz"}
+            onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
+            style={{height:this.state.keyboardHeight>0?80:30,borderRadius:5,borderColor: 'gray', borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
+          />
+          <TouchableOpacity style={{padding:5,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
+            <Text style={{color:'teal'}}>Gönder</Text>
+          </TouchableOpacity>
+        </KeyboardAvoidingView>
       </View>
 
     );
@@ -322,9 +324,11 @@ export default class SocialFal extends React.Component {
 
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingBottom:36
+  containerrr: {
+
+    paddingBottom:36,
+    flex:1,
+    backgroundColor:'white'
 
   },
   contain: {

@@ -209,7 +209,7 @@ export default class Social extends React.Component {
             </View>
             <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.6)',padding:10,width:Dimensions.get('window').width-85}}>
               <Text style={{fontSize:16,color:'white'}}>
-                Bu sayfada diğer falseverlerden gelen falları okuyabilir, bu fallara yorum yapıp falpuan kazanabilirsin.
+                Bu sayfada diğer falseverlerden gelen falları okuyabilir, bu fallara yorum yapıp beğeni kazanabilirsin.
               </Text>
 
             </View>

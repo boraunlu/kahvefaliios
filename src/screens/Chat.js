@@ -137,7 +137,7 @@ export default class Chat extends React.Component {
 
 
   showpopup = () => {
-    this.popupSosyal.show()
+    this.popupDialog.show()
   }
 
   onStarRatingPress = (rating) => {
@@ -375,6 +375,7 @@ export default class Chat extends React.Component {
              if(response && response.productIdentifier) {
                Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
                this.popupSosyal.dismiss()
+               Keyboard.dismiss()
                setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
              }
            }
@@ -499,6 +500,7 @@ export default class Chat extends React.Component {
           if(this.state.falType==1||this.state.falType==2){
             Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
             this.popupSosyal.dismiss()
+            Keyboard.dismiss()
             setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
           }
           else{
@@ -511,6 +513,7 @@ export default class Chat extends React.Component {
               Backend.addCredits(-50)
               this.props.userStore.increment(-50)
               this.popupSosyal.dismiss()
+              Keyboard.dismiss()
               setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
             }
           }
@@ -549,6 +552,9 @@ export default class Chat extends React.Component {
     }
     else if (payload.payload=='hand') {
       this.popupHand.show()
+    }
+    else if (payload.payload=='sosyalfal') {
+      this.popupSosyal.show()
     }
     else{
       if(payload.type=="postback"){
@@ -1117,7 +1123,7 @@ export default class Chat extends React.Component {
               }}
               elements={this.state.modalElements}
               sendPayload={(payload,image) => {
-                if(payload.payload=='gunluk'||payload.payload=='love'||payload.payload=='detay'||payload.payload=='hand'){
+                if(payload.payload=='gunluk'||payload.payload=='love'||payload.payload=='detay'||payload.payload=='hand'||payload.payload=='sosyalfal'){
                   this.sendPayload(payload)
                 }
                 else{

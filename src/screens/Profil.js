@@ -27,10 +27,9 @@ import { observer, inject } from 'mobx-react';
 var radio_props = [
   {label: 'Falıma bakılmadı', value: 0 },
   {label: 'Falların içeriğini beğenmedim', value: 1 },
-  {label: 'Fiyatları yüksek buldum', value: 2 },
-  {label: 'Uygulamanın dizaynını beğenmedim', value: 3 },
-  {label: 'Reklam İzleyemiyorum', value: 4 },
-  {label: 'Diğer', value: 5 },
+  {label: 'Uygulamanın dizaynını beğenmedim', value: 2 },
+  {label: 'Reklam İzleyemiyorum', value: 3 },
+  {label: 'Diğer', value: 4 },
 ];
 
 @inject("userStore")
@@ -178,13 +177,11 @@ export default class Profil extends React.Component {
             <View style={{marginBottom:5}}>
               <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
-            <View style={{marginBottom:5,flexDirection:'row',flex:1,width:'100%'}}>
-              <View style={{marginRight:3,flexGrow:2}}>
-                <Button title={"Öneri"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
-              </View>
-              <View style={{marginLeft:3,flexGrow:2}}>
-                <Button title={"Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupSikayet.show()}}/>
-              </View>
+            <View style={{marginBottom:5}}>
+
+                <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
+
+
             </View>
             <View style={{marginBottom:5}}>
               <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>
@@ -253,7 +250,7 @@ export default class Profil extends React.Component {
             style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
             onChangeText={(text) => this.setState({text})}
 
-            placeholder={'Buraya uygulamamızda görmek isteyeceğiniz yenilikleri yazabilirsiniz. Teşekkür ederiz!'}
+            placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
             editable = {true}
           />
 
@@ -293,9 +290,9 @@ export default class Profil extends React.Component {
        </PopupDialog>
       <PopupDialog
            dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
-           dialogStyle={{marginTop:-250}}
+           dialogStyle={{marginTop:-300}}
            width={'90%'}
-           height={'60%'}
+           height={'40%'}
            ref={(popupDialog) => { this.popupDialog3 = popupDialog; }}
          >
          <View style={{flex:1,padding:5}}>
