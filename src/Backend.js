@@ -764,7 +764,7 @@ loadMessages = (callback) => {
   }
 
   postSosyal = (question,images,anonim) => {
-    fetch('https://eventfluxbot.herokuapp.com/appapi/postSosyal', {
+    fetch('https://eventfluxbot.herokuapp.com/webhook/postSosyal', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

@@ -30,7 +30,7 @@ export default class ProfilePicker extends Component {
 
   initMeslekPicker = () => {
 
-   var meslekArray=["Öğrenci", "Çalışıyor","Çalışmıyor","İş arıyor"];
+   var meslekArray=["Öğrenciyim", "Kamuda Çalışıyorum", "Özel Sektör", "Kendi İşim","Çalışmıyorum","İş Arıyorum"];
 
    Picker.init({
        pickerData: meslekArray,
@@ -48,7 +48,7 @@ export default class ProfilePicker extends Component {
 
   initiliskiPicker = () => {
 
-   var iliskiArray=["İlişkisi Yok", "Sevgilisi Var","Evli"];
+   var iliskiArray=["İlişkim Yok", "Sevgilim Var","Evliyim","Nişanlıyım","Platonik","Ayrı Yaşıyorum","Yeni Ayrıldım","Boşandım"];
 
    Picker.init({
        pickerData: iliskiArray,

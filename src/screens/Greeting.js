@@ -131,7 +131,7 @@ static navigationOptions = ({ navigation }) => ({
         const resetAction = NavigationActions.reset({
           index: 0,
           actions: [
-            NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false,falciNo:falciNo}})
+            NavigationActions.navigate({ routeName: 'Chat',params:{newFortune:false,falciNo:falciNo,falType:this.props.userStore.user.fortuneType}})
           ]
         })
         this.props.navigation.dispatch(resetAction)

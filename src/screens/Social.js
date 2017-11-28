@@ -112,6 +112,13 @@ export default class Social extends React.Component {
 
   }
 
+  replaceAvatar = (index) => {
+
+    var sosyals = this.props.socialStore.socials
+    sosyals[index].profile_pic=null
+    this.props.socialStore.setSocials(sosyals)
+  }
+
   renderTek = () => {
     if(this.state.tek){
       var tek = this.state.tek
@@ -159,7 +166,7 @@ export default class Social extends React.Component {
              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
               <View style={{flexDirection:'row',height:70,}}>
 
-              <Image source={profile_pic} onError={(error) => {profile_pic=require('../static/images/femaleAvatar.png')}} style={styles.falciAvatar}></Image>
+              <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
                 <View style={{padding:10,flex:1}}>
 
                   <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>

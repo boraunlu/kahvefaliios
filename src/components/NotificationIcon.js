@@ -31,7 +31,7 @@ export default class NotificationIcon extends React.Component {
           alignItems:'center',
           justifyContent:'center',
           top: 5,
-          right: 25,
+          right: 15,
           height:16,
           width:16,
           borderRadius: 8,

@@ -376,6 +376,7 @@ export default class Chat extends React.Component {
                Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
                this.popupSosyal.dismiss()
                Keyboard.dismiss()
+               this.setState({modalVisible:false,inputVisible:false})
                setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
              }
            }
@@ -501,6 +502,7 @@ export default class Chat extends React.Component {
             Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
             this.popupSosyal.dismiss()
             Keyboard.dismiss()
+            this.setState({modalVisible:false,inputVisible:false})
             setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
           }
           else{
@@ -514,6 +516,7 @@ export default class Chat extends React.Component {
               this.props.userStore.increment(-50)
               this.popupSosyal.dismiss()
               Keyboard.dismiss()
+              this.setState({modalVisible:false,inputVisible:false})
               setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
             }
           }
@@ -1432,7 +1435,7 @@ export default class Chat extends React.Component {
                     style={{height:60,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
                   />
                   <View style={{flexDirection:'row',alignItems:'center',marginTop:10}}>
-                    <Text style={{color:'white'}}> Fotoğrafım Görünebilir </Text>
+                    <Text style={{color:'white'}}>Profil Fotoğrafım Görünebilir </Text>
                     <Switch
                       onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
                       value={this.state.anonimSwitchIsOn} />
