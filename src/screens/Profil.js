@@ -6,6 +6,7 @@ import {
   Image,
   ScrollView,
   TouchableHighlight,
+  TouchableOpacity,
   Button,
   TextInput,
   Keyboard,
@@ -21,6 +22,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import Picker from 'react-native-picker';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
+
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 
@@ -94,7 +96,6 @@ export default class Profil extends React.Component {
       else{
         Alert.alert('Başvuru','Başvurunuz bize ulaşmıştır. Teşekkürler!')
         this.setState({kendi:''})
-        Keyboard.dismiss()
         this.popupDialog3.dismiss(() => {
           console.log('callback');
         });
@@ -110,10 +111,30 @@ export default class Profil extends React.Component {
           })
         })
         .then((response) => {
-
+          Keyboard.dismiss()
         })
       }
     }
+
+  onActionsPress = () => {
+    const options = ['Çekilmiş Fotoğraflarından Seç', 'Yeni Fotoğraf Çek', 'İptal'];
+    const cancelButtonIndex = options.length - 1;
+    showActionSheetWithOptions({
+      options,
+      cancelButtonIndex,
+    },
+    (buttonIndex) => {
+      switch (buttonIndex) {
+        case 0:
+          this.setPickerVisible(true);
+          break;
+        case 1:
+          Camera.checkVideoAuthorizationStatus().then((response) => {if(response==true){this.setCameraVisible(true)}})
+          break;
+        default:
+      }
+    });
+  }
 
   componentDidMount() {
 
@@ -165,10 +186,14 @@ export default class Profil extends React.Component {
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
           <View style={{elevation:3,paddingTop:15,marginTop:30,backgroundColor:'white',flexDirection:'column'}}>
-            <View style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
+            <TouchableOpacity onPress={()=>{this.onActionsPress()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
-            </View>
-            <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:16}}>{this.state.userName}</Text>
+              <TouchableOpacity style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'#1194F7',alignItems:'center',backgroundColor:'transparent'}}>
+                <Icon name="pencil" color={'gray'} size={20} />
+              </TouchableOpacity>
+            </TouchableOpacity>
+
+            <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
 
             <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.navigateto(destination)}}/>
 
@@ -346,3 +371,7 @@ const styles = StyleSheet.create({
   },
 
 });
+
+Profil.contextTypes = {
+  actionSheet: React.PropTypes.func,
+};

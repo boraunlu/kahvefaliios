@@ -112,8 +112,8 @@ export default class SocialFal extends React.Component {
   addComment = () => {
     const { params } = this.props.navigation.state;
     var index = params.index
-    if(this.state.commentInput.length<30){
-      Alert.alert("Kısa Yorum","Lütfen daha uzun bir yorum yapınız.")
+    if(this.state.commentInput.length<50){
+      Alert.alert("Kısa Yorum","Lütfen daha uzun ve detaylı yorumlayın.")
     }
     else {
       if(this.state.commentInput.length>400){

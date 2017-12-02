@@ -7,7 +7,8 @@ import {
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
-  Dimensions
+  Dimensions,
+  Button
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -15,6 +16,7 @@ import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
+import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
@@ -66,13 +68,15 @@ export default class Social extends React.Component {
   };
 }
 
-  static navigationOptions = {
+  static navigationOptions = ({ navigation }) => ({
       title: 'Sosyal',
       tabBarIcon: ({ tintColor }) => (
         <Icon name="group" color={tintColor} size={22} />
       ),
-      headerRight:<View style={{flexDirection:'row',alignItems:'center',marginRight:10}}><Text>{"   ("+generatefalcisayisi()+") Online"}</Text><View style={{backgroundColor:'#00FF00',height:12,width:12,borderRadius:6,marginLeft:5}}></View></View>  ,
-    };
+      headerRight:<View style={{paddingRight:5}}><Button color={'teal'} title={"+ Fal Paylaş"} onPress={() => {navigation.state.params.showpopup()}}/></View>,
+      headerLeft:<View style={{flexDirection:'row',alignItems:'center',paddingLeft:5}}><Text>{"   ("+generatefalcisayisi()+") Online"}</Text><View style={{backgroundColor:'#00FF00',height:12,width:12,borderRadius:6,marginLeft:5}}></View></View>  ,
+
+    })
 
 
 
@@ -81,9 +85,16 @@ export default class Social extends React.Component {
     navigate( "SocialFal",{fal:fal} )
   }
 
+  showpopup = () => {
+    this.popupSosyal.show()
+
+  }
+
+
 
 
   componentDidMount() {
+    this.props.navigation.setParams({ showpopup: this.showpopup  })
     fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
       method: 'POST',
       headers: {
@@ -228,6 +239,27 @@ export default class Social extends React.Component {
             {this.renderSosyaller()}
           </ScrollView>
         </View>
+        <PopupDialog
+
+          ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
+
+          width={'80%'}
+          height={'60%'}
+          dialogStyle={{marginTop:-150}}
+          overlayOpacity={0.75}
+        >
+          <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center'}} >
+
+              <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
+              <Text style={styles.faltypeyazipopup}>
+                Falımı nasıl paylaşabilirim?
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                Ana sayfa üzerinden falcılarımızla yaptığınız sohbetin bitiminde çıkan <Text style={{fontWeight:'bold',fontSize:15}}>"Falseverlere Sor"</Text> seçeneğini kullanarak falınızın burada yayınlanmasını sağlayabilirsiniz.  {"\n"}
+              </Text>
+                <Image style={{height:140,resizeMode:'contain',alignSelf:'center'}} source={require('../static/images/sosyalreklam1.png')}/>
+          </View>
+        </PopupDialog>
       </Image>
 
     );
@@ -256,5 +288,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 8,
   },
+  faltypeyazi:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+  },
+  faltypeyazipopup:{
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:15
+  },
+  faltypeyazikucuk:{
+    textAlign: 'center',color:'white',fontSize:14
+  },
+  faltypeyazikucukpopup:{
+    color:'white',fontSize:14,margin:5,textAlign:'center',marginTop:15
+  },
+  faltypeyazikucukpopup2:{
+    flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
+  }
 
 });
