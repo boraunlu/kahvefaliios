@@ -612,7 +612,6 @@ loadMessages = (callback) => {
           })
         }
         else{
-
           this.messagesRef.push({
             type: "image",
             image: message[0].image,
@@ -716,6 +715,51 @@ loadMessages = (callback) => {
         uid:this.getUid()
       })
     })
+  }
+
+  uploadProfilePic = (uri) => {
+
+    return new Promise((resolve, reject) => {
+     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+       let uploadBlob = null
+       var mime ='image/jpg'
+       const imageRef = firebase.storage().ref('profilepics').child(this.getUid())
+       fs.readFile(uploadUri, 'base64')
+       .then((data) => {
+         return Blob.build(data, { type: `${mime};BASE64` })
+       })
+       .then((blob) => {
+         uploadBlob = blob
+         return imageRef.put(blob, { contentType: mime })
+       })
+       .then(() => {
+         uploadBlob.close()
+         return imageRef.getDownloadURL()
+       })
+       .then((url) => {
+         resolve(url)
+         firebase.auth().currentUser.updateProfile({
+           photoURL:url
+         })
+         fetch('https://eventfluxbot.herokuapp.com/appapi/setProfilePic', {
+           method: 'POST',
+           headers: {
+             'Accept': 'application/json',
+             'Content-Type': 'application/json',
+           },
+           body: JSON.stringify({
+             url: url,
+             uid:this.getUid()
+           })
+         })
+
+
+       })
+       .catch((error) => {
+         reject(error)
+       })
+   })
+
   }
 
   uploadImages = (images) => {

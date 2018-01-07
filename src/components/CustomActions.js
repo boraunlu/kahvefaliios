@@ -157,8 +157,8 @@ export default class CustomActions extends React.Component {
         >
           {this.renderNavBar()}
           <CameraRollPicker
-            maximum={10}
-            imagesPerRow={4}
+            maximum={3}
+            imagesPerRow={3}
             callback={this.selectImages}
             selected={[]}
             emptyText={"Yükleniyor... \n \n Eğer çok uzun sürüyorsa uygulamamıza fotoğraflarına erişim izni vermemiş olabilirsiniz. Teşekkürler!"}

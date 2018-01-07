@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {ActivityIndicator, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ProgressBar from 'react-native-progress/Bar';
 import Picker from 'react-native-picker';
 
 require('../components/data/falcilar.js');
@@ -21,73 +22,60 @@ export default class UserData extends Component {
 
   }
 
-  initMeslekPicker = () => {
-
-   var meslekArray=["Öğrenci", "Çalışıyor","Çalışmıyor","İş arıyor"];
-
-   Picker.init({
-       pickerData: meslekArray,
-       selectedValue: [this.props.userStore.meslek],
-       pickerTitleText:'İş Durumunuz',
-       pickerCancelBtnText:'Kapat',
-       pickerConfirmBtnText: 'Tamam',
-
-       onPickerConfirm: data => {
-           this.props.userStore.changeMeslek(data)
-       },
-
-   });
-  }
-
-  initiliskiPicker = () => {
-
-   var iliskiArray=["İlişkisi Yok", "Sevgilisi Var","Evli"];
-
-   Picker.init({
-       pickerData: iliskiArray,
-       selectedValue: [this.props.userStore.meslek],
-       pickerTitleText:'İlişki Durumunuz',
-       pickerCancelBtnText:'Kapat',
-       pickerConfirmBtnText: 'Tamam',
-       onPickerConfirm: data => {
-           this.props.userStore.changeIliski(data)
-       },
-
-   });
-  }
-
-  initAgePicker = () => {
-
-    let agedata = [];
-    for(var i=12;i<70;i++){
-        agedata.push(i);
-    }
-
-   Picker.init({
-       pickerData: agedata,
-       selectedValue: [this.props.userStore.age],
-       pickerTitleText:'Yaşınız',
-       pickerCancelBtnText:'Kapat',
-       pickerConfirmBtnText: 'Tamam',
-       onPickerConfirm: data => {
-
-           this.props.userStore.changeAge(data[0])
-       },
-
-   });
-  }
-
   componentDidUpdate = () => {
-
-
 
   }
 
   renderUserData(){
     if (this.props.userStore.user) {
+      var falPuan =this.props.userStore.user.falPuan
+      var seviye = 1
+      var limit =20
+      var gosterilenpuan=falPuan
+      var unvan = "Yeni Falsever"
+      var kolor='rgb(209,142,12)'
+      if (falPuan>20&&falPuan<51){
+        seviye = 2
+        limit = 30
+        gosterilenpuan=falPuan-20
+        unvan = "Falsever"
+        kolor='rgb(60,179,113)'
+      }else if (falPuan>50&&falPuan<101) {
+        seviye = 3
+        limit = 50
+        gosterilenpuan=falPuan-50
+        unvan = "Deneyimli Falsever"
+        kolor='rgb(114,0,218)'
+      }else if (falPuan>100&&falPuan<176) {
+        seviye = 4
+        limit = 75
+        gosterilenpuan=falPuan-100
+        unvan = "Fal Uzmanı"
+        kolor='rgb(0,185,241)'
+      }
+      else if (falPuan>175&&falPuan<301) {
+        seviye = 5
+        limit = 125
+        gosterilenpuan=falPuan-175
+        unvan = "Fal Profesörü"
+        kolor='rgb(249,50,12)'
+      }
 
       return (
         <View >
+        <TouchableOpacity  onPress={() => {this.props.setDestination('FalPuan')}}>
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
+            <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+            <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
+          </View>
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+            <View style={{justifyContent:'center'}}>
+              <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+              <ProgressBar borderColor={kolor} color={kolor} height={16} borderRadius={8} progress={gosterilenpuan/limit} width={200} />
+            </View>
+            <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+          </View>
+        </TouchableOpacity>
         <View style={styles.secondrow}>
           <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistikleri</Text>
           <View style={styles.secondinner}>

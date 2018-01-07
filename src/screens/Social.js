@@ -8,7 +8,14 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Dimensions,
-  Button
+  Button,
+  TextInput,
+  Keyboard,
+  Switch,
+  Alert,
+  TouchableHighlight,
+  Modal,
+  ActionSheetIOS
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -17,6 +24,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import Spinner from 'react-native-loading-spinner-overlay';
+import CameraRollPicker from 'react-native-camera-roll-picker';
+import CameraPick from '../components/CameraPick';
+import Camera from 'react-native-camera';
+import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
@@ -51,20 +63,28 @@ function generatefalcisayisi() {
   if(saat>3&&saat<8){
     falcisayisi=1+gun
   }
-  return falcisayisi*17+dk
+  return falcisayisi*20+dk
 }
 
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 
 @inject("socialStore")
+@inject("userStore")
 @observer
 export default class Social extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       sosyaller:null,
-      tek:null
+      tek:null,
+      sosyalInput:'',
+      anonimSwitchIsOn:true,
+      falPhotos:[],
+      keyboardVisible:false,
+      pickerVisible: false,
+      cameraVisible: false,
+      spinnerVisible:false,
   };
 }
 
@@ -86,7 +106,16 @@ export default class Social extends React.Component {
   }
 
   showpopup = () => {
-    this.popupSosyal.show()
+
+        if(this.props.userStore.user){
+          if(this.props.userStore.user.timesUsed>0){
+            this.popupSosyal.show()
+          }
+          else {
+            Alert.alert("Çok Hızlısın :)","Sosyal Pano'da fal paylaşabilmeniz için öncelikle Ana Sayfa'da bulunan fallardan birine baktırmanız gerekmektedir")
+          }
+        }
+
 
   }
 
@@ -112,16 +141,30 @@ export default class Social extends React.Component {
 
         this.props.socialStore.setSocials(responseJson.sosyals)
      })
+     this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
+     this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
   }
 
-  componentDidUpdate() {
+   componentWillUnmount() {
+
+
+   this.keyboardDidShowListener.remove();
+   this.keyboardDidHideListener.remove();
+
+   }
+
+  _keyboardDidShow = (event) => {
+    var height= event.endCoordinates.height
+    this.setState({keyboardHeight: height,keyboardVisible:true});
 
   }
 
-  componentWillUnmount() {
-
-
+  _keyboardDidHide = () =>  {
+   // alert('Keyboard Hidden');
+   this.setState({keyboardVisible:false})
   }
+
+
 
   replaceAvatar = (index) => {
 
@@ -163,6 +206,64 @@ export default class Social extends React.Component {
         </View>
       )
     }
+    else{
+      if(this.props.userStore.user){
+        var falPuan =this.props.userStore.user.falPuan
+        var seviye = 1
+        var limit =20
+        var gosterilenpuan=falPuan
+        var unvan = "Yeni Falsever"
+        var kolor='rgb(209,142,12)'
+        if (falPuan>20&&falPuan<51){
+          seviye = 2
+          limit = 30
+          gosterilenpuan=falPuan-20
+          unvan = "Falsever"
+          kolor='rgb(60,179,113)'
+        }else if (falPuan>50&&falPuan<101) {
+          seviye = 3
+          limit = 50
+          gosterilenpuan=falPuan-50
+          unvan = "Deneyimli Falsever"
+          kolor='rgb(114,0,218)'
+        }else if (falPuan>100&&falPuan<176) {
+          seviye = 4
+          limit = 75
+          gosterilenpuan=falPuan-100
+          unvan = "Fal Uzmanı"
+          kolor='rgb(0,185,241)'
+        }
+        else if (falPuan>175&&falPuan<301) {
+          seviye = 5
+          limit = 125
+          gosterilenpuan=falPuan-175
+          unvan = "Fal Profesörü"
+          kolor='rgb(249,50,12)'
+        }
+        return(
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
+              <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+              <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
+            </View>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+              <View style={{justifyContent:'center'}}>
+                <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+                <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
+                  <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                  </View>
+                </View>
+
+              </View>
+              <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+            </View>
+          </TouchableOpacity>
+        )
+      }
+      else{
+        return(null)
+      }
+    }
   }
 
   renderSosyaller = () => {
@@ -178,6 +279,7 @@ export default class Social extends React.Component {
               <View style={{flexDirection:'row',height:70,}}>
 
               <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
+
                 <View style={{padding:10,flex:1}}>
 
                   <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>
@@ -211,13 +313,284 @@ export default class Social extends React.Component {
     }
   }
 
+  renderphoto1 = () => {
+    if(this.state.falPhotos[0]){
+      return (
+        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
+
+         <Image source={{uri:this.state.falPhotos[0]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
+         </View>
+        );
+    }
+    else {
+      return(
+      <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+      )
+    }
+  }
+  renderphoto2 = () => {
+    if(this.state.falPhotos[1]){
+      return (
+        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
+
+         <Image source={{uri:this.state.falPhotos[1]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
+         </View>
+        );
+    }
+    else {
+      return(
+        <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+      )
+    }
+  }
+  renderphoto3 = () => {
+    if(this.state.falPhotos[2]){
+      return (
+        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
+
+         <Image source={{uri:this.state.falPhotos[2]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
+         </View>
+        );
+    }
+    else {
+      return(
+        <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+      )
+    }
+  }
+
+  changePhoto = () => {
+    const options = ['Çekilmiş Fotoğraflarından Seç', 'Yeni Fotoğraf Çek', 'İptal'];
+    const cancelButtonIndex = options.length - 1;
+    ActionSheetIOS.showActionSheetWithOptions({
+      options,
+      cancelButtonIndex,
+    },
+    (buttonIndex) => {
+      switch (buttonIndex) {
+        case 0:
+          this.setPickerVisible(true);
+          break;
+        case 1:
+          Camera.checkVideoAuthorizationStatus().then((response) => {if(response==true){this.setCameraVisible(true)}})
+          break;
+        default:
+      }
+    });
+
+  }
+
+  sendSosyal = () => {
+    if(this.state.sosyalInput.length<20){
+
+      Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
+    }
+    else{
+      if(this.state.sosyalInput.length>200){
+        Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
+      }
+      else{
+        if(this.state.falPhotos.length>1){
+          this.setState({spinnerVisible:true})
+
+          Backend.uploadImages(this.state.falPhotos).then((urls) => {
+
+            this.setState({spinnerVisible:false})
+
+
+              if(this.props.userStore.userCredit<100){
+                this.paySosyal(urls)
+              }
+              else{
+                Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+                Backend.addCredits(-100)
+                this.props.userStore.increment(-100)
+                this.popupSosyal.dismiss()
+                Keyboard.dismiss()
+                this.setState({sosyalInput:'',falPhotos:[]})
+
+                fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+                  method: 'POST',
+                  headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    uid: Backend.getUid(),
+                  })
+                })
+                .then((response) => response.json())
+                .then((responseJson) => {
+                    this.setState({tek:responseJson.tek});
+                    this.props.socialStore.setSocials(responseJson.sosyals)
+                 })
+                 setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!")},950)
+              }
+
+          })
+          .catch(error => {
+            console.log(error)
+            this.setState({spinnerVisible:false,sosyalInput:JSON.stringify(error.error)})
+            Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
+          })
+
+        }
+        else {
+            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
+        }
+
+      }
+    }
+  }
+
+  selectImages = (images) => {
+    this.setImages(images);
+  }
+
+  setImages = (images) => {
+    this._images = images;
+  }
+
+  getImages = () => {
+    return this._images;
+  }
+
+  setPhoto = (path) => {
+    this.setState({cameraVisible:false,spinnerVisible:false})
+    var images = this.state.falPhotos
+    images.push(path)
+    this.setState({falPhotos:images})
+  }
+
+  setPickerVisible = (visible = false) => {
+    this.setState({pickerVisible: visible});
+  }
+
+  setCameraVisible = (visible = false) => {
+    this.setState({cameraVisible: visible});
+  }
+
+
+  renderNavBar = () => {
+    return (
+      <NavBar style={{
+        statusBar: {
+          backgroundColor: '#FFF',
+          height:30
+        },
+        navBar: {
+          backgroundColor: '#FFF',
+
+        },
+      }}>
+        <NavButton onPress={() => {
+          this.setPickerVisible(false);
+        }}>
+          <NavButtonText style={{
+            color: '#000',
+            fontSize:26
+          }}>
+            {'<'}
+          </NavButtonText>
+        </NavButton>
+        <NavTitle style={{
+          color: '#000',
+        }}>
+          {'Fotoğraflarım'}
+        </NavTitle>
+        <NavButton onPress={() => {
+          if(this._images.length==0){
+            alert("Lütfen önce fotoğraf seçin")
+          }
+          else{
+            this.setPickerVisible(false);
+
+            const images = this.getImages().map((image) => {
+              return {
+                image: image.uri,
+              };
+            });
+            this.setFromPicker(images);
+            this.setImages([]);
+          }
+        }}>
+          <NavButtonText style={{
+            color: '#000',
+          }}>
+            {'Gönder'}
+          </NavButtonText>
+        </NavButton>
+      </NavBar>
+    );
+  }
+
+  setFromPicker = (images) => {
+    var falPhotos = this.state.falPhotos
+    for (var i = 0; i < images.length; i++) {
+      falPhotos.push(images[i].image)
+    }
+
+    this.setState({falPhotos:falPhotos})
+  }
+
+  paySosyal = (urls) => {
+    //this.setState({spinnerVisible:true})
+    var products = [
+       'com.grepsi.kahvefaliios.100',
+    ];
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){this.setState({spinnerVisible:false})}
+      else{
+
+        var identifier = 'com.grepsi.kahvefaliios.100'
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+               this.popupSosyal.dismiss()
+               this.setState({modalVisible:false,inputVisible:false})
+               Keyboard.dismiss()
+              
+               this.setState({sosyalInput:'',falPhotos:[]})
+
+               fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+                 method: 'POST',
+                 headers: {
+                   'Accept': 'application/json',
+                   'Content-Type': 'application/json',
+                 },
+                 body: JSON.stringify({
+                   uid: Backend.getUid(),
+                 })
+               })
+               .then((response) => response.json())
+               .then((responseJson) => {
+                   this.setState({tek:responseJson.tek});
+                   this.props.socialStore.setSocials(responseJson.sosyals)
+
+
+                })
+                setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!")},950)
+
+             }
+           }
+        });
+      }
+    });
+  }
+
   render() {
 
 
     return (
 
       <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
-
+        <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
         <View style={{flex:1,width:'100%'}}>
           <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
             <View>
@@ -241,7 +614,7 @@ export default class Social extends React.Component {
         </View>
         <PopupDialog
 
-          ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
+          ref={(popupDialog) => { this.popupSosyal2 = popupDialog; }}
 
           width={'80%'}
           height={'60%'}
@@ -260,6 +633,104 @@ export default class Social extends React.Component {
                 <Image style={{height:140,resizeMode:'contain',alignSelf:'center'}} source={require('../static/images/sosyalreklam1.png')}/>
           </View>
         </PopupDialog>
+        <PopupDialog
+
+          ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
+          dialogStyle={this.state.keyboardVisible?styles.marginKeyboardVisible:styles.marginKeyboardNotVisible}
+          width={0.8}
+          height={0.75}
+          overlayOpacity={0.75}
+        >
+          <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center',paddingBottom:40}} >
+
+              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+
+                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  </View>
+              </View>
+              <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
+              <Text style={styles.faltypeyazipopup}>
+                Siz sorun, diğer falseverlerimiz cevaplasın!
+              </Text>
+              <Text style={styles.faltypeyazikucukpopup}>
+                Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 3 gün boyunca Sosyal Panomuzda yayınlayıp, diğer falseverlerin yorumuna sunalım.   {"\n"}
+              </Text>
+              <TextInput
+                editable={true}
+                multiline={true}
+                value={this.state.sosyalInput}
+                onChangeText={(text) => this.setState({sosyalInput:text})}
+                placeholder={"Sorunu yaz"}
+                style={{height:60,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
+              />
+              <View style={{flexDirection:'row',alignItems:'center',marginTop:10}}>
+                <Text style={{color:'white'}}> Profil Fotoğrafım Görünebilir </Text>
+                <Switch
+                  onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
+                  value={this.state.anonimSwitchIsOn} />
+                  </View>
+              <View style={{width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:120,paddingBottom:40,justifyContent:'space-around'}}>
+              {
+                this.renderphoto1()
+              }
+              {
+                this.renderphoto2()
+              }
+              {
+                this.renderphoto3()
+              }
+
+              </View>
+              <View style={{position:'absolute',bottom:0,width:'100%'}}>
+
+               <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                 <TouchableOpacity  onPress={() => {this.popupSosyal.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                   <Text style={{textAlign:'center'}}>İstemiyorum</Text>
+                 </TouchableOpacity>
+                 <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                   <Text style={{textAlign:'center',fontWeight:'bold'}}>GÖNDER</Text>
+                 </TouchableOpacity>
+               </View>
+             </View>
+
+
+
+          </View>
+        </PopupDialog>
+
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.pickerVisible}
+          onRequestClose={() => {
+            this.setPickerVisible(false);
+          }}
+        >
+          {this.renderNavBar()}
+          <CameraRollPicker
+            maximum={3}
+            imagesPerRow={3}
+            callback={this.selectImages}
+            selected={[]}
+            emptyText={"Yükleniyor... \n \n Eğer çok uzun sürüyorsa uygulamamıza fotoğraflarına erişim izni vermemiş olabilirsiniz. Teşekkürler!"}
+          />
+        </Modal>
+        <Modal
+          animationType={'slide'}
+          transparent={false}
+          visible={this.state.cameraVisible}
+          onRequestClose={() => {
+            this.setCameraVisible(false);
+          }}
+        >
+           <CameraPick
+            sendCapturedImage={(image) => { this.setPhoto(image.path)}}
+          />
+        </Modal>
       </Image>
 
     );
@@ -302,6 +773,23 @@ const styles = StyleSheet.create({
   },
   faltypeyazikucukpopup2:{
     flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
-  }
+  },
+  marginKeyboardVisible:{
+    marginTop:-500
+  },
+  marginKeyboardNotVisible:{
+    marginTop:-100
+  },
+  coin:{
+    height:15,
+    width:15,
+    marginLeft:5,
+  },
+  label: {
+    fontSize: 12,
+    color:'white',
+    textAlign:'center',
+    fontWeight:'bold'
+  },
 
 });

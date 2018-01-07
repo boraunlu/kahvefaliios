@@ -287,8 +287,7 @@ export default class Chat extends React.Component {
            }
            else{
              if(response && response.productIdentifier) {
-                if(credit2==25){Backend.addCredits(25)}
-                Backend.sendPayload(credit2+"baslat")
+                this.navigateto('Chat',0,credit2)
                 Backend.addCredits(0,"chat"+credit2)
              }
            }
@@ -489,7 +488,7 @@ export default class Chat extends React.Component {
       Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
     }
     else{
-      if(this.state.sosyalInput.length>120){
+      if(this.state.sosyalInput.length>200){
         Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
       }
       else{
@@ -507,7 +506,7 @@ export default class Chat extends React.Component {
           }
           else{
 
-            if(this.props.userStore.userCredit<100){
+            if(this.props.userStore.userCredit<50){
               this.paySosyal(urls)
             }
             else{
@@ -1218,7 +1217,7 @@ export default class Chat extends React.Component {
                     <Image source={require('../static/images/coins.png')} style={styles.coin}/>
                   </View>) :
                     (<View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
-                    <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
+                    <Animatable.Text style={[styles.label2,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
 
 
                   </View>)
@@ -1414,10 +1413,17 @@ export default class Chat extends React.Component {
               <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center',paddingBottom:40}} >
 
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-                    <Text style={[styles.label]}>
-                      50
-                    </Text>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  {this.state.falType==2||this.state.falType==1?  (
+                      <View style={{padding:5,flexDirection:'row',position:'absolute',top:5,right:5}}>
+                      <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
+                    </View>
+                    ): (
+                        <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                        <Text style={[styles.label]}>
+                          50
+                        </Text>
+                        <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                      </View>)}
                   </View>
                   <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
                   <Text style={styles.faltypeyazipopup}>
@@ -1494,6 +1500,13 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
+    color:'white',
+    textAlign:'center',
+    fontWeight:'bold',
+    backgroundColor:'transparent'
+  },
+  label: {
+    fontSize: 10,
     color:'white',
     textAlign:'center',
     fontWeight:'bold',

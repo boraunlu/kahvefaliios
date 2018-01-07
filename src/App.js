@@ -22,6 +22,7 @@ import Kimiz from './screens/Kimiz';
 import Mesajlar from './screens/Mesajlar';
 import Swipers from './screens/Swipers';
 import Profil from './screens/Profil';
+import FalPuan from './screens/FalPuan';
 
 import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigation';
 import { Provider } from 'mobx-react';
@@ -52,6 +53,7 @@ let KahvefaliappNav = StackNavigator({
     ChatBizden: {screen:ChatBizden},
     ChatAgent: {screen:ChatAgent},
     Swipers: {screen:Swipers},
+    FalPuan: {screen:FalPuan},
 });
 
 export default class Kahvefaliapp extends Component {

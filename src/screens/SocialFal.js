@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   TextInput,
   Keyboard,
+  ActivityIndicator,
   Alert
 } from 'react-native';
 
@@ -19,6 +20,7 @@ import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 import Lightbox from 'react-native-lightbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 import { observable } from 'mobx';
@@ -45,7 +47,8 @@ export default class SocialFal extends React.Component {
       keyboardHeight:0,
       inputHeight:40,
       keyboardAcik:false,
-      commentInput:''
+      commentInput:'',
+      profinfo:null
   };
 }
 
@@ -109,19 +112,107 @@ export default class SocialFal extends React.Component {
 
   }
 
+  showProfPopup = (fireid) =>{
+    this.popupDialog.show()
+    this.setState({profinfo:null})
+    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: fireid,
+      })
+    })
+    .then((response) => response.json())
+   .then((responseJson) => {
+     //alert(responseJson.profile_pic)
+     responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+     var meslek =''
+     switch(responseJson.workStatus) {
+       case 1:
+           meslek='Çalışıyor';
+           break;
+       case 2:
+           meslek='İş arıyor';
+           break;
+       case 3:
+           meslek='Öğrenci';
+           break;
+       case 4:
+           meslek='Çalışmıyor';
+           break;
+       case 5:
+           meslek='Kamuda Çalışıyorum';
+           break;
+       case 6:
+           meslek='Özel Sektör';
+           break;
+       case 7:
+           meslek='Kendi İşim';
+           break;
+     }
+     var iliski =''
+     switch(responseJson.relStatus) {
+         case "0":
+             iliski='İlişkisi Yok';
+             break;
+         case "1":
+             iliski='Sevgilisi Var';
+             break;
+         case "2":
+             iliski='Evli';
+             break;
+         case "3":
+             iliski='Nişanlı';
+             break;
+         case "4":
+             iliski='Platonik';
+             break;
+         case "5":
+             iliski='Ayrı Yaşıyor';
+             break;
+         case "6":
+             iliski='Yeni Ayrılmış';
+             break;
+         case "7":
+             iliski='Boşanmış';
+             break;
+
+     }
+     responseJson.iliski=iliski
+     responseJson.meslek=meslek
+        this.setState({profinfo:responseJson});
+
+      })
+  }
+
   addComment = () => {
     const { params } = this.props.navigation.state;
     var index = params.index
-    if(this.state.commentInput.length<50){
+    if(this.state.commentInput.length<40){
       Alert.alert("Kısa Yorum","Lütfen daha uzun ve detaylı yorumlayın.")
     }
     else {
-      if(this.state.commentInput.length>400){
+      if(this.state.commentInput.length>600){
         Alert.alert("Çok Uzun Yorum","Lütfen yorumunuzu biraz daha kısa tutun.")
       }
       else{
         this.setState({commentInput:''})
-        var comment={comment:this.state.commentInput,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),photoURL:firebase.auth().currentUser.photoURL}
+        var falPuan =this.props.userStore.user.falPuan
+        var seviye = 1
+        if (falPuan>20&&falPuan<51){
+          seviye = 2
+        }else if (falPuan>50&&falPuan<101) {
+          seviye = 3
+        }else if (falPuan>100&&falPuan<176) {
+          seviye = 4
+        }
+        else if (falPuan>175&&falPuan<301) {
+          seviye = 5
+        }
+        var comment={comment:this.state.commentInput,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
         var newcomments=this.state.comments
         newcomments.push(comment)
         this.setState({comments:newcomments})
@@ -155,6 +246,21 @@ export default class SocialFal extends React.Component {
           this.state.comments.map(function (comment,index) {
             var liked = false;
             var likecount=0;
+            var kolor='rgb(209,142,12)'
+            switch(comment.seviye) {
+                case 2:
+                    kolor='rgb(60,179,113)'
+                    break;
+                case 3:
+                    kolor='rgb(114,0,218)'
+                    break;
+                case 4:
+                    kolor='rgb(0,185,241)'
+                    break;
+                case 5:
+                    kolor='rgb(249,50,12)'
+                    break;
+            }
             if(comment.likes){
               var id = Backend.getUid()
               for (var i = 0; i < comment.likes.length; i++) {
@@ -168,7 +274,12 @@ export default class SocialFal extends React.Component {
 
             return (
               <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#f8fff8',borderColor:'gray'}}>
-                <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                <View>
+                  <TouchableOpacity onPress={()=>{this.showProfPopup(comment.fireID)}}>
+                    <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                  </TouchableOpacity>
+                  <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                </View>
                 <View style={{padding:10,flex:2}}>
                   <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
                     {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
@@ -179,7 +290,7 @@ export default class SocialFal extends React.Component {
                     {comment.comment}
                   </Text>
                 </View>
-                <TouchableOpacity style={{width:25,alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked?this.like(index):null}}>
+                <TouchableOpacity style={{width:25,alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
                   {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
                   <Text>{likecount}</Text>
                 </TouchableOpacity>
@@ -200,6 +311,71 @@ export default class SocialFal extends React.Component {
 
   }
 
+
+    renderProfInfo = () => {
+      if(this.state.profinfo){
+        var falPuan =this.state.profinfo.falPuan
+        var seviye = 1
+        var limit =20
+        var gosterilenpuan=falPuan
+        var unvan = "Yeni Falsever"
+        var kolor='rgb(209,142,12)'
+        if (falPuan>20&&falPuan<51){
+          seviye = 2
+          limit = 30
+          gosterilenpuan=falPuan-20
+          unvan = "Falsever"
+          kolor='rgb(60,179,113)'
+        }else if (falPuan>50&&falPuan<101) {
+          seviye = 3
+          limit = 50
+          gosterilenpuan=falPuan-50
+          unvan = "Deneyimli Falsever"
+          kolor='rgb(114,0,218)'
+        }else if (falPuan>100&&falPuan<176) {
+          seviye = 4
+          limit = 75
+          gosterilenpuan=falPuan-100
+          unvan = "Fal Uzmanı"
+          kolor='rgb(0,185,241)'
+        }
+        else if (falPuan>175&&falPuan<301) {
+          seviye = 5
+          limit = 125
+          gosterilenpuan=falPuan-175
+          unvan = "Fal Profesörü"
+          kolor='rgb(249,50,12)'
+        }
+        return(
+        <View>
+          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:60,width:60, borderRadius:30}} source={this.state.profinfo.profile_pic}></Image>
+            <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
+          <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
+            <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+
+          </View>
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+            <View style={{justifyContent:'center'}}>
+              <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+              <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
+                <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                </View>
+              </View>
+
+            </View>
+            <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+          </View>
+        </View>
+
+      )
+      }
+      else {
+        return(<ActivityIndicator/>)
+      }
+
+    }
+
   renderBody = () => {
     var fal = this.state.fal
     if(fal){
@@ -219,6 +395,16 @@ export default class SocialFal extends React.Component {
         case 4:
             meslek='Çalışmıyor';
             break;
+        case 5:
+            meslek='Kamuda Çalışıyorum';
+            break;
+        case 6:
+            meslek='Özel Sektör';
+            break;
+        case 7:
+            meslek='"Kendi İşim';
+            break;
+
       }
       var iliski =''
       switch(fal.relStatus) {
@@ -230,6 +416,21 @@ export default class SocialFal extends React.Component {
               break;
           case "2":
               iliski='Evli';
+              break;
+          case "3":
+              iliski='Nişanlı';
+              break;
+          case "4":
+              iliski='Platonik';
+              break;
+          case "5":
+              iliski='Ayrı Yaşıyor';
+              break;
+          case "6":
+              iliski='Yeni Ayrılmış';
+              break;
+          case "7":
+              iliski='Boşanmış';
               break;
 
       }
@@ -300,10 +501,26 @@ export default class SocialFal extends React.Component {
 
 
         </ScrollView>
+        <PopupDialog
+
+         dialogStyle={{marginTop:-250}}
+         width={0.9}
+         height={250}
+         ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+         >
+           <View style={{flex:1}}>
+             <ScrollView style={{padding:10,paddingTop:25}}>
+              {this.renderProfInfo()}
+
+
+             </ScrollView>
+           </View>
+         </PopupDialog>
         <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight>0?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
           <TextInput
             editable={true}
             multiline={true}
+            underlineColorAndroid='rgba(0,0,0,0)'
             value={this.state.commentInput}
             onChangeText={(text) => this.setState({commentInput:text})}
             placeholder={"Yorumunu yaz"}

@@ -13,7 +13,8 @@ import {
   Easing,
   Alert,
   BackAndroid,
-  ScrollView
+  ScrollView,
+  ImageBackground
 } from 'react-native';
 
 
@@ -43,9 +44,21 @@ moment.locale('tr', esLocale);
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
-function generateRandom(uzunluk, mevcut) {
-    var num = Math.floor(Math.random() * falcilar.length);
-    return (num === mevcut ) ? generateRandom(uzunluk, mevcut) : num;
+function generateRandom(uzunluk, mevcut,gender,falType) {
+  var num =0
+  if(falType==1||falType==2){
+   num =  Math.floor(Math.random()*(23-19+1)+19);
+  }
+  else {
+    if(gender=='male'){
+      num =  Math.floor(Math.random()*(18-9+1)+9);
+    }
+    else {
+        num =  Math.floor(Math.random()*(13-0+1)+0);
+    }
+  }
+
+    return (num === mevcut ) ? generateRandom(uzunluk, mevcut,gender,falType) : num;
 }
 
 @inject("userStore")
@@ -149,7 +162,7 @@ static navigationOptions = ({ navigation }) => ({
           else{
             var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
           }*/
-          var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
+          var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci,this.props.userStore.user.gender,falType)
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
               index: 0,
@@ -580,12 +593,12 @@ componentWillUnmount() {
     else{
       return(
 
-          <Animated.View style={{opacity:this.state.buttonOpacity}}>
-        <View style={{borderColor:'white',backgroundColor:'teal',padding:2,flexDirection:'row',justifyContent:'center'}}><Text style={{textAlign:'center',color:'white',fontSize:17,fontWeight:'bold'}}>Yeni Fal</Text><Text> </Text></View>
-        <View style={{borderColor:'white',borderWidth:1}}>
+        <Animated.View style={{opacity:this.state.buttonOpacity}}>
+
+        <View style={{}}>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupGunluk.show()}}>
-              <Image source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
+              <ImageBackground source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
                 {this.state.userData.appGunlukUsed ? (
@@ -608,14 +621,19 @@ componentWillUnmount() {
                     Hergün 1 adet kahve falı bizden size <Text style={{fontWeight:'bold'}}>HEDİYE!</Text>
                   </Text>
                 </View>
-              </Image>
+              </ImageBackground>
             </TouchableOpacity>
 
           </View>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupAsk.show()}}>
-              <Image source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
+              <ImageBackground source={require('../static/images/ask.jpg')} style={styles.faltypeimage}>
+
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
+                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
+                  <Icon name="star" color={'yellow'} size={20} />
+                  <Text style={{color:'white',fontSize:12,fontStyle:'italic'}}> Deneyimli {"\n"} falcılar</Text>
+                </View>
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                     <Text style={[styles.label]}>
                       100
@@ -626,14 +644,25 @@ componentWillUnmount() {
                     Aşk Falı
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    Sırlar dökülsün, aşk konuşalım
+                  Detaylı Aşk Yorumları{"\n"}
+                  +{"\n"}
+                  Falınıza diğer falseverlerden de yorum isteme imkanı
                   </Text>
                 </View>
-              </Image>
+              </ImageBackground>
             </TouchableOpacity>
+
+
+          </View>
+          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupDetay.show()}}>
-              <Image source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
+              <ImageBackground source={require('../static/images/detayli.jpg')} style={styles.faltypeimage}>
+
               <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
+              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
+                <Icon name="star" color={'yellow'} size={20} />
+                <Text style={{color:'white',fontSize:12,fontStyle:'italic'}}> Deneyimli {"\n"} falcılar</Text>
+              </View>
                 <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                   <Text style={[styles.label]}>
                     150
@@ -644,17 +673,18 @@ componentWillUnmount() {
                   Detaylı Fal
                 </Text>
                 <Text style={styles.faltypeyazikucuk}>
-                  Ortaya çıkmayan detay kalmasın
+                Tüm Konularda Detay{"\n"}
+                +{"\n"}
+                Falınıza diğer falseverlerden de yorum isteme imkanı
                 </Text>
 
               </View>
-              </Image>
+              </ImageBackground>
             </TouchableOpacity>
-
           </View>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupHand.show()}}>
-              <Image source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
+              <ImageBackground source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
               <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.6)'}}>
                 {this.state.userData.handUsed == true &&
                     <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -670,22 +700,9 @@ componentWillUnmount() {
                   Eliniz, kaderiniz...
                 </Text>
               </View>
-              </Image>
+              </ImageBackground>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {Alert.alert("Rüya Tabiri","Çok yakında sizlerle, beklemede kalın...")}}>
-              <Image source={require('../static/images/ruya.jpg')} style={styles.faltypeimage}>
-              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
 
-                <Text style={styles.faltypeyazi}>
-                  Rüya Tabiri
-                </Text>
-                <Text style={styles.faltypeyazikucuk}>
-                  Çok yakında...
-                </Text>
-
-              </View>
-              </Image>
-            </TouchableOpacity>
           </View>
         </View>
         </Animated.View>
@@ -925,15 +942,19 @@ const styles = StyleSheet.create({
   },
   faltypecontainer:{
     flex:1,
-    height:125,
+    height:100,
     borderWidth:1,
-    borderColor:'white'
+    borderColor:'white',
+    marginLeft:10,
+    marginTop:10,
+    marginRight:10,
+    borderBottomWidth:1
   },
   faltypeimage:{
     alignItems:'center',
     alignSelf: 'stretch',
     width: null,
-    height:123,
+    height:98,
     flexDirection:'column-reverse'
   },
   button1:{
@@ -962,7 +983,7 @@ const styles = StyleSheet.create({
     fontSize:22
   },
   faltypeyazi:{
-    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22,marginBottom:5
   },
   faltypeyazipopup:{
     textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22,marginTop:20,marginBottom:15

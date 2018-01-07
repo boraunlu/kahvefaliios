@@ -9,9 +9,10 @@ import {
   TouchableOpacity,
   Button,
   TextInput,
+  ActionSheetIOS,
   Keyboard,
+  Modal,
   Alert,
-
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -21,6 +22,12 @@ import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import Picker from 'react-native-picker';
+import Spinner from 'react-native-loading-spinner-overlay';
+import CameraRollPicker from 'react-native-camera-roll-picker';
+import CameraPick from '../components/CameraPick';
+import Camera from 'react-native-camera';
+import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
+import ProgressBar from 'react-native-progress/Bar';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 import { observable } from 'mobx';
@@ -39,6 +46,7 @@ var radio_props = [
 export default class Profil extends React.Component {
   constructor(props) {
     super(props);
+    this._images = [];
     this.state = {
 
       profPhoto:'https://www.peerspace.com/web-templates/assets/images/no_avatar_placeholder.png',
@@ -46,8 +54,10 @@ export default class Profil extends React.Component {
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
       email:'',
       kendi:'',
-      gender:'java',
       radioValue:0,
+      pickerVisible: false,
+      cameraVisible: false,
+      spinnerVisible:false,
   };
 }
 
@@ -116,10 +126,83 @@ export default class Profil extends React.Component {
       }
     }
 
-  onActionsPress = () => {
+    selectImages = (images) => {
+      this.setImages(images);
+    }
+
+    setImages = (images) => {
+      this._images = images;
+    }
+
+    getImages = () => {
+      return this._images;
+    }
+
+    setPickerVisible = (visible = false) => {
+      this.setState({pickerVisible: visible});
+    }
+
+    setCameraVisible = (visible = false) => {
+      this.setState({cameraVisible: visible});
+    }
+
+    renderNavBar = () => {
+      return (
+        <NavBar style={{
+          statusBar: {
+            backgroundColor: '#FFF',
+            height:30
+          },
+          navBar: {
+            backgroundColor: '#FFF',
+
+          },
+        }}>
+          <NavButton onPress={() => {
+            this.setPickerVisible(false);
+          }}>
+            <NavButtonText style={{
+              color: '#000',
+              fontSize:26
+            }}>
+              {'<'}
+            </NavButtonText>
+          </NavButton>
+          <NavTitle style={{
+            color: '#000',
+          }}>
+            {'Fotoğraflarım'}
+          </NavTitle>
+          <NavButton onPress={() => {
+            if(this._images.length==0){
+              alert("Lütfen önce fotoğraf seçin")
+            }
+            else{
+              this.setPickerVisible(false);
+
+              const images = this.getImages().map((image) => {
+                return {
+                  image: image.uri,
+                };
+              });
+              this.uploadProfilePic(images[0].image);
+              this.setImages([]);
+            }
+          }}>
+            <NavButtonText style={{
+              color: '#000',
+            }}>
+              {'Gönder'}
+            </NavButtonText>
+          </NavButton>
+        </NavBar>
+      );
+    }
+
+  changePhoto = () => {
     const options = ['Çekilmiş Fotoğraflarından Seç', 'Yeni Fotoğraf Çek', 'İptal'];
     const cancelButtonIndex = options.length - 1;
-    showActionSheetWithOptions({
+    ActionSheetIOS.showActionSheetWithOptions({
       options,
       cancelButtonIndex,
     },
@@ -136,9 +219,24 @@ export default class Profil extends React.Component {
     });
   }
 
+  uploadProfilePic = (image) => {
+    this.setState({cameraVisible:false,spinnerVisible:true})
+    var uri = image
+    Backend.uploadProfilePic(uri).then((url) => {
+      this.setState({profPhoto:url,spinnerVisible:false})
+    })
+    .catch((error) => {
+      this.setState({spinnerVisible:false})
+      this.setPickerVisible(false);
+      setTimeout(function(){Alert.alert("Tekrar Deneyin","Fotoğrafın yüklenirken bir sorun oluştu. Lütfen tekrar dener misin?");},300);
+
+    })
+  }
+
   componentDidMount() {
 
     var user = firebase.auth().currentUser;
+
     if(user.photoURL){
 
       this.setState({profPhoto:user.photoURL})
@@ -186,16 +284,15 @@ export default class Profil extends React.Component {
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
           <View style={{elevation:3,paddingTop:15,marginTop:30,backgroundColor:'white',flexDirection:'column'}}>
-            <TouchableOpacity onPress={()=>{this.onActionsPress()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'#1194F7',borderWidth:1,paddingTop:1,alignItems:'center'}}>
+            <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'teal',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
-              <TouchableOpacity style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'#1194F7',alignItems:'center',backgroundColor:'transparent'}}>
+              <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'teal',alignItems:'center',backgroundColor:'transparent'}}>
                 <Icon name="pencil" color={'gray'} size={20} />
               </TouchableOpacity>
             </TouchableOpacity>
-
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
 
-            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.navigateto(destination)}}/>
+            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
 
           </View>
           <View style={{paddingTop:5,marginBottom:10,flex:1}}>
@@ -218,6 +315,36 @@ export default class Profil extends React.Component {
               <Button title={"Çıkış Yap"} color={'rgb(249,50,12)'} onPress={() => {this.logout()}}/>
             </View>
           </View>
+          <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
+          <Modal
+            animationType={'slide'}
+            transparent={false}
+            visible={this.state.pickerVisible}
+            onRequestClose={() => {
+              this.setPickerVisible(false);
+            }}
+          >
+            {this.renderNavBar()}
+            <CameraRollPicker
+              maximum={1}
+              imagesPerRow={3}
+              callback={this.selectImages}
+              selected={[]}
+              emptyText={"Yükleniyor... \n \n Eğer çok uzun sürüyorsa uygulamamıza fotoğraflarına erişim izni vermemiş olabilirsiniz. Teşekkürler!"}
+            />
+          </Modal>
+          <Modal
+            animationType={'slide'}
+            transparent={false}
+            visible={this.state.cameraVisible}
+            onRequestClose={() => {
+              this.setCameraVisible(false);
+            }}
+          >
+             <CameraPick
+              sendCapturedImage={(image) => { this.uploadProfilePic(image.path)}}
+            />
+          </Modal>
         </ScrollView>
 
         <PopupDialog
@@ -371,7 +498,3 @@ const styles = StyleSheet.create({
   },
 
 });
-
-Profil.contextTypes = {
-  actionSheet: React.PropTypes.func,
-};

@@ -34,26 +34,27 @@ export default class Home extends React.Component {
       header:null
     };
 
-    _navigateTo = (routeName: string) => {
-        const resetAction = NavigationActions.reset({
-          index: 0,
-          actions: [NavigationActions.navigate({ routeName,params: {title:"homedan"} })]
-        })
-        this.props.navigation.dispatch(resetAction)
-      }
+  _navigateTo = (routeName: string) => {
+      const resetAction = NavigationActions.reset({
+        index: 0,
+        actions: [NavigationActions.navigate({ routeName,params: {title:"homedan"} })]
+      })
+      this.props.navigation.dispatch(resetAction)
+    }
 
   componentDidMount() {
     const { navigate } = this.props.navigation;
 
-   var init = false;
+    var init = false;
     firebase.auth().onAuthStateChanged(function(user) {
 
       if (user) {
 
-
         if(!init){
+
           this._navigateTo('Greeting')
           init = true;
+
         }
           //this._navigateTo('Greeting')
 
