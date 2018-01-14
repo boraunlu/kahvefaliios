@@ -26,6 +26,7 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
 import Camera from 'react-native-camera';
+import ProfilePicker from '../components/ProfilePicker';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import ProgressBar from 'react-native-progress/Bar';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
@@ -58,6 +59,7 @@ export default class Profil extends React.Component {
       pickerVisible: false,
       cameraVisible: false,
       spinnerVisible:false,
+      bio:this.props.userStore.bio
   };
 }
 
@@ -233,6 +235,82 @@ export default class Profil extends React.Component {
     })
   }
 
+  initMeslekPicker = () => {
+
+   var meslekArray=["Öğrenciyim", "Kamuda Çalışıyorum", "Özel Sektör", "Kendi İşim","Çalışmıyorum","İş Arıyorum"];
+
+   Picker.init({
+       pickerData: meslekArray,
+       selectedValue: [this.props.userStore.meslek],
+       pickerTitleText:'İş Durumunuz',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+
+       onPickerConfirm: data => {
+           this.props.userStore.changeMeslek(data)
+       },
+
+   });
+  }
+
+  initiliskiPicker = () => {
+
+   var iliskiArray=["İlişkim Yok", "Sevgilim Var","Evliyim","Nişanlıyım","Platonik","Ayrı Yaşıyorum","Yeni Ayrıldım","Boşandım"];
+
+   Picker.init({
+       pickerData: iliskiArray,
+       selectedValue: [this.props.userStore.meslek],
+       pickerTitleText:'İlişki Durumunuz',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+       onPickerConfirm: data => {
+           this.props.userStore.changeIliski(data)
+       },
+
+   });
+  }
+
+  initAgePicker = () => {
+
+    let agedata = [];
+    for(var i=12;i<70;i++){
+        agedata.push(i);
+    }
+
+   Picker.init({
+       pickerData: agedata,
+       selectedValue: [this.props.userStore.age],
+       pickerTitleText:'Yaşınız',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+       onPickerConfirm: data => {
+
+           this.props.userStore.changeAge(data[0])
+       },
+
+   });
+  }
+
+  initCityPicker = () => {
+
+    let citydata = ['Yurtdışı','İstanbul','Ankara','İzmir','Adana','Adıyaman','Afyonkarahisar','Ağrı','Aksaray','Amasya','Antalya','Ardahan','Artvin','Aydın','Balıkesir','Bartın','Batman','Bayburt','Bilecik','Bingöl','Bitlis','Bolu','Burdur','Bursa','Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Düzce','Edirne','Elazığ','Erzincan','Erzurum','Eskişehir','Gaziantep','Giresun','Gümüşhane','Hakkari','Hatay','Iğdır','Isparta','Kahramanmaraş','Karabük','Karaman','Kars','Kastamonu','Kayseri','Kırıkkale','Kırklareli','Kırşehir','Kilis','Kocaeli','Konya','Kütahya','Malatya','Manisa','Mardin','Mersin','Muğla','Muş','Nevşehir','Niğde','Ordu','Osmaniye','Rize','Sakarya','Samsun','Siirt','Sinop','Sivas','Şırnak','Tekirdağ','Tokat','Trabzon','Tunceli','Şanlıurfa','Uşak','Van','Yalova','Yozgat','Zonguldak'];
+
+
+   Picker.init({
+       pickerData: citydata,
+       selectedValue: [this.props.userStore.city],
+       pickerTitleText:'Şehriniz',
+       pickerCancelBtnText:'Kapat',
+       pickerConfirmBtnText: 'Tamam',
+       onPickerConfirm: data => {
+
+           this.props.userStore.changeCity(data[0])
+       },
+
+   });
+  }
+
+
   componentDidMount() {
 
     var user = firebase.auth().currentUser;
@@ -275,6 +353,27 @@ export default class Profil extends React.Component {
 
   }
 
+  setBio = () => {
+    //alert(this.props.userStore.bio)
+    Backend.setBio(this.props.userStore.bio)
+  }
+
+  renderBio = () => {
+    if(this.props.userStore){
+
+      return(
+      <TextInput
+        style={{height: 35,margin:10,fontSize:12,borderColor:'black',borderWidth:1,textAlign:'center',justifyContent:'center',fontStyle:'italic'}}
+        onChangeText={(nametext) => this.props.userStore.setBio({nametext})}
+        onSubmitEditing={()=>{this.setBio()}}
+        placeholder={'"Profil Cümleniz"'}
+        placeholderTextColor={'darkgray'}
+        maxLength={70}
+        value={this.props.userStore.bio}
+      />)
+    }
+  }
+
 
   render() {
 
@@ -282,8 +381,8 @@ export default class Profil extends React.Component {
     return (
 
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
-        <ScrollView style={{flex:1}}>
-          <View style={{elevation:3,paddingTop:15,marginTop:30,backgroundColor:'white',flexDirection:'column'}}>
+        <ScrollView style={{flex:1,width:'100%'}}>
+          <View style={{elevation:3,paddingTop:15,marginTop:20,width:'100%',backgroundColor:'white',flexDirection:'column'}}>
             <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'teal',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
               <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'teal',alignItems:'center',backgroundColor:'transparent'}}>
@@ -291,7 +390,13 @@ export default class Profil extends React.Component {
               </TouchableOpacity>
             </TouchableOpacity>
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
-
+            {this.renderBio()}
+            <View style={styles.pickerContainer}>
+              <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
+              <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
+              <View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
+              <View ref={agePicker => this.cityPicker = agePicker}><TouchableOpacity onPress={() => {this.initCityPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.city!=='' ? this.props.userStore.city : "Şehir"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
+            </View>
             <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
 
           </View>
@@ -495,6 +600,28 @@ const styles = StyleSheet.create({
     paddingRight:10,
     paddingLeft:10,
 
+  },
+  pickerContainer: {
+    borderColor:'white',
+    borderTopWidth:2,
+    backgroundColor:'transparent',
+    padding:10,
+    backgroundColor:'white',
+    flex:1,
+    width:'100%',
+
+  },
+  picker:{
+    borderWidth:2,borderColor:'teal',flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'#f1f1f1',width:'100%',height:30,borderRadius:5
+  },
+  nameinput:{
+    fontSize:14,fontWeight:'bold',backgroundColor:'transparent',color:'dimgray',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30
+  },
+  pickerText:{
+    fontWeight:'bold',backgroundColor:'transparent',color:'dimgray'
+  },
+  inputwrap:{
+    flexDirection:'row',justifyContent:'space-between',paddingLeft:10,paddingRight:10,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
   },
 
 });

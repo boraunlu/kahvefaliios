@@ -350,7 +350,10 @@ export default class SocialFal extends React.Component {
         <View>
           <Image style={{backgroundColor:'transparent',alignSelf:'center',height:60,width:60, borderRadius:30}} source={this.state.profinfo.profile_pic}></Image>
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
+
           <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
+          {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
+          {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
           <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
             <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
 
@@ -505,11 +508,11 @@ export default class SocialFal extends React.Component {
 
          dialogStyle={{marginTop:-250}}
          width={0.9}
-         height={250}
+         height={325}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>
-             <ScrollView style={{padding:10,paddingTop:25}}>
+             <ScrollView style={{padding:10,paddingTop:15}}>
               {this.renderProfInfo()}
 
 
@@ -528,6 +531,7 @@ export default class SocialFal extends React.Component {
             style={{height:this.state.keyboardHeight>0?80:30,borderRadius:5,borderColor: 'gray', borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
           />
           <TouchableOpacity style={{padding:5,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
+            {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/500"}</Text>:null}
             <Text style={{color:'teal'}}>Gönder</Text>
           </TouchableOpacity>
         </KeyboardAvoidingView>

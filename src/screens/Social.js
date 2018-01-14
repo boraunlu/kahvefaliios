@@ -15,7 +15,8 @@ import {
   Alert,
   TouchableHighlight,
   Modal,
-  ActionSheetIOS
+  ActionSheetIOS,
+  RefreshControl
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -29,6 +30,7 @@ import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
 import Camera from 'react-native-camera';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
+import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
@@ -85,6 +87,7 @@ export default class Social extends React.Component {
       pickerVisible: false,
       cameraVisible: false,
       spinnerVisible:false,
+      refreshing: false,
   };
 }
 
@@ -138,8 +141,14 @@ export default class Social extends React.Component {
      .then((responseJson) => {
 
         this.setState({tek:responseJson.tek});
+        var sosyals=Array.from(responseJson.sosyals)
+        this.props.socialStore.setSocials(sosyals)
 
-        this.props.socialStore.setSocials(responseJson.sosyals)
+        /*
+        
+        this.props.socialStore.setCommenteds(commenteds)**/
+
+
      })
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
@@ -241,16 +250,16 @@ export default class Social extends React.Component {
           kolor='rgb(249,50,12)'
         }
         return(
-          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
-            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
-              <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',height:70,width:'100%',borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,flexDirection:'row'}}>
+              <Text style={{fontSize:14,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
               <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
             </View>
-            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:15}}>
               <View style={{justifyContent:'center'}}>
                 <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
-                  <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                <View style={{height:18,width:200,borderWidth:3,borderColor:kolor}}>
+                  <View style={{height:15,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
                   </View>
                 </View>
 
@@ -267,40 +276,65 @@ export default class Social extends React.Component {
   }
 
   renderSosyaller = () => {
+
     if(this.props.socialStore.socials){
       var sosyaller = this.props.socialStore.socials
-      return (
+      if(sosyaller.length>0){
+        return (
 
-         sosyaller.map(function (sosyal,index) {
-           var profile_pic=null
-           sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
-           return (
-             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
-              <View style={{flexDirection:'row',height:70,}}>
+           sosyaller.map(function (sosyal,index) {
+             var commented = false;
 
-              <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
 
-                <View style={{padding:10,flex:1}}>
+             if(sosyal.comments){
+               var id = Backend.getUid()
+               for (var i = 0; i < sosyal.comments.length; i++) {
+                 if(sosyal.comments[i].fireID==id){
+                   commented=true;
+                   break;
+                 }
+               }
 
-                  <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:16}}>
-                    {sosyal.question}
-                   </Text>
-                   <Text style={{fontWeight:'normal',fontSize:14}}>
-                     {sosyal.name} - <Text style={{color:'gray'}}>
-                      {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+             }
+             var profile_pic=null
+             sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+             return (
+               <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
+                <View style={{flexDirection:'row',height:60,}}>
+
+                <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
+
+                  <View style={{padding:10,flex:1}}>
+
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                      {sosyal.question}
                      </Text>
-                    </Text>
+                     <Text style={{fontWeight:'normal',fontSize:14}}>
+                       {sosyal.name} - <Text style={{color:'gray'}}>
+                        {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+                       </Text>
+                      </Text>
 
+                  </View>
+                  <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+                      <Text >{commented?"asdf":""}</Text>
+                    <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+                  </View>
                 </View>
-                <View style={{padding:15,justifyContent:'center',width:90,borderColor:'teal'}}>
-                  <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:20}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
-                </View>
-              </View>
 
-             </TouchableOpacity>
-             );
-         }, this)
-      )
+               </TouchableOpacity>
+               );
+           }, this)
+        )
+      }
+      else if(sosyaller.length==0){
+        return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />)
+      }
     }
     else{
       return(
@@ -311,6 +345,78 @@ export default class Social extends React.Component {
         />
       )
     }
+  }
+
+  renderCommenteds = () => {
+    /*
+    if(this.props.socialStore.commenteds){
+      var sosyaller = this.props.socialStore.commenteds
+      if(sosyaller.length>0){
+        return (
+
+           sosyaller.map(function (sosyal,index) {
+             var commented = false;
+
+
+             if(sosyal.comments){
+               var id = Backend.getUid()
+               for (var i = 0; i < sosyal.comments.length; i++) {
+                 if(sosyal.comments[i].fireID==id){
+                   commented=true;
+                   break;
+                 }
+               }
+
+             }
+             var profile_pic=null
+             sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+             return (
+               <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
+                <View style={{flexDirection:'row',height:60,}}>
+
+                <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
+
+                  <View style={{padding:10,flex:1}}>
+
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                      {sosyal.question}
+                     </Text>
+                     <Text style={{fontWeight:'normal',fontSize:14}}>
+                       {sosyal.name} - <Text style={{color:'gray'}}>
+                        {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+                       </Text>
+                      </Text>
+
+                  </View>
+                  <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+                      <Text >{commented?"asdf":""}</Text>
+                    <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+                  </View>
+                </View>
+
+               </TouchableOpacity>
+               );
+           }, this)
+        )
+      }
+      else if(sosyaller.length==0){
+        return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />)
+      }
+    }
+    else{
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      )
+    }*/
   }
 
   renderphoto1 = () => {
@@ -555,7 +661,7 @@ export default class Social extends React.Component {
                this.popupSosyal.dismiss()
                this.setState({modalVisible:false,inputVisible:false})
                Keyboard.dismiss()
-              
+
                this.setState({sosyalInput:'',falPhotos:[]})
 
                fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
@@ -584,6 +690,29 @@ export default class Social extends React.Component {
     });
   }
 
+  refresh = () => {
+    //this.setState({tek:null,sosyaller:null});
+     this.setState({refreshing: true});
+    this.props.socialStore.setSocials([])
+    fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: Backend.getUid(),
+      })
+    })
+    .then((response) => response.json())
+    .then((responseJson) => {
+        this.setState({tek:responseJson.tek,refreshing:false});
+        this.props.socialStore.setSocials(responseJson.sosyals)
+
+
+     })
+  }
+
   render() {
 
 
@@ -592,25 +721,37 @@ export default class Social extends React.Component {
       <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
         <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
         <View style={{flex:1,width:'100%'}}>
-          <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
+          <View style={{padding:Dimensions.get('window').height/70,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:0,alignSelf:'stretch'}}>
             <View>
               <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
               </Image>
 
             </View>
             <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.6)',padding:10,width:Dimensions.get('window').width-85}}>
-              <Text style={{fontSize:16,color:'white'}}>
+              <Text style={{fontSize:13,color:'white'}}>
                 Bu sayfada diğer falseverlerden gelen falları okuyabilir, bu fallara yorum yapıp beğeni kazanabilirsin.
               </Text>
 
             </View>
           </View>
             {this.renderTek()}
-          <View style={{backgroundColor:'teal'}}><Text style={{margin:3,fontSize:17,textAlign:'center',color:'white',fontWeight:'bold'}}>Yorum Bekleyen Falseverler ({this.props.socialStore.socials?this.props.socialStore.socials.length:0})</Text></View>
-          <ScrollView style={{backgroundColor:'rgba(255,255,255,0.8)'}}>
 
-            {this.renderSosyaller()}
-          </ScrollView>
+
+
+          <ScrollableTabView
+
+           renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:35}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
+           tabBarPosition='overlayTop'
+           >
+             <ScrollView style={{paddingTop:50}} tabLabel='Yorum Bekleyenler'>
+              {this.renderSosyaller()}
+             </ScrollView>
+             <ScrollView style={{paddingTop:50}} tabLabel='Yorumladıklarınız'>
+              {this.renderCommenteds()}
+             </ScrollView>
+           </ScrollableTabView>
+
+
         </View>
         <PopupDialog
 

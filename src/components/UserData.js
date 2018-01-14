@@ -105,11 +105,7 @@ export default class UserData extends Component {
             </View>
           </View>
           </View>
-        <View style={styles.thirdrow}>
-            <Text style={{fontWeight:'bold',marginBottom:5}}>İlk konuştuğumuz tarih: <Text style={{fontWeight:'normal'}}>{moment(this.props.userData.joinDate).format('LLL')}</Text></Text>
-            <Text style={{fontWeight:'bold',marginBottom:5}}>En son fal baktığın tarih: <Text style={{fontWeight:'normal'}}>{moment(this.props.userData.lastUsed).format('LLL')}</Text></Text>
-            <Text style={{fontWeight:'bold'}}>Kredin: <Text style={{fontWeight:'normal'}}>{this.props.userData.credit ? this.props.userData.credit : 0}</Text></Text>
-        </View>
+
 
         </View>
       );
@@ -156,7 +152,6 @@ var styles = StyleSheet.create({
   secondrow: {
     flexDirection: 'column',
     justifyContent:'space-around',
-    borderBottomWidth:1,
     borderColor:'gainsboro',
     paddingBottom:15,
     paddingTop:5,

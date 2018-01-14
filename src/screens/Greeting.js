@@ -738,7 +738,7 @@ componentWillUnmount() {
 
               </View>
               <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.6)',padding:10,width:Dimensions.get('window').width-85}}>
-                <Text style={{fontSize:16,color:'white'}}>
+                <Text style={{fontSize:13,color:'white'}}>
                   {this.state.greetingMessage}
                 </Text>
 

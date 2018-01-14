@@ -36,6 +36,7 @@
     "react-native-progress": "^3.4.0",
     "react-native-progress-bar": "^0.1.2",
     "react-native-root-toast": "^1.0.5",
+    "react-native-scrollable-tab-view": "^0.8.0",
     "react-native-simple-radio-button": "^2.7.0",
     "react-native-sound": "^0.10.0",
     "react-native-star-rating": "^1.0.7",

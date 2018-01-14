@@ -286,6 +286,21 @@ setProfile = (name,age,iliski,meslek) => {
 
 }
 
+setCity = (city) => {
+
+  fetch('https://eventfluxbot.herokuapp.com/appapi/setCity', {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      uid: this.uid,
+      city:city,
+    })
+  })
+}
+
 appRated = () => {
   fetch('https://eventfluxbot.herokuapp.com/webhook/appRated', {
     method: 'POST',
@@ -822,6 +837,20 @@ loadMessages = (callback) => {
       })
     })
 
+  }
+  setBio = (bio) =>{
+
+    fetch('https://eventfluxbot.herokuapp.com/appapi/setBio', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        bio:bio,
+        uid:this.getUid()
+      })
+    })
   }
 }
 

@@ -13,6 +13,8 @@ export default class UserStore {
   @observable meslekStatus= null;
   @observable iliskiStatus= null;
   @observable isAgent= false;
+  @observable bio= '';
+  @observable city= '';
 
 
 
@@ -45,7 +47,12 @@ export default class UserStore {
   }
   @action changeAge(value) {
     this.age=value
+    Backend.setProfile(this.userName,this.age,this.iliskiStatus,this.meslekStatus)
+  }
 
+  @action changeCity(value) {
+    this.city=value
+    Backend.setCity(value)
   }
 
   @action changeMeslek(value) {
@@ -69,6 +76,7 @@ export default class UserStore {
       status=6;
     }
     this.meslekStatus=status
+      Backend.setProfile(this.userName,this.age,this.iliskiStatus,this.meslekStatus)
   }
   @action changeIliski(value) {
     var status="0"
@@ -95,6 +103,7 @@ export default class UserStore {
     }
 
     this.iliskiStatus=status
+    Backend.setProfile(this.userName,this.age,this.iliskiStatus,this.meslekStatus)
 
   }
 
@@ -172,6 +181,10 @@ export default class UserStore {
 
     this.userName=name.nametext
   }
+  @action setBio(name) {
+
+    this.bio=name.nametext
+  }
 
 
 
@@ -179,7 +192,9 @@ export default class UserStore {
     this.user = user;
     this.userCredit=user.credit
     this.userName=user.name
+    this.bio=user.bio
     this.age=user.age
+    this.city=user.city
     this.sharedWeek=user.sharedToday
     if(user.lastMessage){
       this.aktifLastMessage=user.lastMessage.text
