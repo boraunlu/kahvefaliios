@@ -82,7 +82,7 @@ export default class Profil extends React.Component {
         Keyboard.dismiss()
         this.setState({text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'})
         this.popupDialog2.dismiss(() => {
-          console.log('callback');
+
         });
         fetch('https://eventfluxbot.herokuapp.com/sendMail', {
           method: 'POST',
@@ -109,7 +109,7 @@ export default class Profil extends React.Component {
         Alert.alert('Başvuru','Başvurunuz bize ulaşmıştır. Teşekkürler!')
         this.setState({kendi:''})
         this.popupDialog3.dismiss(() => {
-          console.log('callback');
+
         });
         fetch('https://eventfluxbot.herokuapp.com/sendMail', {
           method: 'POST',
@@ -383,6 +383,7 @@ export default class Profil extends React.Component {
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1,width:'100%'}}>
           <View style={{elevation:3,paddingTop:15,marginTop:20,width:'100%',backgroundColor:'white',flexDirection:'column'}}>
+            <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{position:'absolute',top:10,left:10,marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold'}}>{this.props.userStore.userCredit}</Text></TouchableOpacity>
             <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'teal',borderWidth:1,paddingTop:1,alignItems:'center'}}>
               <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
               <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'teal',alignItems:'center',backgroundColor:'transparent'}}>
@@ -391,13 +392,14 @@ export default class Profil extends React.Component {
             </TouchableOpacity>
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
             {this.renderBio()}
+            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
             <View style={styles.pickerContainer}>
               <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
               <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
               <View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
               <View ref={agePicker => this.cityPicker = agePicker}><TouchableOpacity onPress={() => {this.initCityPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.city!=='' ? this.props.userStore.city : "Şehir"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
             </View>
-            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
+
 
           </View>
           <View style={{paddingTop:5,marginBottom:10,flex:1}}>
@@ -599,6 +601,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     paddingRight:10,
     paddingLeft:10,
+    
 
   },
   pickerContainer: {

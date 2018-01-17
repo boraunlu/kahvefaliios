@@ -76,35 +76,7 @@ export default class UserData extends Component {
             <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
           </View>
         </TouchableOpacity>
-        <View style={styles.secondrow}>
-          <Text style={{fontWeight:'bold',textAlign:'center',fontSize:16}}>Fal İstatistikleri</Text>
-          <View style={styles.secondinner}>
-            <View >
-              <View style={{height:21,borderColor:'#1194F7',borderBottomWidth:1}}>
-                <Text style={{fontWeight:'bold'}}>Toplam</Text>
-              </View>
-              <View style={{paddingTop:5,alignItems:'center'}}>
-                <Text style={styles.numbers}>{this.props.userData.timesUsed ? this.props.userData.timesUsed : 0}</Text>
-              </View>
-            </View>
-            <View>
-              <View style={{height:21,borderColor:'#1194F7',borderBottomWidth:1}}>
-                <Text style={{fontWeight:'bold'}}>Aşk</Text>
-              </View>
-              <View style={{paddingTop:5,alignItems:'center'}}>
-                <Text style={styles.numbers}>{this.props.userData.loveUsed ? this.props.userData.loveUsed : 0}</Text>
-              </View>
-            </View>
-            <View>
-              <View style={{height:21,borderColor:'#1194F7',borderBottomWidth:1}}>
-                <Text style={{fontWeight:'bold' }}>Detaylı</Text>
-              </View>
-              <View style={{paddingTop:5,alignItems:'center'}}>
-                <Text style={styles.numbers}>{this.props.userData.detayUsed ? this.props.userData.detayUsed : 0}</Text>
-              </View>
-            </View>
-          </View>
-          </View>
+
 
 
         </View>
@@ -137,6 +109,7 @@ var styles = StyleSheet.create({
 
     padding: 15,
     paddingTop:5,
+    paddingBottom:0,
     width: Dimensions.get('window').width-20,
   },
   firstrow: {

@@ -35,7 +35,13 @@ var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
 function capitalizeFirstLetter(string) {
+  if(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+  else {
+    return ""
+  }
+
 }
 
 function replaceGecenHafta(string) {
@@ -145,9 +151,24 @@ export default class Social extends React.Component {
         this.props.socialStore.setSocials(sosyals)
 
         /*
-        
-        this.props.socialStore.setCommenteds(commenteds)**/
 
+        this.props.socialStore.setCommenteds(commenteds)*/
+        var commenteds=[]
+        var id = Backend.getUid()
+        for (var i = 0; i < sosyals.length; i++) {
+          var sosyal = sosyals[i]
+          var comments=sosyal.comments
+          if(comments.length>0){
+
+            for (var x = 0; x < comments.length; x++) {
+              if(comments[x].fireID==id){
+                commenteds.push(sosyal)
+                break;
+              }
+            }
+          }
+        }
+        this.props.socialStore.setCommenteds(commenteds)
 
      })
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
@@ -188,9 +209,9 @@ export default class Social extends React.Component {
       var profile_pic=null
       tek.profile_pic?profile_pic={uri:tek.profile_pic}:tek.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
       return(
-        <View style={{height:70,marginBottom:20}}>
+        <View style={{height:70,marginBottom:10,flexDirection:'row'}}>
 
-          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1,height:70}} onPress={() => {this.navigateToFal(tek)}}>
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1,height:70}} onPress={() => {this.navigateToFal(tek)}}>
            <View style={{flexDirection:'row',height:70}}>
 
            <Image source={profile_pic} style={styles.falciAvatar}></Image>
@@ -212,6 +233,11 @@ export default class Social extends React.Component {
            </View>
 
           </TouchableOpacity>
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.props.navigation.navigate('Leader')}}>
+            <Icon name="trophy" color={'darkgoldenrod'} size={30} />
+            <Text style={{textAlign:'center',fontSize:12}}>Puan Tablosu</Text>
+          </TouchableOpacity>
+
         </View>
       )
     }
@@ -250,23 +276,29 @@ export default class Social extends React.Component {
           kolor='rgb(249,50,12)'
         }
         return(
-          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',height:70,width:'100%',borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
-            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,flexDirection:'row'}}>
-              <Text style={{fontSize:14,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-              <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
-            </View>
-            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:15}}>
-              <View style={{justifyContent:'center'}}>
-                <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                <View style={{height:18,width:200,borderWidth:3,borderColor:kolor}}>
-                  <View style={{height:15,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
-                  </View>
-                </View>
-
+          <View style={{flexDirection:'row',height:70,marginBottom:10}}>
+            <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',height:70,flex:1,borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+              <View style={{alignSelf:'center',alignItems:'center',marginTop:5,flexDirection:'row'}}>
+                <Text style={{fontSize:14,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+                <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
               </View>
-              <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
-            </View>
-          </TouchableOpacity>
+              <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:15}}>
+                <View style={{justifyContent:'center'}}>
+                  <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+                  <View style={{height:18,width:200,borderWidth:3,borderColor:kolor}}>
+                    <View style={{height:15,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                    </View>
+                  </View>
+
+                </View>
+                <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.props.navigation.navigate('Leader')}}>
+              <Icon name="trophy" color={'darkgoldenrod'} size={30} />
+              <Text style={{textAlign:'center',fontSize:12}}>Puan Tablosu</Text>
+            </TouchableOpacity>
+          </View>
         )
       }
       else{
@@ -283,19 +315,7 @@ export default class Social extends React.Component {
         return (
 
            sosyaller.map(function (sosyal,index) {
-             var commented = false;
 
-
-             if(sosyal.comments){
-               var id = Backend.getUid()
-               for (var i = 0; i < sosyal.comments.length; i++) {
-                 if(sosyal.comments[i].fireID==id){
-                   commented=true;
-                   break;
-                 }
-               }
-
-             }
              var profile_pic=null
              sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
              return (
@@ -317,7 +337,7 @@ export default class Social extends React.Component {
 
                   </View>
                   <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
-                      <Text >{commented?"asdf":""}</Text>
+
                     <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
                   </View>
                 </View>
@@ -348,26 +368,14 @@ export default class Social extends React.Component {
   }
 
   renderCommenteds = () => {
-    /*
+
     if(this.props.socialStore.commenteds){
       var sosyaller = this.props.socialStore.commenteds
       if(sosyaller.length>0){
         return (
 
            sosyaller.map(function (sosyal,index) {
-             var commented = false;
 
-
-             if(sosyal.comments){
-               var id = Backend.getUid()
-               for (var i = 0; i < sosyal.comments.length; i++) {
-                 if(sosyal.comments[i].fireID==id){
-                   commented=true;
-                   break;
-                 }
-               }
-
-             }
              var profile_pic=null
              sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
              return (
@@ -389,7 +397,6 @@ export default class Social extends React.Component {
 
                   </View>
                   <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
-                      <Text >{commented?"asdf":""}</Text>
                     <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
                   </View>
                 </View>
@@ -401,11 +408,7 @@ export default class Social extends React.Component {
       }
       else if(sosyaller.length==0){
         return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />)
+        <Text>Yorumladığın fal bulunmuyor</Text>)
       }
     }
     else{
@@ -416,7 +419,7 @@ export default class Social extends React.Component {
           size="large"
         />
       )
-    }*/
+    }
   }
 
   renderphoto1 = () => {
@@ -690,10 +693,8 @@ export default class Social extends React.Component {
     });
   }
 
-  refresh = () => {
-    //this.setState({tek:null,sosyaller:null});
-     this.setState({refreshing: true});
-    this.props.socialStore.setSocials([])
+  _onRefresh() {
+    this.setState({refreshing: true});
     fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
       method: 'POST',
       headers: {
@@ -706,9 +707,27 @@ export default class Social extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-        this.setState({tek:responseJson.tek,refreshing:false});
-        this.props.socialStore.setSocials(responseJson.sosyals)
+        this.setState({tek:responseJson.tek});
+        var sosyals=Array.from(responseJson.sosyals)
+        this.props.socialStore.setSocials(sosyals)
 
+        var commenteds=[]
+        var id = Backend.getUid()
+        for (var i = 0; i < sosyals.length; i++) {
+          var sosyal = sosyals[i]
+          var comments=sosyal.comments
+          if(comments.length>0){
+
+            for (var x = 0; x < comments.length; x++) {
+              if(comments[x].fireID==id){
+                commenteds.push(sosyal)
+                break;
+              }
+            }
+          }
+        }
+        this.props.socialStore.setCommenteds(commenteds)
+        this.setState({refreshing: false});
 
      })
   }
@@ -736,22 +755,28 @@ export default class Social extends React.Component {
           </View>
             {this.renderTek()}
 
+            <ScrollableTabView
+              style={{paddingTop:50,height:40}}
+             renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
+             tabBarPosition='overlayTop'
+             >
+               <ScrollView
 
+               refreshControl={
+                  <RefreshControl
+                    refreshing={this.state.refreshing}
+                    onRefresh={this._onRefresh.bind(this)}
 
-          <ScrollableTabView
-
-           renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:35}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
-           tabBarPosition='overlayTop'
-           >
-             <ScrollView style={{paddingTop:50}} tabLabel='Yorum Bekleyenler'>
-              {this.renderSosyaller()}
-             </ScrollView>
-             <ScrollView style={{paddingTop:50}} tabLabel='Yorumladıklarınız'>
-              {this.renderCommenteds()}
-             </ScrollView>
-           </ScrollableTabView>
-
-
+                    progressViewOffset={50}
+                  />
+                }
+                tabLabel='Yorum Bekleyenler'>
+                {this.renderSosyaller()}
+               </ScrollView>
+               <ScrollView tabLabel='Yorumladıklarınız'>
+                {this.renderCommenteds()}
+               </ScrollView>
+             </ScrollableTabView>
         </View>
         <PopupDialog
 

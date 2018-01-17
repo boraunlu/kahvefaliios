@@ -348,7 +348,7 @@ export default class SocialFal extends React.Component {
         }
         return(
         <View>
-          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:60,width:60, borderRadius:30}} source={this.state.profinfo.profile_pic}></Image>
+          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
 
           <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
@@ -508,7 +508,7 @@ export default class SocialFal extends React.Component {
 
          dialogStyle={{marginTop:-250}}
          width={0.9}
-         height={325}
+         height={320}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>

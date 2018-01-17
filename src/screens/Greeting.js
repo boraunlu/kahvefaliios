@@ -42,7 +42,13 @@ var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
 function capitalizeFirstLetter(string) {
+  if(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+  else {
+    return ""
+  }
+
 }
 function generateRandom(uzunluk, mevcut,gender,falType) {
   var num =0
@@ -162,7 +168,7 @@ static navigationOptions = ({ navigation }) => ({
           else{
             var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci)
           }*/
-          var randomnumber = generateRandom(falcilar.length,this.state.userData.currentFalci,this.props.userStore.user.gender,falType)
+          var randomnumber = generateRandom(falcilar.length,this.props.userStore.user.currentFalci,this.props.userStore.user.gender,falType)
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
               index: 0,
@@ -520,7 +526,7 @@ componentWillUnmount() {
         return(
           <View>
           <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
-          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
            <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
               <View>
               <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
@@ -549,7 +555,7 @@ componentWillUnmount() {
           return(
             <View>
             <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Son Konuşman</Text></View>
-            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:20}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <View>
                 <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
@@ -681,6 +687,26 @@ componentWillUnmount() {
               </View>
               </ImageBackground>
             </TouchableOpacity>
+          </View>
+          <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.props.navigation.navigate("Social")}}>
+              <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimage}>
+
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    Sosyal Fal
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Diğer falseverle buluşma yeriniz!
+                  </Text>
+                </View>
+                <View style={{position:'absolute',right:10,top:25,backgroundColor:'transparent'}}>
+                  <Icon name="chevron-right" color={"white"} size={50} />
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+
           </View>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupHand.show()}}>

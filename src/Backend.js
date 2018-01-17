@@ -323,9 +323,9 @@ loadMessages = (callback) => {
     const onReceive = (data) => {
       const message = data.val();
       var callbackobj = {};
-      console.log("datakey"+data.key);
-      console.log("lastloaded"+this.lastKeyLoaded)
-      if(data.key==this.lastKeyLoaded||this.lastKeyLoaded==null){console.log("aksi")}
+      //console.log("datakey"+data.key);
+      //console.log("lastloaded"+this.lastKeyLoaded)
+      if(data.key==this.lastKeyLoaded||this.lastKeyLoaded==null){}
       else{
         if(message.type=="text"){
           callbackobj=

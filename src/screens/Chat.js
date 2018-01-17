@@ -65,9 +65,21 @@ var whoosh = new Sound('yourturn.mp3', Sound.MAIN_BUNDLE, (error) => {
   // loaded successfully
 });
 
-function generateRandom(uzunluk, mevcut) {
-    var num = Math.floor(Math.random() * falcilar.length);
-    return (num === mevcut ) ? generateRandom(uzunluk, mevcut) : num;
+function generateRandom(uzunluk, mevcut,gender,falType) {
+  var num =0
+  if(falType==1||falType==2){
+   num =  Math.floor(Math.random()*(23-19+1)+19);
+  }
+  else {
+    if(gender=='male'){
+      num =  Math.floor(Math.random()*(18-9+1)+9);
+    }
+    else {
+        num =  Math.floor(Math.random()*(13-0+1)+0);
+    }
+  }
+
+    return (num === mevcut ) ? generateRandom(uzunluk, mevcut,gender,falType) : num;
 }
 
 class CustomMessage extends Message {
@@ -212,7 +224,7 @@ export default class Chat extends React.Component {
 
     const { navigate } = this.props.navigation;
     if(destination=="Chat"){
-          var randomnumber = generateRandom(falcilar.length,this.props.userStore.user.currentFalci)
+          var randomnumber = generateRandom(falcilar.length,this.props.userStore.user.currentFalci,this.props.userStore.user.gender,falType)
           Backend.setFalci(randomnumber).then(() => {
             const resetAction = NavigationActions.reset({
               index: 0,
