@@ -645,13 +645,13 @@ export default class Social extends React.Component {
   paySosyal = (urls) => {
     //this.setState({spinnerVisible:true})
     var products = [
-       'com.grepsi.kahvefaliios.100',
+       'com.grepsi.kahvefaliios.sosyal',
     ];
     InAppUtils.loadProducts(products, (error, products) => {
       if(error){this.setState({spinnerVisible:false})}
       else{
 
-        var identifier = 'com.grepsi.kahvefaliios.100'
+        var identifier = 'com.grepsi.kahvefaliios.sosyal'
         InAppUtils.purchaseProduct(identifier, (error, response) => {
           this.setState({spinnerVisible:false})
            // NOTE for v3.0: User can cancel the payment which will be availble as error object here.

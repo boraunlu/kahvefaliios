@@ -41,9 +41,14 @@ import moment from 'moment';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
-function capitalizeFirstLetter(string) {
-  if(string){
-    return string.charAt(0).toUpperCase() + string.slice(1);
+function capitalizeFirstLetter(stringy) {
+  if(stringy){
+    if(stringy.length>0){
+      return stringy.charAt(0).toUpperCase() + stringy.slice(1);
+    }
+    else {
+      return ""
+    }
   }
   else {
     return ""
@@ -689,7 +694,7 @@ componentWillUnmount() {
             </TouchableOpacity>
           </View>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.props.navigation.navigate("Social")}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.props.navigation.navigate('Social')}}>
               <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimage}>
 
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>

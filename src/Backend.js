@@ -681,11 +681,127 @@ loadMessages = (callback) => {
       this.lastMessageref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,user:this.uid,text:lastmessagetext})
     }
   }
+
+  sendMessageToFalsever = (message,falsever) => {
+
+    var bilgilerref= firebase.database().ref('messages/'+this.uid+'/falsever/bilgiler/'+falsever.fireID);
+    var mesajlarref= firebase.database().ref('messages/'+this.uid+'/falsever/mesajlar/'+falsever.fireID);
+    var tomesajlarref= firebase.database().ref('messages/'+falsever.fireID+'/falsever/mesajlar/'+this.uid);
+    var tobilgilerref= firebase.database().ref('messages/'+falsever.fireID+'/falsever/bilgiler/'+this.uid);
+    var lastmessagetext=''
+
+    if(message){
+      if(message[0].text){
+        for (let i = 0; i < message.length; i++) {
+
+
+            bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:message[i].text})
+            tobilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:message[i].user.name,avatar:message[i].user.avatar,text:message[i].text})
+            mesajlarref.push({
+              type: "text",
+              text: message[i].text,
+              user: message[i].user,
+              createdAt: firebase.database.ServerValue.TIMESTAMP,
+            });
+            tomesajlarref.push({
+              type: "text",
+              text: message[i].text,
+              user: message[i].user,
+              createdAt: firebase.database.ServerValue.TIMESTAMP,
+            });
+
+
+          fetch('https://eventfluxbot.herokuapp.com/webhook/falsevermessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              toid: falsever.fireID,
+              text: message[i].text,
+              senderisim:message[i].user.name,
+              type:"text"
+            })
+          })
+          .then(function(response){});
+        }
+        lastmessagetext=message[0].text
+      }
+      else if (message[0].image) {
+
+        if(message.length>1){
+          var imagepusharray=[];
+          for (let i = 0; i < message.length; i++) {
+            this.messagesRef.push({
+              type: "image",
+              image: message[i].image,
+              user: message[i].user,
+              createdAt: firebase.database.ServerValue.TIMESTAMP,
+            });
+          }
+          imagepusharray=['https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg','https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg']
+          fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: this.uid,
+              image: imagepusharray,
+              type:"images"
+            })
+          })
+        }
+        else{
+          this.messagesRef.push({
+            type: "image",
+            image: message[0].image,
+            user: message[0].user,
+            createdAt: firebase.database.ServerValue.TIMESTAMP,
+          });
+          fetch('https://eventfluxbot.herokuapp.com/webhook/appmessage', {
+            method: 'POST',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              uid: this.uid,
+              image: 'https://s3.eu-central-1.amazonaws.com/kahvefali/images/kahveler/0.jpg',
+              type:"image"
+            })
+          })
+        }
+        lastmessagetext="Fotoğraf"
+      }
+
+    }
+  }
+
+
   getBizden = () => {
     return new Promise((resolve, reject) => {
           var response ={}
           var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/bizden');
           lastmessagesref.once('value')
+          .then((dataSnapshot) => {
+            resolve(dataSnapshot.val())
+          })
+          .catch((error) => {
+            reject(error)
+          })
+
+   })
+
+  }
+
+  getFalsevers = () => {
+    return new Promise((resolve, reject) => {
+          var response ={}
+          var lastmessagesref = firebase.database().ref('messages/'+this.uid+'/falsever/bilgiler');
+          lastmessagesref.on('value')
           .then((dataSnapshot) => {
             resolve(dataSnapshot.val())
           })

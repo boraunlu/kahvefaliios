@@ -40,6 +40,7 @@ export default class Mesajlar extends React.Component {
     super(props);
     this.state = {
       messages: null,
+      falsevers:null,
       aktifChat:null,
       lastBizden:null,
       tickets:null,
@@ -135,17 +136,32 @@ export default class Mesajlar extends React.Component {
 
     })
 
+    var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler');
+    falseverref.on('value',function(dataSnapshot){
+        var falsevers=dataSnapshot.val()
+        var data = falsevers
+        var output =[]
+        for (var key in data) {
+            data[key].fireID = key;   // save key so you can access it from the array (will modify original data)
+            output.push(data[key]);
+        }
+
+        this.setState({falsevers:output})
+    }.bind(this))
+
+
   }
 
   componentDidUpdate(prevProps,prevState) {
         //alert(prevProps.userStore.isAgent)
+        /*
     if(this.props.userStore.isAgent==true&&this.state.agentCheck==false){
       this.setState({agentCheck:true})
       this.trackTickets();
       if(this.props.userStore.hasTicket){
 
       }
-    }
+    }*/
   }
 
   componentWillMount() {
@@ -153,6 +169,7 @@ export default class Mesajlar extends React.Component {
 
   }
 
+  /*
   trackTickets = () => {
     var ticketref= firebase.database().ref('tickets');
     ticketref.orderByChild("status").equalTo(0).on('value',function(snapshot){
@@ -187,7 +204,7 @@ export default class Mesajlar extends React.Component {
       }
 
     }.bind(this))
-  }
+  }*/
 
   renderAktif = () => {
     if(this.state.aktifChat==null){
@@ -256,6 +273,51 @@ export default class Mesajlar extends React.Component {
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
+                  <Icon name="trash-o" color={'gray'} size={20} />
+                </TouchableOpacity>
+              </View>
+
+             </TouchableOpacity>
+             );
+         }, this)
+      )
+    }
+  }
+
+  renderFalsevers = (props) => {
+    if(this.state.falsevers==null){
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      )
+    }
+    else if (this.state.falsevers.length==0) {
+      return(
+        <Text style={{textAlign:'center',backgroundColor:'transparent'}}> Eski falın bulunmuyor </Text>
+      )
+    }
+    else{
+      var messages = this.state.falsevers
+      return (
+
+         messages.map(function (message,index) {
+           return (
+             <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.props.navigation.navigate('ChatFalsever',{falsever:message})}}>
+              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+                <Image source={{uri:message.avatar}} style={styles.falciAvatar}></Image>
+
+                <View style={{padding:10,flex:2}}>
+                  <Text style={{fontWeight:'bold',fontSize:16}}>
+                    {message.name}
+                   </Text>
+                   <Text>
+                   {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
+                  </Text>
+                </View>
+                <TouchableOpacity onPress={() => {this.delete(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
                 </TouchableOpacity>
               </View>
@@ -406,8 +468,9 @@ export default class Mesajlar extends React.Component {
     return (
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
-        {this.renderAgent()}
+
           {this.renderAktif()}
+          {this.renderFalsevers()}
           {this.renderBizden()}
           <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}

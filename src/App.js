@@ -13,6 +13,7 @@ import Chat from './screens/Chat';
 import ChatOld from './screens/ChatOld';
 import ChatBizden from './screens/ChatBizden';
 import ChatAgent from './screens/ChatAgent';
+import ChatFalsever from './screens/ChatFalsever';
 import Social from './screens/Social';
 import SocialFal from './screens/SocialFal';
 import Home from './screens/Home';
@@ -53,6 +54,7 @@ let KahvefaliappNav = StackNavigator({
     SocialFal: {screen:SocialFal},
     ChatBizden: {screen:ChatBizden},
     ChatAgent: {screen:ChatAgent},
+    ChatFalsever: {screen:ChatFalsever},
     Swipers: {screen:Swipers},
     FalPuan: {screen:FalPuan},
     Leader: {screen:Leader},
