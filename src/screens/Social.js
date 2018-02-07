@@ -30,6 +30,8 @@ import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
 import Camera from 'react-native-camera';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
@@ -115,17 +117,15 @@ export default class Social extends React.Component {
   }
 
   showpopup = () => {
-
-        if(this.props.userStore.user){
-          if(this.props.userStore.user.timesUsed>0){
-            this.popupSosyal.show()
-          }
-          else {
-            Alert.alert("Çok Hızlısın :)","Sosyal Pano'da fal paylaşabilmeniz için öncelikle Ana Sayfa'da bulunan fallardan birine baktırmanız gerekmektedir")
-          }
-        }
-
-
+    if(this.props.userStore.user){
+      if(this.props.userStore.user.timesUsed>0){
+        //this.popupSosyal.show()
+        this.props.navigation.navigate('FalPaylas')
+      }
+      else {
+        Alert.alert("Çok Hızlısın :)","Sosyal Pano'da fal paylaşabilmeniz için öncelikle Ana Sayfa'da bulunan fallardan birine baktırmanız gerekmektedir")
+      }
+    }
   }
 
 
@@ -204,8 +204,8 @@ export default class Social extends React.Component {
   }
 
   renderTek = () => {
-    if(this.state.tek){
-      var tek = this.state.tek
+    if(this.props.socialStore.tek){
+      var tek = this.props.socialStore.tek
       var profile_pic=null
       tek.profile_pic?profile_pic={uri:tek.profile_pic}:tek.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
       return(
@@ -422,276 +422,6 @@ export default class Social extends React.Component {
     }
   }
 
-  renderphoto1 = () => {
-    if(this.state.falPhotos[0]){
-      return (
-        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
-
-         <Image source={{uri:this.state.falPhotos[0]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
-         </View>
-        );
-    }
-    else {
-      return(
-      <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
-      )
-    }
-  }
-  renderphoto2 = () => {
-    if(this.state.falPhotos[1]){
-      return (
-        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
-
-         <Image source={{uri:this.state.falPhotos[1]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
-         </View>
-        );
-    }
-    else {
-      return(
-        <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
-      )
-    }
-  }
-  renderphoto3 = () => {
-    if(this.state.falPhotos[2]){
-      return (
-        <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
-
-         <Image source={{uri:this.state.falPhotos[2]}} style={{ height: 50,borderRadius:5,width:50,alignSelf:'center'}}></Image>
-         </View>
-        );
-    }
-    else {
-      return(
-        <TouchableHighlight style={{height:50,width:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
-      )
-    }
-  }
-
-  changePhoto = () => {
-    const options = ['Çekilmiş Fotoğraflarından Seç', 'Yeni Fotoğraf Çek', 'İptal'];
-    const cancelButtonIndex = options.length - 1;
-    ActionSheetIOS.showActionSheetWithOptions({
-      options,
-      cancelButtonIndex,
-    },
-    (buttonIndex) => {
-      switch (buttonIndex) {
-        case 0:
-          this.setPickerVisible(true);
-          break;
-        case 1:
-          Camera.checkVideoAuthorizationStatus().then((response) => {if(response==true){this.setCameraVisible(true)}})
-          break;
-        default:
-      }
-    });
-
-  }
-
-  sendSosyal = () => {
-    if(this.state.sosyalInput.length<20){
-
-      Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
-    }
-    else{
-      if(this.state.sosyalInput.length>200){
-        Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
-      }
-      else{
-        if(this.state.falPhotos.length>1){
-          this.setState({spinnerVisible:true})
-
-          Backend.uploadImages(this.state.falPhotos).then((urls) => {
-
-            this.setState({spinnerVisible:false})
-
-
-              if(this.props.userStore.userCredit<100){
-                this.paySosyal(urls)
-              }
-              else{
-                Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
-                Backend.addCredits(-100)
-                this.props.userStore.increment(-100)
-                this.popupSosyal.dismiss()
-                Keyboard.dismiss()
-                this.setState({sosyalInput:'',falPhotos:[]})
-
-                fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                  method: 'POST',
-                  headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    uid: Backend.getUid(),
-                  })
-                })
-                .then((response) => response.json())
-                .then((responseJson) => {
-                    this.setState({tek:responseJson.tek});
-                    this.props.socialStore.setSocials(responseJson.sosyals)
-                 })
-                 setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!")},950)
-              }
-
-          })
-          .catch(error => {
-            console.log(error)
-            this.setState({spinnerVisible:false,sosyalInput:JSON.stringify(error.error)})
-            Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
-          })
-
-        }
-        else {
-            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
-        }
-
-      }
-    }
-  }
-
-  selectImages = (images) => {
-    this.setImages(images);
-  }
-
-  setImages = (images) => {
-    this._images = images;
-  }
-
-  getImages = () => {
-    return this._images;
-  }
-
-  setPhoto = (path) => {
-    this.setState({cameraVisible:false,spinnerVisible:false})
-    var images = this.state.falPhotos
-    images.push(path)
-    this.setState({falPhotos:images})
-  }
-
-  setPickerVisible = (visible = false) => {
-    this.setState({pickerVisible: visible});
-  }
-
-  setCameraVisible = (visible = false) => {
-    this.setState({cameraVisible: visible});
-  }
-
-
-  renderNavBar = () => {
-    return (
-      <NavBar style={{
-        statusBar: {
-          backgroundColor: '#FFF',
-          height:30
-        },
-        navBar: {
-          backgroundColor: '#FFF',
-
-        },
-      }}>
-        <NavButton onPress={() => {
-          this.setPickerVisible(false);
-        }}>
-          <NavButtonText style={{
-            color: '#000',
-            fontSize:26
-          }}>
-            {'<'}
-          </NavButtonText>
-        </NavButton>
-        <NavTitle style={{
-          color: '#000',
-        }}>
-          {'Fotoğraflarım'}
-        </NavTitle>
-        <NavButton onPress={() => {
-          if(this._images.length==0){
-            alert("Lütfen önce fotoğraf seçin")
-          }
-          else{
-            this.setPickerVisible(false);
-
-            const images = this.getImages().map((image) => {
-              return {
-                image: image.uri,
-              };
-            });
-            this.setFromPicker(images);
-            this.setImages([]);
-          }
-        }}>
-          <NavButtonText style={{
-            color: '#000',
-          }}>
-            {'Gönder'}
-          </NavButtonText>
-        </NavButton>
-      </NavBar>
-    );
-  }
-
-  setFromPicker = (images) => {
-    var falPhotos = this.state.falPhotos
-    for (var i = 0; i < images.length; i++) {
-      falPhotos.push(images[i].image)
-    }
-
-    this.setState({falPhotos:falPhotos})
-  }
-
-  paySosyal = (urls) => {
-    //this.setState({spinnerVisible:true})
-    var products = [
-       'com.grepsi.kahvefaliios.sosyal',
-    ];
-    InAppUtils.loadProducts(products, (error, products) => {
-      if(error){this.setState({spinnerVisible:false})}
-      else{
-
-        var identifier = 'com.grepsi.kahvefaliios.sosyal'
-        InAppUtils.purchaseProduct(identifier, (error, response) => {
-          this.setState({spinnerVisible:false})
-           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-           if(error){
-
-           }
-           else{
-             if(response && response.productIdentifier) {
-               Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
-               this.popupSosyal.dismiss()
-               this.setState({modalVisible:false,inputVisible:false})
-               Keyboard.dismiss()
-
-               this.setState({sosyalInput:'',falPhotos:[]})
-
-               fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                 method: 'POST',
-                 headers: {
-                   'Accept': 'application/json',
-                   'Content-Type': 'application/json',
-                 },
-                 body: JSON.stringify({
-                   uid: Backend.getUid(),
-                 })
-               })
-               .then((response) => response.json())
-               .then((responseJson) => {
-                   this.setState({tek:responseJson.tek});
-                   this.props.socialStore.setSocials(responseJson.sosyals)
-
-
-                })
-                setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!")},950)
-
-             }
-           }
-        });
-      }
-    });
-  }
 
   _onRefresh() {
     this.setState({refreshing: true});
@@ -707,9 +437,10 @@ export default class Social extends React.Component {
     })
     .then((response) => response.json())
     .then((responseJson) => {
-        this.setState({tek:responseJson.tek});
+
         var sosyals=Array.from(responseJson.sosyals)
         this.props.socialStore.setSocials(sosyals)
+        this.props.socialStore.setTek(responseJson.tek)
 
         var commenteds=[]
         var id = Backend.getUid()
@@ -738,6 +469,7 @@ export default class Social extends React.Component {
     return (
 
       <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
+
         <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
         <View style={{flex:1,width:'100%'}}>
           <View style={{padding:Dimensions.get('window').height/70,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:0,alignSelf:'stretch'}}>
@@ -753,6 +485,7 @@ export default class Social extends React.Component {
 
             </View>
           </View>
+
             {this.renderTek()}
 
             <ScrollableTabView
@@ -765,7 +498,7 @@ export default class Social extends React.Component {
                refreshControl={
                   <RefreshControl
                     refreshing={this.state.refreshing}
-                    onRefresh={this._onRefresh.bind(this)}
+                    onRefresh={()=>{this._onRefresh}}
 
                     progressViewOffset={50}
                   />
@@ -778,125 +511,8 @@ export default class Social extends React.Component {
                </ScrollView>
              </ScrollableTabView>
         </View>
-        <PopupDialog
-
-          ref={(popupDialog) => { this.popupSosyal2 = popupDialog; }}
-
-          width={'80%'}
-          height={'60%'}
-          dialogStyle={{marginTop:-150}}
-          overlayOpacity={0.75}
-        >
-          <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center'}} >
-
-              <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
-              <Text style={styles.faltypeyazipopup}>
-                Falımı nasıl paylaşabilirim?
-              </Text>
-              <Text style={styles.faltypeyazikucukpopup}>
-                Ana sayfa üzerinden falcılarımızla yaptığınız sohbetin bitiminde çıkan <Text style={{fontWeight:'bold',fontSize:15}}>"Falseverlere Sor"</Text> seçeneğini kullanarak falınızın burada yayınlanmasını sağlayabilirsiniz.  {"\n"}
-              </Text>
-                <Image style={{height:140,resizeMode:'contain',alignSelf:'center'}} source={require('../static/images/sosyalreklam1.png')}/>
-          </View>
-        </PopupDialog>
-        <PopupDialog
-
-          ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
-          dialogStyle={this.state.keyboardVisible?styles.marginKeyboardVisible:styles.marginKeyboardNotVisible}
-          width={0.8}
-          height={0.75}
-          overlayOpacity={0.75}
-        >
-          <View style={{flex:1,backgroundColor:'#36797f',alignItems:'center',paddingBottom:40}} >
-
-              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-
-                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-                    <Text style={[styles.label]}>
-                      100
-                    </Text>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                  </View>
-              </View>
-              <Image source={require('../static/images/karilar.png')} style={{height:60,resizeMode:'contain',marginTop:10}}/>
-              <Text style={styles.faltypeyazipopup}>
-                Siz sorun, diğer falseverlerimiz cevaplasın!
-              </Text>
-              <Text style={styles.faltypeyazikucukpopup}>
-                Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 3 gün boyunca Sosyal Panomuzda yayınlayıp, diğer falseverlerin yorumuna sunalım.   {"\n"}
-              </Text>
-              <TextInput
-                editable={true}
-                multiline={true}
-                value={this.state.sosyalInput}
-                onChangeText={(text) => this.setState({sosyalInput:text})}
-                placeholder={"Sorunu yaz"}
-                style={{height:60,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
-              />
-              <View style={{flexDirection:'row',alignItems:'center',marginTop:10}}>
-                <Text style={{color:'white'}}> Profil Fotoğrafım Görünebilir </Text>
-                <Switch
-                  onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
-                  value={this.state.anonimSwitchIsOn} />
-                  </View>
-              <View style={{width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:120,paddingBottom:40,justifyContent:'space-around'}}>
-              {
-                this.renderphoto1()
-              }
-              {
-                this.renderphoto2()
-              }
-              {
-                this.renderphoto3()
-              }
-
-              </View>
-              <View style={{position:'absolute',bottom:0,width:'100%'}}>
-
-               <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                 <TouchableOpacity  onPress={() => {this.popupSosyal.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                   <Text style={{textAlign:'center'}}>İstemiyorum</Text>
-                 </TouchableOpacity>
-                 <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                   <Text style={{textAlign:'center',fontWeight:'bold'}}>GÖNDER</Text>
-                 </TouchableOpacity>
-               </View>
-             </View>
 
 
-
-          </View>
-        </PopupDialog>
-
-        <Modal
-          animationType={'slide'}
-          transparent={false}
-          visible={this.state.pickerVisible}
-          onRequestClose={() => {
-            this.setPickerVisible(false);
-          }}
-        >
-          {this.renderNavBar()}
-          <CameraRollPicker
-            maximum={3}
-            imagesPerRow={3}
-            callback={this.selectImages}
-            selected={[]}
-            emptyText={"Yükleniyor... \n \n Eğer çok uzun sürüyorsa uygulamamıza fotoğraflarına erişim izni vermemiş olabilirsiniz. Teşekkürler!"}
-          />
-        </Modal>
-        <Modal
-          animationType={'slide'}
-          transparent={false}
-          visible={this.state.cameraVisible}
-          onRequestClose={() => {
-            this.setCameraVisible(false);
-          }}
-        >
-           <CameraPick
-            sendCapturedImage={(image) => { this.setPhoto(image.path)}}
-          />
-        </Modal>
       </Image>
 
     );

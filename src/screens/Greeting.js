@@ -1052,7 +1052,7 @@ const styles = StyleSheet.create({
   },
   marqueeContainer:{
     flex:1,
-    marginBottom:15,
+    marginBottom:5,
     paddingVertical:5,
     backgroundColor:'rgba(0, 0, 0, 0.6)',
     borderTopWidth:1,

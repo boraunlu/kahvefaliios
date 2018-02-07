@@ -48,7 +48,9 @@ export default class SocialFal extends React.Component {
       inputHeight:40,
       keyboardAcik:false,
       commentInput:'',
-      profinfo:null
+      profinfo:null,
+      replyingTo:false,
+      writing:false
   };
 }
 
@@ -109,6 +111,20 @@ export default class SocialFal extends React.Component {
     }
     this.setState({comments:newcomments})
     Backend.like(this.state.fal._id,index);
+
+  }
+
+  dislike = (index) => {
+    var newcomments=this.state.comments
+    if(newcomments[index].dislikes){
+      newcomments[index].dislikes.push(Backend.getUid())
+    }
+    else{
+      var dislikes=[Backend.getUid()]
+      newcomments[index].dislikes=dislikes
+    }
+    this.setState({comments:newcomments})
+    Backend.dislike(this.state.fal._id,index);
 
   }
 
@@ -212,19 +228,28 @@ export default class SocialFal extends React.Component {
         else if (falPuan>175&&falPuan<301) {
           seviye = 5
         }
-        var comment={comment:this.state.commentInput,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
+        var comment={comment:this.state.commentInput,parentIndex:this.state.replyingTo,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
         var newcomments=this.state.comments
-        newcomments.push(comment)
-        this.setState({comments:newcomments})
+        if(this.state.replyingTo){
+          newcomments.splice(this.state.replyingTo, 0, comment);
+          //console.log(newcomments[this.state.replyingTo].name)
+        }
+        else {
+          newcomments.push(comment)
+          this.setState({comments:newcomments})
+        }
         Keyboard.dismiss()
-        Backend.addComment(this.state.fal._id,comment)
-        this.props.socialStore.addComment(comment,index)
-        setTimeout(()=>{Alert.alert("Teşekkürler","Yorumunuz paylaşıldı!")},200)
+        Backend.addComment(this.state.fal._id,comment,this.props.userStore.user.commented)
+        if(!this.props.userStore.user.commented){
+          setTimeout(()=>{Alert.alert("Teşekkürler","İlk yorumunuzu yaptığınız için 15 Kredi kazandınız!")},200)
+          this.props.userStore.setCommentedTrue()
+          Keyboard.dismiss()
+        }
+
       }
     }
-
-
   }
+
   renderAktifStripe = () => {
     if(this.state.fal)
     {
@@ -245,7 +270,9 @@ export default class SocialFal extends React.Component {
         {
           this.state.comments.map(function (comment,index) {
             var liked = false;
+            var disliked = false;
             var likecount=0;
+            var dislikecount=0;
             var kolor='rgb(209,142,12)'
             switch(comment.seviye) {
                 case 2:
@@ -271,33 +298,76 @@ export default class SocialFal extends React.Component {
               }
               likecount=comment.likes.length
             }
+            if(comment.dislikes){
+              var id = Backend.getUid()
+              for (var i = 0; i < comment.dislikes.length; i++) {
+                if(comment.dislikes[i]==id){
+                  disliked=true;
+                  break;
+                }
+              }
+              dislikecount=comment.dislikes.length
+            }
 
-            return (
-              <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#f8fff8',borderColor:'gray'}}>
-                <View>
-                  <TouchableOpacity onPress={()=>{this.showProfPopup(comment.fireID)}}>
-                    <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
-                  </TouchableOpacity>
-                  <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
-                </View>
-                <View style={{padding:10,flex:2}}>
-                  <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
-                    {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
-                     {capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+            if(dislikecount>4){
+              return(
+                      <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#EeFFEe',borderColor:'gray'}}>
+                        <View style={{marginLeft:comment.parentIndex?60:0}}>
+                          <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID)}}>
+                            <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                          </TouchableOpacity>
+                          <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                        </View>
+                        <View style={{padding:10,flex:2}}>
+                          <Text style={{fontWeight:'normal',textAlign:'center',padding:20,fontStyle:'italic',fontSize:12}}>
+                            Bu yorum olumsuz tepki aldığı için yayından kaldırılmıştır
+                          </Text>
+                        </View>
+                      </View>
+                      )
+            }
+            else {
+              return (
+                <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#f8FFf8':'#EeFFEe',borderColor:'gray'}}>
+                  <View style={{marginLeft:comment.parentIndex?60:0}}>
+                    <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID)}}>
+                      <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                    </TouchableOpacity>
+                    <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                  </View>
+                  <View style={{padding:10,flex:2}}>
+                    <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
+                      {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
+                       {capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+                      </Text>
                     </Text>
-                  </Text>
-                  <Text style={{fontWeight:'normal',fontSize:14}}>
-                    {comment.comment}
-                  </Text>
+                    <Text style={{fontWeight:'normal',fontSize:14}}>
+                      {comment.comment}
+                    </Text>
+                    <View style={{flexDirection:'row',alignItems:'center',marginTop:5}}>
+                      <TouchableOpacity onPress={()=>{this.setState({replyingTo:index+1}); this.refs.Input.focus(); }}>
+                        <Text style={{textDecorationLine:'underline',fontWeight:'bold',color:'teal',fontSize:14}}>
+                          Cevap ver
+                        </Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
+                        {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
+                        <Text style={{marginLeft:4}}>{likecount}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
+                        {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
+                        <Text style={{marginLeft:4}}>{dislikecount}</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+
                 </View>
-                <TouchableOpacity style={{width:25,alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
-                  {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
-                  <Text>{likecount}</Text>
-                </TouchableOpacity>
-              </View>
-              );
-          }, this)}
-          </ScrollView>
+                );
+            }
+
+          }, this)
+        }
+        </ScrollView>
       )
     }
     else{
@@ -490,11 +560,6 @@ export default class SocialFal extends React.Component {
 
   render() {
 
-    const {keyboardHeight} = this.state;
-
-    let newStyle = {
-      height:keyboardHeight
-    }
     return (
 
       <View style={styles.containerrr}>
@@ -519,14 +584,17 @@ export default class SocialFal extends React.Component {
              </ScrollView>
            </View>
          </PopupDialog>
-        <KeyboardAvoidingView style={{bottom:this.state.keyboardHeight>0?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
+        <View style={{bottom:this.state.writing?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
           <TextInput
             editable={true}
             multiline={true}
+            onBlur={() => {this.setState({replyingTo:false,writing:false})} }
+            onFocus={() => {this.setState({writing:true})} }
+            ref='Input'
             underlineColorAndroid='rgba(0,0,0,0)'
             value={this.state.commentInput}
             onChangeText={(text) => this.setState({commentInput:text})}
-            placeholder={"Yorumunu yaz"}
+            placeholder={this.state.replyingTo?"Cevabını yaz":"Yorumunu yaz"}
             onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
             style={{height:this.state.keyboardHeight>0?80:30,borderRadius:5,borderColor: 'gray', borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
           />
@@ -534,7 +602,7 @@ export default class SocialFal extends React.Component {
             {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/500"}</Text>:null}
             <Text style={{color:'teal'}}>Gönder</Text>
           </TouchableOpacity>
-        </KeyboardAvoidingView>
+        </View>
       </View>
 
     );

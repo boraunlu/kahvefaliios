@@ -135,7 +135,7 @@ export default class Mesajlar extends React.Component {
       }
 
     })
-
+    /*
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler');
     falseverref.on('value',function(dataSnapshot){
         var falsevers=dataSnapshot.val()
@@ -148,7 +148,7 @@ export default class Mesajlar extends React.Component {
 
         this.setState({falsevers:output})
     }.bind(this))
-
+*/
 
   }
 
@@ -470,7 +470,7 @@ export default class Mesajlar extends React.Component {
         <ScrollView style={{flex:1}}>
 
           {this.renderAktif()}
-          {this.renderFalsevers()}
+
           {this.renderBizden()}
           <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}

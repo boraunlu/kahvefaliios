@@ -314,6 +314,7 @@ appRated = () => {
   })
 
 }
+
 newfortune = () => {this.lastKeyLoaded="asdf"}
 
   // retrieve the messages from the Backend
@@ -819,7 +820,7 @@ loadMessages = (callback) => {
     }
   }
 
-  addComment = (falid,comment) => {
+  addComment = (falid,comment,firstcomment) => {
     fetch('https://eventfluxbot.herokuapp.com/webhook/addComment', {
       method: 'POST',
       headers: {
@@ -827,14 +828,31 @@ loadMessages = (callback) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        uid:this.getUid(),
         falid: falid,
         comment: comment,
+        firstcomment:!firstcomment
       })
     })
   }
 
   like = (falid,index) => {
     fetch('https://eventfluxbot.herokuapp.com/appapi/like', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        falid: falid,
+        index: index,
+        uid:this.getUid()
+      })
+    })
+  }
+
+  dislike = (falid,index) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/dislike', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',

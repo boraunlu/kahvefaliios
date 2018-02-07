@@ -45,6 +45,10 @@ export default class UserStore {
   @action setAppRatedTrue() {
     this.user.appRated =true
   }
+  @action setCommentedTrue() {
+    this.user.commented =true
+    this.userCredit = this.userCredit+15;
+  }
   @action changeAge(value) {
     this.age=value
     Backend.setProfile(this.userName,this.age,this.iliskiStatus,this.meslekStatus)

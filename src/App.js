@@ -24,6 +24,7 @@ import Mesajlar from './screens/Mesajlar';
 import Swipers from './screens/Swipers';
 import Profil from './screens/Profil';
 import FalPuan from './screens/FalPuan';
+import FalPaylas from './screens/FalPaylas';
 import Leader from './screens/Leader';
 
 import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigation';
@@ -57,6 +58,7 @@ let KahvefaliappNav = StackNavigator({
     ChatFalsever: {screen:ChatFalsever},
     Swipers: {screen:Swipers},
     FalPuan: {screen:FalPuan},
+    FalPaylas: {screen:FalPaylas},
     Leader: {screen:Leader},
 });
 

@@ -73,7 +73,7 @@ export default class Odeme extends React.Component {
           var identifier = 'com.grepsi.kahvefaliios.'+credit
           InAppUtils.purchaseProduct(identifier, (error, response) => {
             this.setState({spinnerVisible:false})
-             
+
              if(error){}
              else{
                if(response && response.productIdentifier) {
@@ -177,6 +177,19 @@ export default class Odeme extends React.Component {
       }
     }
 
+  commentyaptir = () => {
+    Alert.alert(
+      'Bedava Kredi',
+      'Sosyal panodaki kahve fallarından birine yorum yazarak 15 Kredi kazanabilirsiniz!',
+      [
+        {text: 'İstemiyorum', onPress: () => {}},
+        {text: 'Tamam', onPress: () => {
+                  this.props.navigation.navigate('Social')
+        }},
+      ],
+    )
+  }
+
   componentDidMount() {
 
     Keyboard.dismiss()
@@ -270,6 +283,7 @@ export default class Odeme extends React.Component {
             <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
             <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
             {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
+            {this.props.userStore.user ? this.props.userStore.user.commented ? <View/> : <TouchableOpacity onPress={() => {this.commentyaptir()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Yorum Yap</Text><Icon name="comment" color={'blue'} size={22} /></TouchableOpacity> : <View/> }
           </View>
         </View>
         <View style={{flex:1}}>
