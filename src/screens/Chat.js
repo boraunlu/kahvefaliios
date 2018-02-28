@@ -1453,13 +1453,8 @@ export default class Chat extends React.Component {
                     placeholder={"Sorunu yaz"}
                     style={{height:60,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
                   />
-                  <View style={{flexDirection:'row',alignItems:'center',marginTop:10}}>
-                    <Text style={{color:'white'}}>Profil Fotoğrafım Görünebilir </Text>
-                    <Switch
-                      onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
-                      value={this.state.anonimSwitchIsOn} />
-                      </View>
-                  <View style={{width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:120,paddingBottom:40}}>
+
+                  <View style={{width:'100%',marginTop:10,flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:120,paddingBottom:40}}>
                   {
                     this.state.falPhotos.map(function (foto,index) {
 

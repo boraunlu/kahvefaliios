@@ -50,7 +50,8 @@ export default class SocialFal extends React.Component {
       commentInput:'',
       profinfo:null,
       replyingTo:false,
-      writing:false
+      writing:false,
+      falowner:false
   };
 }
 
@@ -66,7 +67,10 @@ export default class SocialFal extends React.Component {
     const { params } = this.props.navigation.state;
     this.setState({fal:params.fal,comments:params.fal.comments})
 
-
+    var id =Backend.getUid()
+    if(id==params.fal.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
+      this.setState({falowner:true})
+    }
   }
 
   componentDidUpdate() {
@@ -128,7 +132,8 @@ export default class SocialFal extends React.Component {
 
   }
 
-  showProfPopup = (fireid) =>{
+  showProfPopup = (fireid,profPhoto) =>{
+
     this.popupDialog.show()
     this.setState({profinfo:null})
     fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
@@ -144,7 +149,8 @@ export default class SocialFal extends React.Component {
     .then((response) => response.json())
    .then((responseJson) => {
      //alert(responseJson.profile_pic)
-     responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+     responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+
      var meslek =''
      switch(responseJson.workStatus) {
        case 1:
@@ -240,15 +246,34 @@ export default class SocialFal extends React.Component {
         }
         Keyboard.dismiss()
         Backend.addComment(this.state.fal._id,comment,this.props.userStore.user.commented)
+        /*
         if(!this.props.userStore.user.commented){
           setTimeout(()=>{Alert.alert("Teşekkürler","İlk yorumunuzu yaptığınız için 15 Kredi kazandınız!")},200)
           this.props.userStore.setCommentedTrue()
           Keyboard.dismiss()
-        }
+        }*/
 
       }
     }
   }
+
+
+    deleteComment = (index) => {
+      Alert.alert(
+        'Yorum Silimi',
+        'Bu yorumu silmek istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {
+
+            Backend.deleteComment(this.state.fal._id,index)
+            var comments = this.state.comments
+            comments.splice(index,1)
+            this.setState({comments:comments})
+          }},
+        ],
+      )
+    }
 
   renderAktifStripe = () => {
     if(this.state.fal)
@@ -260,6 +285,16 @@ export default class SocialFal extends React.Component {
           <View style={{backgroundColor:'red'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16,margin:3}}>Yeni Yoruma Kapalı</Text></View>
         )
       }
+    }
+  }
+  renderCommentDelete = (index) => {
+    if(this.state.falowner==true){
+      return (
+        <TouchableOpacity style={{width:20,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:20}} onPress={() => {this.deleteComment(index)}}>
+          <Icon name="times" color={'red'} size={15} />
+
+        </TouchableOpacity>
+      );
     }
   }
 
@@ -313,7 +348,7 @@ export default class SocialFal extends React.Component {
               return(
                       <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#EeFFEe',borderColor:'gray'}}>
                         <View style={{marginLeft:comment.parentIndex?60:0}}>
-                          <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID)}}>
+                          <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
                             <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
                           </TouchableOpacity>
                           <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
@@ -330,10 +365,11 @@ export default class SocialFal extends React.Component {
               return (
                 <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#f8FFf8':'#EeFFEe',borderColor:'gray'}}>
                   <View style={{marginLeft:comment.parentIndex?60:0}}>
-                    <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID)}}>
+                    <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
+                      {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'teal',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
                       <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
                     </TouchableOpacity>
-                    <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                  <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?58:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
                   </View>
                   <View style={{padding:10,flex:2}}>
                     <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
@@ -360,7 +396,7 @@ export default class SocialFal extends React.Component {
                       </TouchableOpacity>
                     </View>
                   </View>
-
+                  {this.renderCommentDelete(index)}
                 </View>
                 );
             }
@@ -509,11 +545,10 @@ export default class SocialFal extends React.Component {
       }
       return(
           <View style={{flex:1}}>
-
-
             <View style={{alignItems:'center',flexDirection:'row',backgroundColor:'white',justifyContent:'center',borderColor:'gray',borderBottomWidth:0,paddingTop:10}}>
-              <Image source={profile_pic} style={styles.falciAvatar}></Image>
-
+              <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(this.state.fal.fireID,this.state.fal.profile_pic)}}>
+                <Image source={profile_pic} style={styles.falciAvatar}></Image>
+              </TouchableOpacity>
               <View style={{}}>
                 <Text style={{fontWeight:'bold',fontSize:17}}>
                   {fal.name}

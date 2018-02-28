@@ -33,6 +33,7 @@ import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
+import Marquee from '@remobile/react-native-marquee';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
@@ -73,7 +74,7 @@ function generatefalcisayisi() {
   if(saat>3&&saat<8){
     falcisayisi=1+gun
   }
-  return falcisayisi*20+dk
+  return falcisayisi*30+dk
 }
 
 import { observable } from 'mobx';
@@ -96,6 +97,7 @@ export default class Social extends React.Component {
       cameraVisible: false,
       spinnerVisible:false,
       refreshing: false,
+      marquee:""
   };
 }
 
@@ -133,6 +135,12 @@ export default class Social extends React.Component {
 
   componentDidMount() {
     this.props.navigation.setParams({ showpopup: this.showpopup  })
+    var marquees=["Beğenmediğiniz yorumları 👎 tuşuna basarak işaretleyebilirsiniz.","Rahatsız edici yorumlar yapan kullanıcıların hesabı kapatılacaktır.","Siz de sağ üstteki '+ Fal Paylaş' butonuna basarak falınızı burada paylaşabilirsiniz!","Beğendiğiniz yorumları ❤️'lemeyi unutmayın :)","Profilinize sizi en iyi anlatan cümleyi yazmayı unutmayın!","Şehir bilginizi profil sayfanızdan girebilirsiniz."]
+    var marquee=''
+    for (var i = 0; i < marquees.length; i++) {
+      marquee=marquee+"  ||  "+marquees[i]
+    }
+    this.setState({marquee:marquee})
     fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
       method: 'POST',
       headers: {
@@ -146,7 +154,7 @@ export default class Social extends React.Component {
     .then((response) => response.json())
      .then((responseJson) => {
 
-        this.setState({tek:responseJson.tek});
+        this.props.socialStore.setTek(responseJson.tek)
         var sosyals=Array.from(responseJson.sosyals)
         this.props.socialStore.setSocials(sosyals)
 
@@ -203,13 +211,97 @@ export default class Social extends React.Component {
     this.props.socialStore.setSocials(sosyals)
   }
 
+  deleteTek = () => {
+    if(this.props.socialStore.tek){
+      Alert.alert(
+        'Fal Silimi',
+        'Falını silmek istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {
+            var tek = this.props.socialStore.tek
+            Backend.deleteSosyal(tek._id)
+            this.props.socialStore.setTek(null)
+          }},
+        ],
+      )
+
+    }
+  }
+
+  renderInfo = () => {
+    if(this.props.userStore.user){
+      var falPuan =this.props.userStore.user.falPuan
+      var seviye = 1
+      var limit =20
+      var gosterilenpuan=falPuan
+      var unvan = "Yeni Falsever"
+      var kolor='rgb(209,142,12)'
+      if (falPuan>20&&falPuan<51){
+        seviye = 2
+        limit = 30
+        gosterilenpuan=falPuan-20
+        unvan = "Falsever"
+        kolor='rgb(60,179,113)'
+      }else if (falPuan>50&&falPuan<101) {
+        seviye = 3
+        limit = 50
+        gosterilenpuan=falPuan-50
+        unvan = "Deneyimli Falsever"
+        kolor='rgb(114,0,218)'
+      }else if (falPuan>100&&falPuan<176) {
+        seviye = 4
+        limit = 75
+        gosterilenpuan=falPuan-100
+        unvan = "Fal Uzmanı"
+        kolor='rgb(0,185,241)'
+      }
+      else if (falPuan>175&&falPuan<301) {
+        seviye = 5
+        limit = 125
+        gosterilenpuan=falPuan-175
+        unvan = "Fal Profesörü"
+        kolor='rgb(249,50,12)'
+      }
+      return(
+        <View style={{flexDirection:'row',height:70,marginBottom:0}}>
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',height:70,flex:1,borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,flexDirection:'row'}}>
+              <Text style={{fontSize:14,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+              <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
+            </View>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:15}}>
+              <View style={{justifyContent:'center'}}>
+                <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+                <View style={{height:18,width:200,borderWidth:3,borderColor:kolor}}>
+                  <View style={{height:15,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                  </View>
+                </View>
+
+              </View>
+              <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.props.navigation.navigate('Leader')}}>
+            <Icon name="trophy" color={'darkgoldenrod'} size={30} />
+            <Text style={{textAlign:'center',fontSize:12}}>Puan Tablosu</Text>
+          </TouchableOpacity>
+        </View>
+      )
+    }
+    else{
+      return(null)
+    }
+  }
+
   renderTek = () => {
     if(this.props.socialStore.tek){
       var tek = this.props.socialStore.tek
       var profile_pic=null
       tek.profile_pic?profile_pic={uri:tek.profile_pic}:tek.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
       return(
-        <View style={{height:70,marginBottom:10,flexDirection:'row'}}>
+        <View style={{height:70,marginBottom:0,flexDirection:'row'}}>
 
           <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1,height:70}} onPress={() => {this.navigateToFal(tek)}}>
            <View style={{flexDirection:'row',height:70}}>
@@ -233,78 +325,18 @@ export default class Social extends React.Component {
            </View>
 
           </TouchableOpacity>
-          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.props.navigation.navigate('Leader')}}>
-            <Icon name="trophy" color={'darkgoldenrod'} size={30} />
-            <Text style={{textAlign:'center',fontSize:12}}>Puan Tablosu</Text>
+          <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.deleteTek()}}>
+            <Icon name="trash-o" color={'darkgray'} size={30} />
+
           </TouchableOpacity>
 
         </View>
       )
     }
     else{
-      if(this.props.userStore.user){
-        var falPuan =this.props.userStore.user.falPuan
-        var seviye = 1
-        var limit =20
-        var gosterilenpuan=falPuan
-        var unvan = "Yeni Falsever"
-        var kolor='rgb(209,142,12)'
-        if (falPuan>20&&falPuan<51){
-          seviye = 2
-          limit = 30
-          gosterilenpuan=falPuan-20
-          unvan = "Falsever"
-          kolor='rgb(60,179,113)'
-        }else if (falPuan>50&&falPuan<101) {
-          seviye = 3
-          limit = 50
-          gosterilenpuan=falPuan-50
-          unvan = "Deneyimli Falsever"
-          kolor='rgb(114,0,218)'
-        }else if (falPuan>100&&falPuan<176) {
-          seviye = 4
-          limit = 75
-          gosterilenpuan=falPuan-100
-          unvan = "Fal Uzmanı"
-          kolor='rgb(0,185,241)'
-        }
-        else if (falPuan>175&&falPuan<301) {
-          seviye = 5
-          limit = 125
-          gosterilenpuan=falPuan-175
-          unvan = "Fal Profesörü"
-          kolor='rgb(249,50,12)'
-        }
-        return(
-          <View style={{flexDirection:'row',height:70,marginBottom:10}}>
-            <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',height:70,flex:1,borderColor:'gray',borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
-              <View style={{alignSelf:'center',alignItems:'center',marginTop:5,flexDirection:'row'}}>
-                <Text style={{fontSize:14,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-                <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
-              </View>
-              <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:15}}>
-                <View style={{justifyContent:'center'}}>
-                  <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                  <View style={{height:18,width:200,borderWidth:3,borderColor:kolor}}>
-                    <View style={{height:15,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
-                    </View>
-                  </View>
-
-                </View>
-                <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:70,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:70}} onPress={() => {this.props.navigation.navigate('Leader')}}>
-              <Icon name="trophy" color={'darkgoldenrod'} size={30} />
-              <Text style={{textAlign:'center',fontSize:12}}>Puan Tablosu</Text>
-            </TouchableOpacity>
-          </View>
-        )
-      }
-      else{
-        return(null)
-      }
+      return(null)
     }
+
   }
 
   renderSosyaller = () => {
@@ -408,7 +440,7 @@ export default class Social extends React.Component {
       }
       else if(sosyaller.length==0){
         return(
-        <Text>Yorumladığın fal bulunmuyor</Text>)
+          <Text style={{textAlign:'center',padding:10,backgroundColor:'white'}}>Son 2 gün içinde yorum yaptığın fal bulunmuyor. Haydi hemen fallara yorum yap ve falpuanları toplamaya başla 😉</Text>)
       }
     }
     else{
@@ -423,7 +455,7 @@ export default class Social extends React.Component {
   }
 
 
-  _onRefresh() {
+  _onRefresh = () => {
     this.setState({refreshing: true});
     fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
       method: 'POST',
@@ -472,47 +504,48 @@ export default class Social extends React.Component {
 
         <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
         <View style={{flex:1,width:'100%'}}>
-          <View style={{padding:Dimensions.get('window').height/70,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:0,alignSelf:'stretch'}}>
-            <View>
-              <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
-              </Image>
 
+
+            {this.renderInfo()}
+            <View style={styles.marqueeContainer}>
+              <Marquee speed={15} style={styles.marquee}>
+                {this.state.marquee}
+              </Marquee>
             </View>
-            <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.6)',padding:10,width:Dimensions.get('window').width-85}}>
-              <Text style={{fontSize:13,color:'white'}}>
-                Bu sayfada diğer falseverlerden gelen falları okuyabilir, bu fallara yorum yapıp beğeni kazanabilirsin.
-              </Text>
-
-            </View>
-          </View>
-
             {this.renderTek()}
-
+            <View style={{flex:1}}>
             <ScrollableTabView
-              style={{paddingTop:50,height:40}}
+              style={{paddingTop:50,flex:1}}
              renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
              tabBarPosition='overlayTop'
              >
-               <ScrollView
+             <ScrollView
 
-               refreshControl={
-                  <RefreshControl
-                    refreshing={this.state.refreshing}
-                    onRefresh={()=>{this._onRefresh}}
+             refreshControl={
+                <RefreshControl
+                  refreshing={this.state.refreshing}
+                  onRefresh={()=>{this._onRefresh()}}
+                       progressViewOffset={50}
+                />
+              }
+              tabLabel='Yorum Bekleyenler'>
+              {this.renderSosyaller()}
+             </ScrollView>
+             <ScrollView tabLabel='Yorumladıklarınız'
 
-                    progressViewOffset={50}
-                  />
-                }
-                tabLabel='Yorum Bekleyenler'>
-                {this.renderSosyaller()}
-               </ScrollView>
-               <ScrollView tabLabel='Yorumladıklarınız'>
-                {this.renderCommenteds()}
-               </ScrollView>
-             </ScrollableTabView>
+                          refreshControl={
+                             <RefreshControl
+                               refreshing={this.state.refreshing}
+                               onRefresh={()=>{this._onRefresh()}}
+                               progressViewOffset={50}
+                             />
+                           }
+                           >
+              {this.renderCommenteds()}
+             </ScrollView>
+           </ScrollableTabView>
+              </View>
         </View>
-
-
       </Image>
 
     );
@@ -573,5 +606,20 @@ const styles = StyleSheet.create({
     textAlign:'center',
     fontWeight:'bold'
   },
+  marqueeContainer:{
+
+    height:40,
+    justifyContent:'center',
+    paddingVertical:5,
+    backgroundColor:'rgba(0, 0, 0, 0.6)',
+
+  },
+  marquee: {
+
+      fontSize: 16,
+      color:'white',
+      backgroundColor: 'transparent',
+      overflow: 'hidden',
+  }
 
 });

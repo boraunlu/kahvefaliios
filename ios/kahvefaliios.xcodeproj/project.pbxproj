@@ -89,6 +89,7 @@
 		BD724BE41EB71B34005B48F6 /* yourturn.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = BD724BE21EB71B34005B48F6 /* yourturn.mp3 */; };
 		BDDAE2EA1EC4DEDC00D8BCB0 /* libCodePush.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BD0D20451EBB959E005312A4 /* libCodePush.a */; };
 		C7E8E93CC53945DB9B2191B7 /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2417764245244C4B95DBBAD1 /* Foundation.ttf */; };
+		CB2BF06C0B464A1A8283D35C /* libRCTImageResizer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E7E0F49E86E84CAA855F72C9 /* libRCTImageResizer.a */; };
 		CE224F678CDC4438B0587BAB /* libRNGoogleSignin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66634C9EA74E4DCA8E14EF98 /* libRNGoogleSignin.a */; };
 		CE79F448C850F5E177F4A7FC /* libPods-kahvefaliios-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5478FCF5033BB9EDD380FF5A /* libPods-kahvefaliios-tvOS.a */; };
 		D8DA9FF6206945F6BBA7DB6C /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 530DED36B94D4E9896753430 /* Ionicons.ttf */; };
@@ -464,6 +465,13 @@
 			remoteGlobalIDString = 54265A5692EB9F80345CBFFEBE517201;
 			remoteInfo = Protobuf;
 		};
+		BD9B32552044A96C0080DDCC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A73B238B6934467ABBD52C78 /* RCTImageResizer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 5D72D2E81C16249000E22EC1;
+			remoteInfo = RCTImageResizer;
+		};
 		BDD33BDE1F819879002A4C5A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 62B0414881DF43FA85D9956A /* CodePush.xcodeproj */;
@@ -564,6 +572,7 @@
 		982384CB2386EB10B81D9523 /* Pods-kahvefaliios-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios-tvOS/Pods-kahvefaliios-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		9D586CBCFB724F23A22D661D /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		A4CBC99F066E43AFBD8A504A /* libRCTCamera.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTCamera.a; sourceTree = "<group>"; };
+		A73B238B6934467ABBD52C78 /* RCTImageResizer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTImageResizer.xcodeproj; path = "../node_modules/react-native-image-resizer/ios/RCTImageResizer.xcodeproj"; sourceTree = "<group>"; };
 		B32561270A1345BDB1D52825 /* SafariServices.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = SafariServices.framework; path = System/Library/Frameworks/SafariServices.framework; sourceTree = SDKROOT; };
 		B9A843F246844C298AE1EBF7 /* libRNVectorIcons.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNVectorIcons.a; sourceTree = "<group>"; };
 		BC6BF1927B3746D794038AD7 /* libRNSound.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNSound.a; sourceTree = "<group>"; };
@@ -593,6 +602,7 @@
 		CD827117411148FBB1490D56 /* RNAdMobManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNAdMobManager.xcodeproj; path = "../node_modules/react-native-admob/ios/RNAdMobManager.xcodeproj"; sourceTree = "<group>"; };
 		D98A078599C745F892E2C71A /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		E1D3AC810E55DB80455E1584 /* Pods-kahvefaliios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios/Pods-kahvefaliios.debug.xcconfig"; sourceTree = "<group>"; };
+		E7E0F49E86E84CAA855F72C9 /* libRCTImageResizer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTImageResizer.a; sourceTree = "<group>"; };
 		E804C229916DF18E2DC9DCDE /* Pods-kahvefaliiosTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliiosTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliiosTests/Pods-kahvefaliiosTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EACDB7ADFCFD4BD293C2ACE8 /* SystemConfiguration.framework */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		F1180790BDB14F938073ADDF /* RNFetchBlob.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFetchBlob.xcodeproj; path = "../node_modules/react-native-fetch-blob/ios/RNFetchBlob.xcodeproj"; sourceTree = "<group>"; };
@@ -649,6 +659,7 @@
 				8E29E07391EF40938278335A /* AddressBook.framework in Frameworks */,
 				36E8C5C38EEE47F5A8FB7274 /* libRNAdMobManager.a in Frameworks */,
 				3B29737604EF4261BFD083EB /* libRNFIRMessaging.a in Frameworks */,
+				CB2BF06C0B464A1A8283D35C /* libRCTImageResizer.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -855,6 +866,7 @@
 				7BB4B82396244156812DDDA4 /* RNGoogleSignin.xcodeproj */,
 				CD827117411148FBB1490D56 /* RNAdMobManager.xcodeproj */,
 				598EE9D00DFE435ABCBF72F4 /* RNFIRMessaging.xcodeproj */,
+				A73B238B6934467ABBD52C78 /* RCTImageResizer.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1057,6 +1069,14 @@
 			path = Fonts;
 			sourceTree = "<group>";
 		};
+		BD9B32522044A96C0080DDCC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD9B32562044A96C0080DDCC /* libRCTImageResizer.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BDD33B6C1F7DA030002A4C5A /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
@@ -1072,6 +1092,7 @@
 				66634C9EA74E4DCA8E14EF98 /* libRNGoogleSignin.a */,
 				60CA432499CA472DBCF72064 /* libRNAdMobManager.a */,
 				D98A078599C745F892E2C71A /* libRNFIRMessaging.a */,
+				E7E0F49E86E84CAA855F72C9 /* libRCTImageResizer.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1289,6 +1310,10 @@
 				{
 					ProductGroup = 00C302BC1ABCB91800DB3ED1 /* Products */;
 					ProjectRef = 00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */;
+				},
+				{
+					ProductGroup = BD9B32522044A96C0080DDCC /* Products */;
+					ProjectRef = A73B238B6934467ABBD52C78 /* RCTImageResizer.xcodeproj */;
 				},
 				{
 					ProductGroup = 78C398B11ACF4ADC00677621 /* Products */;
@@ -1706,6 +1731,13 @@
 			fileType = archive.ar;
 			path = libProtobuf.a;
 			remoteRef = BD8A3C591F44D80200319BEC /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		BD9B32562044A96C0080DDCC /* libRCTImageResizer.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTImageResizer.a;
+			remoteRef = BD9B32552044A96C0080DDCC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BDD33BDF1F819879002A4C5A /* libCodePush.a */ = {
@@ -2128,12 +2160,14 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -2167,12 +2201,14 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -2214,6 +2250,7 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -2228,6 +2265,7 @@
 				PRODUCT_NAME = kahvefaliios;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -2261,6 +2299,7 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -2275,6 +2314,7 @@
 				PRODUCT_NAME = kahvefaliios;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
@@ -2307,11 +2347,13 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -2354,11 +2396,13 @@
 					"$(SRCROOT)/../node_modules/react-native-google-signin/ios/RNGoogleSignin/**",
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
+					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				OTHER_LDFLAGS = (
@@ -2390,6 +2434,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.kahvefaliios-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2415,6 +2460,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 					"\"$(SRCROOT)/$(TARGET_NAME)\"",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.kahvefaliios-tvOSTests";

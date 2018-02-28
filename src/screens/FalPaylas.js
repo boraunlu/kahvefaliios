@@ -29,6 +29,7 @@ import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
 import Camera from 'react-native-camera';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
+import ImageResizer from 'react-native-image-resizer';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import { observable } from 'mobx';
@@ -136,7 +137,7 @@ export default class FalPaylas extends React.Component {
         else{
           if(this.state.falPhotos.length>1){
             this.setState({spinnerVisible:true})
-
+        
             Backend.uploadImages(this.state.falPhotos).then((urls) => {
               console.log(urls)
               this.setState({spinnerVisible:false})
@@ -325,8 +326,11 @@ export default class FalPaylas extends React.Component {
     setFromPicker = (images) => {
       var falPhotos = this.state.falPhotos
       for (var i = 0; i < images.length; i++) {
+
         falPhotos.push(images[i].image)
       }
+
+
 
       this.setState({falPhotos:falPhotos})
     }
@@ -377,13 +381,8 @@ export default class FalPaylas extends React.Component {
               placeholder={"Sorunu yaz"}
               style={{height:100,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
             />
-            <View style={{flexDirection:'row',alignItems:'center',marginTop:20}}>
-              <Text style={{color:'white'}}> Profil Fotoğrafım Görünebilir </Text>
-              <Switch
-                onValueChange={(value) => this.setState({anonimSwitchIsOn: value})}
-                value={this.state.anonimSwitchIsOn} />
-            </View>
-            <View style={{width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:100,paddingBottom:40,paddingTop:20,justifyContent:'space-around'}}>
+
+            <View style={{width:'100%',marginTop:20,flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:100,paddingBottom:40,paddingTop:20,justifyContent:'space-around'}}>
             {
               this.renderphoto1()
             }

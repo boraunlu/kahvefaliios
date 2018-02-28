@@ -5,6 +5,8 @@ import {
 import RNFetchBlob from 'react-native-fetch-blob'
 import firebase from 'firebase'
 import moment from 'moment';
+import ImageResizer from 'react-native-image-resizer';
+
 
 const fs = RNFetchBlob.fs
 const Blob = RNFetchBlob.polyfill.Blob
@@ -83,35 +85,43 @@ class Backend {
   }
   uploadImage(uri){
     return new Promise((resolve, reject) => {
-     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-       let uploadBlob = null
-       var imageName = "";
-       var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      ImageResizer.createResizedImage(uri, 500, 500,'JPEG',80)
+      .then(({uri}) => {
+        console.log("uri "+uri)
+        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+          let uploadBlob = null
+          var imageName = "";
+          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-       for( var i=0; i < 13; i++ ){
-          imageName += possible.charAt(Math.floor(Math.random() * possible.length));
-       }
-       var mime ='image/jpg'
-       const imageRef = firebase.storage().ref('posts').child(imageName)
-       fs.readFile(uploadUri, 'base64')
-       .then((data) => {
-         return Blob.build(data, { type: `${mime};BASE64` })
-       })
-       .then((blob) => {
-         uploadBlob = blob
-         return imageRef.put(blob, { contentType: mime })
-       })
-       .then(() => {
-         uploadBlob.close()
-         return imageRef.getDownloadURL()
-       })
-       .then((url) => {
-         resolve(url)
+          for( var i=0; i < 13; i++ ){
+             imageName += possible.charAt(Math.floor(Math.random() * possible.length));
+          }
+          var mime ='image/jpg'
+          const imageRef = firebase.storage().ref('posts').child(imageName)
+          fs.readFile(uploadUri, 'base64')
+          .then((data) => {
+            return Blob.build(data, { type: `${mime};BASE64` })
+          })
+          .then((blob) => {
+            uploadBlob = blob
+            return imageRef.put(blob, { contentType: mime })
+          })
+          .then(() => {
+            uploadBlob.close()
+            return imageRef.getDownloadURL()
+          })
+          .then((url) => {
+            resolve(url)
 
-       })
-       .catch((error) => {
-         reject(error)
-       })
+          })
+          .catch((error) => {
+            reject(error)
+          })
+      }).catch((err) => {
+        console.log(err);
+          reject(error)
+      });
+
    })
 
   }
@@ -836,6 +846,20 @@ loadMessages = (callback) => {
     })
   }
 
+  deleteComment = (falid,index) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/deleteComment', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id:falid,
+        index:index
+      })
+    })
+  }
+
   like = (falid,index) => {
     fetch('https://eventfluxbot.herokuapp.com/appapi/like', {
       method: 'POST',
@@ -866,10 +890,38 @@ loadMessages = (callback) => {
     })
   }
 
+  deleteSosyal = (falid) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/deletePost', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        id: falid
+      })
+    })
+  }
+
+
+  resize = () => {
+    ImageResizer.createResizedImage(this.state.image.uri, 800, 600, 'JPEG', 80)
+    .then(({uri}) => {
+      this.setState({
+        resizedImageUri: uri,
+      });
+    }).catch((err) => {
+      console.log(err);
+      return Alert.alert('Unable to resize the photo',
+        'Check the console for full the error message');
+    });
+  }
+
   uploadProfilePic = (uri) => {
 
     return new Promise((resolve, reject) => {
      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+
        let uploadBlob = null
        var mime ='image/jpg'
        const imageRef = firebase.storage().ref('profilepics').child(this.getUid())

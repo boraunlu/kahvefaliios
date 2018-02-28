@@ -3,6 +3,7 @@ package com.kahvefaliios;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.sbugert.rnadmob.RNAdMobPackage;
 import co.apptailor.googlesignin.RNGoogleSigninPackage;
@@ -41,6 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new ImageResizerPackage(),
             new FIRMessagingPackage(),
             new RNAdMobPackage(),
             new RNGoogleSigninPackage(),
