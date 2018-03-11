@@ -1,6 +1,24 @@
 {
   "images": [
     {
+      "orientation" : "portrait",
+      "idiom" : "iphone",
+      "extent" : "full-screen",
+      "filename": "IPhoneXportrait.png",
+      "minimum-system-version" : "11.0",
+      "subtype" : "2436h",
+      "scale" : "3x"
+    },
+    {
+      "orientation" : "landscape",
+      "idiom" : "iphone",
+      "extent" : "full-screen",
+      "filename": "IPhoneXLandscape.png",
+      "minimum-system-version" : "11.0",
+      "subtype" : "2436h",
+      "scale" : "3x"
+    },
+    {
       "extent": "full-screen",
       "idiom": "iphone",
       "filename": "Default-568h@2x.png",

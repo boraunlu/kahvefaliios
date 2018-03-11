@@ -22,7 +22,8 @@ export default class Leader extends React.Component {
     this.state = {
       leaders:[],
       profinfo:null,
-      weeks:[]
+      weeks:[],
+      weekResults:[]
   };
 }
 
@@ -51,7 +52,8 @@ export default class Leader extends React.Component {
      .then((responseJson) => {
         var leaders=Array.from(responseJson.leaders)
         var weeks=Array.from(responseJson.weeks)
-        this.setState({leaders:leaders,weeks:weeks});
+        var weekResults=Array.from(responseJson.weekresults)
+        this.setState({leaders:leaders,weeks:weeks,weekResults:weekResults});
 
 
      })
@@ -304,6 +306,53 @@ export default class Leader extends React.Component {
     }
   }
 
+  renderWeekResults = () => {
+    var leaders = this.state.weekResults
+    if(leaders.length>0){
+      return (
+
+         leaders.map(function (leader,index) {
+
+           var profile_pic=null
+           leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+           return (
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
+              <View style={{flexDirection:'row',height:60}}>
+                <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
+                  <Text style={{fontWeight:'bold',fontSize:22}}>{index+1+"."}</Text>
+                </View>
+                <Image source={profile_pic} onError={(error) => {}} style={styles.falciAvatar}></Image>
+
+                  <View style={{padding:10,flex:1,justifyContent:'center',}}>
+
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                      {leader.name}
+                     </Text>
+
+
+                  </View>
+                  <View style={{padding:15,justifyContent:'center',width:100,borderColor:'teal'}}>
+
+                    <Text style={{textAlign:'center',color:'black'}}>FalPuan</Text>
+                    <Text style={{textAlign:'center',fontSize:18,fontWeight:'bold',color:'black'}}>{leader.falPuan}</Text>
+                  </View>
+              </View>
+
+             </TouchableOpacity>
+             );
+         }, this)
+      )
+    }
+    else if(leaders.length==0){
+      return(
+      <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 80}]}
+        size="large"
+      />)
+    }
+  }
+
   render() {
 
 
@@ -317,6 +366,9 @@ export default class Leader extends React.Component {
        >
        <ScrollView tabLabel='Haftalık Yarışma' style={{flex:1,width:'100%'}}>
         {this.renderWeeks()}
+       </ScrollView>
+       <ScrollView tabLabel='Geçen Haftanın Kazananları' style={{flex:1,width:'100%'}}>
+        {this.renderWeekResults()}
        </ScrollView>
        <ScrollView tabLabel='Tüm Zamanlar' style={{flex:1,width:'100%'}}>
          {this.renderLeaders()}

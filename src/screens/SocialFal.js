@@ -11,7 +11,8 @@ import {
   TextInput,
   Keyboard,
   ActivityIndicator,
-  Alert
+  Alert,
+  Share
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -132,6 +133,20 @@ export default class SocialFal extends React.Component {
 
   }
 
+  shareFal = () => {
+
+    Share.share({
+      message: this.state.fal.question+" http://www.falsohbeti.com/sosyal/"+this.state.fal._id,
+      url: 'http://www.falsohbeti.com/sosyal/'+this.state.fal._id,
+      title: 'Kahve Falı Sohbeti'
+    }, {
+      // Android only:
+      dialogTitle: 'Kahve Falı Sohbeti',
+      // iOS only:
+
+    })
+  }
+
   showProfPopup = (fireid,profPhoto) =>{
 
     this.popupDialog.show()
@@ -205,9 +220,15 @@ export default class SocialFal extends React.Component {
      }
      responseJson.iliski=iliski
      responseJson.meslek=meslek
-        this.setState({profinfo:responseJson});
+     //alert(responseJson.sosyal)
+     this.setState({profinfo:responseJson});
 
       })
+  }
+
+  navigateToFal = (fal) => {
+    const { navigate } = this.props.navigation;
+    navigate( "SocialFal",{fal:fal} )
   }
 
   addComment = () => {
@@ -445,10 +466,10 @@ export default class SocialFal extends React.Component {
           unvan = "Fal Uzmanı"
           kolor='rgb(0,185,241)'
         }
-        else if (falPuan>175&&falPuan<301) {
+        else if (falPuan>175) {
           seviye = 5
-          limit = 125
-          gosterilenpuan=falPuan-175
+          limit = 12500
+          gosterilenpuan=falPuan
           unvan = "Fal Profesörü"
           kolor='rgb(249,50,12)'
         }
@@ -471,10 +492,10 @@ export default class SocialFal extends React.Component {
                 <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
                 </View>
               </View>
-
             </View>
             <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
           </View>
+          {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
         </View>
 
       )
@@ -485,6 +506,37 @@ export default class SocialFal extends React.Component {
 
     }
 
+
+  renderKendiFali = (kendiFali) =>{
+    var sosyal=kendiFali
+    return(
+    <View>
+      <Text style={{fontWeight:'bold',textAlign:'center',marginBottom:10,fontSize:16}}>Yorum Bekleyen Falı</Text>
+      <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,1)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
+       <View style={{flexDirection:'row',height:60,}}>
+         <View style={{padding:10,flex:1}}>
+
+           <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+             {sosyal.question}
+            </Text>
+            <Text style={{fontWeight:'normal',fontSize:14}}>
+              {sosyal.name} - <Text style={{color:'gray'}}>
+               {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+              </Text>
+             </Text>
+
+         </View>
+         <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+
+           <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+         </View>
+       </View>
+
+      </TouchableOpacity>
+    </View>
+    )
+
+  }
   renderBody = () => {
     var fal = this.state.fal
     if(fal){
@@ -580,7 +632,13 @@ export default class SocialFal extends React.Component {
                    </View>
                   );
               }, this)}
+
             </View>
+            <TouchableOpacity style={{alignSelf:'center',justifyContent:'center',alignItems:'center',height:30,width:200,borderRadius:5,padding:5,marginBottom:10,backgroundColor:'#8a398e',flexDirection:'row'}} onPress={()=>{this.shareFal()}}>
+              <Icon name="share" color={'white'} size={16} />
+              <Text style={{color:'white',fontSize:16}}>   Arkadaşlarına Sor </Text>
+
+            </TouchableOpacity>
             <View style={{flex:1}}>
               <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18,margin:3}}>Yorumlar ({this.state.comments.length})</Text></View>
               {this.renderComments()}
@@ -608,7 +666,7 @@ export default class SocialFal extends React.Component {
 
          dialogStyle={{marginTop:-250}}
          width={0.9}
-         height={320}
+         height={370}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>

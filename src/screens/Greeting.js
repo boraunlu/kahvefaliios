@@ -209,57 +209,15 @@ static navigationOptions = ({ navigation }) => ({
     this.setState({checkValidation:false})
   }
 
-  startGunluk = () => {
-    var userData =this.state.userData
-    if(!userData.appGunlukUsed&&!userData.aktif){
-      this.navigateto('Chat',0,0)
-    }else if(!userData.appGunlukUsed&&userData.aktif){
-      Alert.alert(
-        'Yeni Fal',
-        'Şu an mevcut bir aktif sohbetin bulunuyor. Bu konuşmayı sonlandırıp günlük falına bakmak istediğinden emin misin?',
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {this.navigateto('Chat',0,0)}},
-        ],
-      )
+  startgunluk1 = () => {
+    var userData=this.props.userStore.user
+  //  alert(typeof userData.detayUsed === 'undefined')
+    if(userData.timesUsed>9&&typeof userData.detayUsed === 'undefined'&&typeof userData.loveUsed === 'undefined'){
+      this.popupParaiste.show()
     }
-    else if (userData.appGunlukUsed&&!userData.aktif) {
-      Alert.alert(
-        'Yeni Günlük Fal',
-        'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-            if(this.props.userStore.userCredit<100){
-              this.pay(0)
-            }
-            else{
-              this.navigateto('Chat',0,0)
-              Backend.addCredits(-100)
-            }
-        }, style: 'cancel'},
-        ],
-      )
+    else {
+      this.popupGunluk.show()
     }
-    else{
-      Alert.alert(
-        'Yeni Günlük Fal',
-        'Günlük fala ücretsiz olarak günde sadece bir kere bakıyoruz. Mevcut sohbetini sonlandırarak, hemen 100 kredi karşılığında bir günlük fal daha baktırmak ister misin?',
-        [
-          {text: 'Hayır', onPress: () => {}},
-          {text: 'Evet', onPress: () => {
-            if(this.props.userStore.userCredit<100){
-              this.pay(0)
-            }
-            else{
-              this.navigateto('Chat',0,0)
-              Backend.addCredits(-100)
-            }
-        }},
-        ],
-      )
-    }
-
   }
 
   startGunluk2 = () => {
@@ -608,7 +566,7 @@ componentWillUnmount() {
 
         <View style={{}}>
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupGunluk.show()}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startgunluk1()}}>
               <ImageBackground source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
                 <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
@@ -950,6 +908,32 @@ componentWillUnmount() {
               </View>
             </View>
           </Image>
+        </PopupDialog>
+        <PopupDialog
+          ref={(popupDialog) => { this.popupParaiste = popupDialog; }}
+          dialogStyle={{marginTop:-150}}
+          width={0.8}
+          height={0.6}
+          overlayOpacity={0.75}
+        >
+          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/paraisteback.jpg')}>
+
+            <Image source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
+            <Text style={{backgroundColor:'transparent',color:'white',marginLeft:15,marginRight:15,fontSize:16}}>
+              {"Sevgili "+this.props.userStore.userName+",\n\nÜcretsiz günlük fal haklarını maalesef tükettin 😞\n\n"}
+              Bir kere <Text style={{fontWeight:'bold'}}>AŞK</Text> veya <Text style={{fontWeight:'bold'}}>DETAYLI</Text> fal baktırırsan, tam <Text style={{fontWeight:'bold',fontSize:18,color:'#ffbacd'}}>250 adet</Text> bedava günlük fal hakkı kazanacaksın!🎉🎊
+            </Text>
+            <View style={{position:'absolute',bottom:0,width:'100%'}}>
+              <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
+                <TouchableOpacity  onPress={() => {this.popupParaiste.dismiss();this.popupAsk.show()}} style={{flex:1,height:60,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center',fontWeight:'bold'}}>AŞK Falına Bak{'\n'}❤️</Text>
+                </TouchableOpacity>
+                <TouchableOpacity  onPress={() => {this.popupParaiste.dismiss();this.popupDetay.show()}} style={{flex:1,height:60,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
+                  <Text style={{textAlign:'center',fontWeight:'bold'}}>DETAYLI Falına Bak{'\n'}🔮</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </ImageBackground>
         </PopupDialog>
       </Image>
 

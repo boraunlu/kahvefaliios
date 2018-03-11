@@ -4,6 +4,7 @@ import {
   Text,
   View,
   Image,
+    FlatList,
   ScrollView,
   TouchableOpacity,
   ActivityIndicator,
@@ -399,10 +400,10 @@ export default class Social extends React.Component {
     }
   }
 
-  renderCommenteds = () => {
+  renderSosyaller = () => {
 
-    if(this.props.socialStore.commenteds){
-      var sosyaller = this.props.socialStore.commenteds
+    if(this.props.socialStore.socials){
+      var sosyaller = this.props.socialStore.socials
       if(sosyaller.length>0){
         return (
 
@@ -429,6 +430,7 @@ export default class Social extends React.Component {
 
                   </View>
                   <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+
                     <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
                   </View>
                 </View>
@@ -436,6 +438,169 @@ export default class Social extends React.Component {
                </TouchableOpacity>
                );
            }, this)
+        )
+      }
+      else if(sosyaller.length==0){
+        return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />)
+      }
+    }
+    else{
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      )
+    }
+  }
+
+    renderSosyaller2 = () => {
+
+          if(this.props.socialStore.socials){
+            var sosyaller = this.props.socialStore.socials
+            if(sosyaller.length>0){
+              return (
+                <FlatList
+                  data={sosyaller}
+                  keyExtractor={this._keyExtractor}
+                  refreshing={this.state.refreshing}
+                  onRefresh={()=>{this._onRefresh()}}
+                    tabLabel='Yorum Bekleyenler'
+                  renderItem={({item,index}) => this.renderItem(item,index)}
+                />
+
+              )
+            }
+            else if(sosyaller.length==0){
+              return(
+              <ActivityIndicator
+                animating={true}
+                style={[styles.centering, {height: 80}]}
+                size="large"
+              />)
+            }
+          }
+          else{
+            return(
+              <ActivityIndicator
+                animating={true}
+                style={[styles.centering, {height: 80}]}
+                size="large"
+              />
+            )
+          }
+    }
+    renderItem = (item,index) => {
+
+
+      var profile_pic=null
+      item.profile_pic?profile_pic={uri:item.profile_pic}:item.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+      return (
+        <TouchableOpacity key={index}  style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(item,index)}}>
+         <View style={{flexDirection:'row',height:60,}}>
+
+         <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
+
+           <View style={{padding:10,flex:1}}>
+
+             <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+               {item.question}
+              </Text>
+              <Text style={{fontWeight:'normal',fontSize:14}}>
+                {item.name} - <Text style={{color:'gray'}}>
+                 {capitalizeFirstLetter(replaceGecenHafta(moment(item.time).calendar()))}
+                </Text>
+               </Text>
+
+           </View>
+           <View style={{padding:15,justifyContent:'center',width:60,borderColor:'teal'}}>
+
+             <Text style={{textAlign:'center',color:'black'}}>{item.comments?item.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
+           </View>
+         </View>
+
+        </TouchableOpacity>
+        );
+    }
+  _keyExtractor = (item, index) => index;
+
+  renderCommenteds = () => {
+
+    if(this.props.socialStore.commenteds){
+      var sosyaller = this.props.socialStore.commenteds
+      if(sosyaller.length>0){
+        return (
+          sosyaller.map(function (sosyal,index) {
+
+            var profile_pic=null
+            sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+            return (
+              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
+               <View style={{flexDirection:'row',height:60,}}>
+
+               <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
+
+                 <View style={{padding:10,flex:1}}>
+
+                   <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                     {sosyal.question}
+                    </Text>
+                    <Text style={{fontWeight:'normal',fontSize:14}}>
+                      {sosyal.name} - <Text style={{color:'gray'}}>
+                       {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+                      </Text>
+                     </Text>
+
+                 </View>
+                 <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+                   <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+                 </View>
+               </View>
+
+              </TouchableOpacity>
+              );
+          }, this)
+
+        )
+      }
+      else if(sosyaller.length==0){
+        return(
+          <Text style={{textAlign:'center',padding:10,backgroundColor:'white'}}>Son 2 gün içinde yorum yaptığın fal bulunmuyor. Haydi hemen fallara yorum yap ve falpuanları toplamaya başla 😉</Text>)
+      }
+    }
+    else{
+      return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />
+      )
+    }
+  }
+
+  renderCommenteds2 = () => {
+
+    if(this.props.socialStore.commenteds){
+      var sosyaller = this.props.socialStore.commenteds
+      if(sosyaller.length>0){
+        return (
+          <FlatList
+            data={sosyaller}
+            keyExtractor={this._keyExtractor}
+            refreshing={this.state.refreshing}
+            onRefresh={()=>{this._onRefresh()}}
+            tabLabel='Yorumladıklarınız'
+            renderItem={({item,index}) => this.renderItem(item,index)}
+          />
+
+
         )
       }
       else if(sosyaller.length==0){
@@ -513,38 +678,21 @@ export default class Social extends React.Component {
               </Marquee>
             </View>
             {this.renderTek()}
-            <View style={{flex:1}}>
-            <ScrollableTabView
-              style={{paddingTop:50,flex:1}}
-             renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
-             tabBarPosition='overlayTop'
-             >
-             <ScrollView
 
-             refreshControl={
-                <RefreshControl
-                  refreshing={this.state.refreshing}
-                  onRefresh={()=>{this._onRefresh()}}
-                       progressViewOffset={50}
-                />
-              }
-              tabLabel='Yorum Bekleyenler'>
-              {this.renderSosyaller()}
-             </ScrollView>
-             <ScrollView tabLabel='Yorumladıklarınız'
-
-                          refreshControl={
-                             <RefreshControl
-                               refreshing={this.state.refreshing}
-                               onRefresh={()=>{this._onRefresh()}}
-                               progressViewOffset={50}
-                             />
-                           }
-                           >
-              {this.renderCommenteds()}
-             </ScrollView>
-           </ScrollableTabView>
-              </View>
+              <View style={{flex:1}}>
+          <ScrollableTabView
+            style={{paddingTop:50,flex:1}}
+           renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
+           tabBarPosition='overlayTop'
+           >
+           <View         tabLabel='Yorum Bekleyenler' >
+            {this.renderSosyaller2()}
+          </View>
+           <View         tabLabel='Yorumladıklarınız'>
+            {this.renderCommenteds2()}
+          </View>
+         </ScrollableTabView>
+            </View>
         </View>
       </Image>
 

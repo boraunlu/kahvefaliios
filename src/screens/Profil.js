@@ -228,6 +228,7 @@ export default class Profil extends React.Component {
 
   uploadProfilePic = (image) => {
     this.setState({cameraVisible:false,spinnerVisible:true})
+      
     ImageResizer.createResizedImage(image, 500, 500,'JPEG',80)
     .then(({uri}) => {
       console.log("uri "+uri)
@@ -235,6 +236,7 @@ export default class Profil extends React.Component {
         this.setState({profPhoto:url,spinnerVisible:false})
       })
       .catch((error) => {
+              console.log(err);
         this.setState({spinnerVisible:false})
         this.setPickerVisible(false);
         setTimeout(function(){Alert.alert("Tekrar Deneyin","Fotoğrafın yüklenirken bir sorun oluştu. Lütfen tekrar dener misin?");},300);
@@ -244,6 +246,9 @@ export default class Profil extends React.Component {
       console.log(err);
         setTimeout(function(){Alert.alert("Tekrar Deneyin","Fotoğrafın yüklenirken bir sorun oluştu. Lütfen tekrar dener misin?");},300);
     });
+
+
+
 
   }
 
@@ -322,22 +327,6 @@ export default class Profil extends React.Component {
    });
   }
 
-  instagetir = () => {
-    fetch('https://api.instagram.com/v1/users/204318825/media/recent?access_token=20533183.a7a676d.415210d67af04137bf60f8eb811b20ad', {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      }
-    })
-    .then((response) => response.json())
-     .then((responseJson) => {
-       //alert(JSON.stringify(responseJson));
-        console.log("cevap "+JSON.stringify(responseJson))
-         //alert(JSON.stringify(responseJson))
-
-     })
-  }
 
   componentDidMount() {
 
@@ -436,7 +425,7 @@ export default class Profil extends React.Component {
             </View>
             <View style={{marginBottom:5}}>
 
-                <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.instagetir();/*this.popupDialog2.show()*/}}/>
+                <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
 
 
             </View>
@@ -611,14 +600,7 @@ export default class Profil extends React.Component {
            </View>
          </View>
         </PopupDialog>
-        <InstagramLogin
-             ref='instagramLogin'
-             clientId='a7a676d3e3cc4792bb7a077a32e9cda2'
-             scopes={['basic']}
-             redirectUrl='https://eventfluxbot.herokuapp.com'
-             onLoginSuccess={(token) => console.log( "tokennn "+token )}
-             onLoginFailure={(data) => console.log(data)}
-         />
+
       </Image>
 
     );
