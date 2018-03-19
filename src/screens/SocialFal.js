@@ -52,7 +52,10 @@ export default class SocialFal extends React.Component {
       profinfo:null,
       replyingTo:false,
       writing:false,
-      falowner:false
+      falowner:false,
+      voters1:[],
+      voters2:[],
+      votedFor:false,
   };
 }
 
@@ -67,10 +70,26 @@ export default class SocialFal extends React.Component {
   componentDidMount() {
     const { params } = this.props.navigation.state;
     this.setState({fal:params.fal,comments:params.fal.comments})
-
     var id =Backend.getUid()
+    if(params.fal.poll1){
+      voters1=params.fal.voters1
+      voters2=params.fal.voters2
+      this.setState({voters1:voters1,voters2:voters2})
+      for (var i = 0; i < voters1.length; i++) {
+        if(id==voters1[i]){
+          this.setState({votedFor:true})
+          break;
+        }
+      }
+      for (var i = 0; i < voters2.length; i++) {
+        if(id==voters2[i]){
+          this.setState({votedFor:true})
+          break;
+        }
+      }
+    }
     if(id==params.fal.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
-      this.setState({falowner:true})
+      this.setState({falowner:true,votedFor:true})
     }
   }
 
@@ -537,6 +556,79 @@ export default class SocialFal extends React.Component {
     )
 
   }
+
+  renderPoll = () => {
+    if(this.state.fal.poll1){
+
+      if(this.state.fal.poll1.length>1){
+        return(
+          <View>
+          <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5,justifyContent:'space-between'}}>
+            <TouchableOpacity style={{justifyContent:'center',height:40,width:'45%',borderColor: 'blue', marginRight:5,borderTopLeftRadius: 10,borderBottomLeftRadius: 10,borderRadius:10,paddingLeft:8,paddingRight:8,backgroundColor:'#6AAFE6'}} onPress={()=>{this.voteFor(1)}}>
+             <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}}>
+              {this.state.fal.poll1}
+             </Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{justifyContent:'center',height:40,width:'45%',borderColor: 'red',marginLeft:5,borderTopRightRadius: 10,borderRadius:10,borderBottomRightRadius: 10,paddingLeft:8,paddingRight:8,backgroundColor:'#E72564'}} onPress={()=>{this.voteFor(2)}}>
+              <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>
+               {this.state.fal.poll2}
+              </Text>
+            </TouchableOpacity>
+          </View>
+              {this.renderPollResults()}
+              </View>
+        )
+      }
+      else{return null}
+    }
+  }
+
+  renderPollResults = () => {
+    if(this.state.votedFor){
+      var v1count=this.state.voters1.length
+      var v2count=this.state.voters2.length
+
+      var v1percentage=v1count*100/(v1count+v2count)
+      var v2percentage =100-v1percentage
+      if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
+      return(
+        <View style={{flexDirection:'row',paddingBottom:5,justifyContent:'center'}}>
+          <View style={{flex:1,justifyContent:'center'}} >
+           <Text style={{color:'#6AAFE6',fontWeight:'bold',fontSize:18,textAlign:'center'}}>
+            {"%"+v1percentage}
+           </Text>
+          </View>
+          <View style={{flex:1,justifyContent:'center'}} >
+            <Text style={{textAlign:'center',color:'#E72564',fontSize:18,fontWeight:'bold'}}>
+                 {"%"+v2percentage}
+            </Text>
+          </View>
+        </View>
+      )
+    }
+    else {
+      return null
+    }
+  }
+
+  voteFor = (vote) => {
+    if(!this.state.votedFor){
+      if(vote==1){
+        var voters1=this.state.fal.voters1
+        voters1.push(Backend.getUid())
+        this.setState({voters1:voters1,votedFor:true})
+        Backend.voteFor(1,this.state.fal._id)
+      }
+      if(vote==2){
+        var voters2=this.state.fal.voters1
+        voters2.push(Backend.getUid())
+        this.setState({voters2:voters2,votedFor:true})
+        Backend.voteFor(2,this.state.fal._id)
+      }
+    }
+
+  }
+
   renderBody = () => {
     var fal = this.state.fal
     if(fal){
@@ -563,7 +655,7 @@ export default class SocialFal extends React.Component {
             meslek='Özel Sektör';
             break;
         case 7:
-            meslek='"Kendi İşim';
+            meslek='Kendi İşim';
             break;
 
       }
@@ -634,12 +726,9 @@ export default class SocialFal extends React.Component {
               }, this)}
 
             </View>
-            <TouchableOpacity style={{alignSelf:'center',justifyContent:'center',alignItems:'center',height:30,width:200,borderRadius:5,padding:5,marginBottom:10,backgroundColor:'#8a398e',flexDirection:'row'}} onPress={()=>{this.shareFal()}}>
-              <Icon name="share" color={'white'} size={16} />
-              <Text style={{color:'white',fontSize:16}}>   Arkadaşlarına Sor </Text>
+            {this.renderPoll()}
 
-            </TouchableOpacity>
-            <View style={{flex:1}}>
+            <View style={{flex:1,marginTop:10}}>
               <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18,margin:3}}>Yorumlar ({this.state.comments.length})</Text></View>
               {this.renderComments()}
             </View>

@@ -846,6 +846,21 @@ loadMessages = (callback) => {
     })
   }
 
+  voteFor = (vote,falid) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/voteFor', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid:this.getUid(),
+        falid: falid,
+        vote:vote
+      })
+    })
+  }
+
   deleteComment = (falid,index) => {
     fetch('https://eventfluxbot.herokuapp.com/appapi/deleteComment', {
       method: 'POST',
@@ -1008,7 +1023,7 @@ loadMessages = (callback) => {
 
   }
 
-  postSosyal = (question,images,anonim) => {
+  postSosyal = (question,images,anonim,poll1,poll2) => {
     fetch('https://eventfluxbot.herokuapp.com/webhook/postSosyal', {
       method: 'POST',
       headers: {
@@ -1019,7 +1034,9 @@ loadMessages = (callback) => {
         question: question,
         photos: images,
         anonim: !anonim,
-        uid:this.getUid()
+        uid:this.getUid(),
+        poll1:poll1,
+        poll2:poll2
       })
     })
 

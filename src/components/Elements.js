@@ -14,7 +14,7 @@ class Element extends Component {
     return(
       <TouchableOpacity style={{alignSelf:'stretch',padding:0, width:200,borderWidth:1, borderColor:'black'}} onPress={() => {this.props.sendPayload(this.props.payload,this.props.image)}}>
         <View style={{height:230,justifyContent:'space-between'}}>
-          <Image source={{ uri: this.props.image}} style={{height:120,width:200}} ></Image>
+          <Image source={{ uri: this.props.image}} style={{height:120,width:198}} ></Image>
           <View style={{padding:5,flexDirection:'column'}}>
             <Text style={{textAlign:'center',fontWeight:'bold',fontSize:17}}>{this.props.title}</Text>
             <Text style={{textAlign:'center'}}>{this.props.subtitle}</Text>

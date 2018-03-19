@@ -9,11 +9,13 @@ import {
   ActivityIndicator,
   Dimensions,
   Button,
+  AsyncStorage,
   TextInput,
   Keyboard,
   Switch,
   Alert,
   TouchableHighlight,
+  KeyboardAvoidingView,
   Modal,
   ActionSheetIOS,
 } from 'react-native';
@@ -21,6 +23,8 @@ import {
 import firebase from 'firebase';
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
@@ -49,6 +53,8 @@ export default class FalPaylas extends React.Component {
       pickerVisible: false,
       cameraVisible: false,
       spinnerVisible:false,
+      pollInput1:'',
+      pollInput2:'',
   };
 }
 
@@ -131,48 +137,49 @@ export default class FalPaylas extends React.Component {
         Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
       }
       else{
-        if(this.state.sosyalInput.length>200){
-          Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
+        if((this.state.pollInput1.length>0&&this.state.pollInput2.length==0)||(this.state.pollInput2.length>0&&this.state.pollInput1.length==0)){
+              Alert.alert("Şıkları Giriniz","Lütfen her iki şıkkı da giriniz ya da ikisini de boş bırakınız")
         }
-        else{
+        else {
           if(this.state.falPhotos.length>1){
             this.setState({spinnerVisible:true})
-        
+
             Backend.uploadImages(this.state.falPhotos).then((urls) => {
               console.log(urls)
               this.setState({spinnerVisible:false})
+              if(this.props.userStore.userCredit<100){
+                this.paySosyal(urls)
+              }
+              else{
 
-
-                if(this.props.userStore.userCredit<100){
-                  this.paySosyal(urls)
-                }
-                else{
-                  Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
+                  Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
                   Backend.addCredits(-100)
                   this.props.userStore.increment(-100)
                   Keyboard.dismiss()
                   this.setState({sosyalInput:'',falPhotos:[]})
-                  fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      uid: Backend.getUid(),
-                    })
-                  })
-                  .then((response) => response.json())
-                  .then((responseJson) => {
-                     // this.setState({tek:responseJson.tek});
-                      this.props.socialStore.setSocials(responseJson.sosyals)
+                 setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
+                 setTimeout(()=>{
+                   fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+                     method: 'POST',
+                     headers: {
+                       'Accept': 'application/json',
+                       'Content-Type': 'application/json',
+                     },
+                     body: JSON.stringify({
+                       uid: Backend.getUid(),
+                     })
+                   })
+                   .then((response) => response.json())
+                   .then((responseJson) => {
+                      // this.setState({tek:responseJson.tek});
+                       this.props.socialStore.setSocials(responseJson.sosyals)
                       this.props.socialStore.setTek(responseJson.tek)
 
+                    })
 
-                   })
+                  },1050)
 
-                   setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
-                }
+              }
 
             })
             .catch(error => {
@@ -209,8 +216,7 @@ export default class FalPaylas extends React.Component {
                }
                else{
                  if(response && response.productIdentifier) {
-                   Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
-                   //this.popupSosyal.dismiss()
+                   Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
                    this.setState({modalVisible:false,inputVisible:false})
                    Keyboard.dismiss()
 
@@ -337,7 +343,7 @@ export default class FalPaylas extends React.Component {
 
 
   componentDidMount() {
-
+      //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
   }
   componentDidUpdate() {
 
@@ -355,7 +361,7 @@ export default class FalPaylas extends React.Component {
     return (
 
 
-        <ScrollView style={{flex:1,backgroundColor:'#36797f'}} >
+        <KeyboardAwareScrollView  style={{flex:1,backgroundColor:'#36797f'}} >
         <View style={{flex:1,alignItems:'center',paddingBottom:40}}>
             <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
             <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -372,15 +378,34 @@ export default class FalPaylas extends React.Component {
               Siz sorun, diğer falseverlerimiz cevaplasın!
             </Text>
             <Text style={styles.faltypeyazikucukpopup}>
-              Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 3 gün boyunca Sosyal Panomuzda yayınlayın, diğer falseverlerin yorumuna sunun.   {"\n"}
+              Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 2 gün boyunca Sosyal Panomuzda yayınlayın, diğer falseverlerin yorumuna sunun.   {"\n"}
             </Text>
             <TextInput
               multiline={true}
               value={this.state.sosyalInput}
+              maxLength={150}
               onChangeText={(text) =>{this.setState({sosyalInput:text})}}
               placeholder={"Sorunu yaz"}
-              style={{height:100,width:'90%',borderColor: 'gray', borderWidth: 1,padding:3,backgroundColor:'white'}}
+              style={{height:80,width:'90%',borderColor: 'gray',fontSize:14, borderWidth: 1,padding:3,borderRadius:10,marginBottom:10,backgroundColor:'white'}}
             />
+            <Text style={{color:'white',fontWeight:'bold'}}>Anket şıklarınız</Text>
+            <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5}}>
+              <TextInput
+                maxLength={20}
+                value={this.state.pollInput1}
+                onChangeText={(text) =>{this.setState({pollInput1:text})}}
+                placeholder={"Örn. Evet"}
+                style={{height:40,width:'50%',borderColor: 'gray', borderWidth: 1,color:'blue',borderTopLeftRadius: 10,borderBottomLeftRadius: 10,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+              />
+              <TextInput
+                maxLength={20}
+                value={this.state.pollInput2}
+                onChangeText={(text) =>{this.setState({pollInput2:text})}}
+                placeholder={"Örn. Hayır"}
+                style={{height:40,width:'50%',borderColor: 'gray', borderWidth: 1,color:'red',borderTopRightRadius: 10,borderBottomRightRadius: 10,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+              />
+            </View>
+            <Text style={{color:'white',fontSize:12}}>Anket yapmak istemiyorsanız bu seçenekleri boş bırakabilirsiniz</Text>
 
             <View style={{width:'100%',marginTop:20,flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:100,paddingBottom:40,paddingTop:20,justifyContent:'space-around'}}>
             {
@@ -432,7 +457,7 @@ export default class FalPaylas extends React.Component {
 
 
            </View>
-        </ScrollView>
+        </KeyboardAwareScrollView >
 
 
     );

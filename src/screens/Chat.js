@@ -568,8 +568,8 @@ export default class Chat extends React.Component {
       this.popupHand.show()
     }
     else if (payload.payload=='sosyalfal') {
-      this.popupSosyal.show()
-        //this.props.navigation.navigate('FalPaylas')
+      //this.popupSosyal.show()
+      this.props.navigation.navigate('FalPaylas')
     }
     else{
       if(payload.type=="postback"){
