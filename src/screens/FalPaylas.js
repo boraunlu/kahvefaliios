@@ -49,6 +49,7 @@ export default class FalPaylas extends React.Component {
       text:'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!',
       sosyalInput:'',
       falPhotos:[],
+      falType:null,
       anonimSwitchIsOn:true,
       pickerVisible: false,
       cameraVisible: false,
@@ -145,42 +146,32 @@ export default class FalPaylas extends React.Component {
             this.setState({spinnerVisible:true})
 
             Backend.uploadImages(this.state.falPhotos).then((urls) => {
-              console.log(urls)
-              this.setState({spinnerVisible:false})
-              if(this.props.userStore.userCredit<100){
-                this.paySosyal(urls)
-              }
-              else{
 
-                  Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
+              this.setState({spinnerVisible:false})
+              if(this.state.falType==2||this.state.falType==3){
+                this.postSosyal(urls)
+              }
+              else if(this.state.falType==1){
+
+                if(this.props.userStore.userCredit<50){
+                  this.paySosyal(urls,50)
+                }
+                else{
+                  Backend.addCredits(-50)
+                  this.props.userStore.increment(-50)
+                  this.postSosyal(urls)
+                }
+              }
+              else {
+                if(this.props.userStore.userCredit<100){
+                  this.paySosyal(urls,100)
+                }
+                else{
                   Backend.addCredits(-100)
                   this.props.userStore.increment(-100)
-                  Keyboard.dismiss()
-                  this.setState({sosyalInput:'',falPhotos:[]})
-                 setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
-                 setTimeout(()=>{
-                   fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                     method: 'POST',
-                     headers: {
-                       'Accept': 'application/json',
-                       'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({
-                       uid: Backend.getUid(),
-                     })
-                   })
-                   .then((response) => response.json())
-                   .then((responseJson) => {
-                      // this.setState({tek:responseJson.tek});
-                       this.props.socialStore.setSocials(responseJson.sosyals)
-                      this.props.socialStore.setTek(responseJson.tek)
-
-                    })
-
-                  },1050)
-
+                  this.postSosyal(urls)
+                }
               }
-
             })
             .catch(error => {
               console.log(error)
@@ -198,16 +189,48 @@ export default class FalPaylas extends React.Component {
     }
 
 
-      paySosyal = (urls) => {
+    postSosyal = (urls) => {
+      Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
+
+      Keyboard.dismiss()
+      this.setState({sosyalInput:'',falPhotos:[]})
+     setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
+     setTimeout(()=>{
+       fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           uid: Backend.getUid(),
+         })
+       })
+       .then((response) => response.json())
+       .then((responseJson) => {
+          // this.setState({tek:responseJson.tek});
+           this.props.socialStore.setSocials(responseJson.sosyals)
+          this.props.socialStore.setTek(responseJson.tek)
+
+        })
+
+      },1050)
+    }
+
+      paySosyal = (urls,para) => {
         this.setState({spinnerVisible:true})
         var products = [
            'com.grepsi.kahvefaliios.sosyal',
         ];
+        if(para==50){products = [
+           'com.grepsi.kahvefaliios.50',
+        ];}
         InAppUtils.loadProducts(products, (error, products) => {
           if(error){this.setState({spinnerVisible:false})}
           else{
 
             var identifier = 'com.grepsi.kahvefaliios.sosyal'
+            if(para==50){identifier = 'com.grepsi.kahvefaliios.50'}
             InAppUtils.purchaseProduct(identifier, (error, response) => {
               this.setState({spinnerVisible:false})
                // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
@@ -332,17 +355,18 @@ export default class FalPaylas extends React.Component {
     setFromPicker = (images) => {
       var falPhotos = this.state.falPhotos
       for (var i = 0; i < images.length; i++) {
-
         falPhotos.push(images[i].image)
       }
-
-
-
       this.setState({falPhotos:falPhotos})
     }
 
 
   componentDidMount() {
+    const { params } = this.props.navigation.state;
+    var falType = params ? params.falType : null;
+    var storePhotos=this.props.socialStore.falPhotos
+    this.setState({falPhotos:storePhotos})
+    this.setState({falType:falType+1})
       //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
   }
   componentDidUpdate() {
@@ -365,13 +389,28 @@ export default class FalPaylas extends React.Component {
         <View style={{flex:1,alignItems:'center',paddingBottom:40}}>
             <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
             <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+            {this.state.falType ==2||this.state.falType ==3?
+                null
+                : this.state.falType==1?
 
-                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+
+                  <Text style={[styles.label]}>
+                    50
+                  </Text>
+                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                </View>
+                :
+                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+
                   <Text style={[styles.label]}>
                     100
                   </Text>
                   <Image source={require('../static/images/coins.png')} style={styles.coin}/>
                 </View>
+
+            }
+
             </View>
             <Image source={require('../static/images/karilar.png')} style={{height:100,resizeMode:'contain',marginTop:10}}/>
             <Text style={styles.faltypeyazipopup}>

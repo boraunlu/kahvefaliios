@@ -6,6 +6,8 @@ export default class SocialStore {
   @observable commenteds = null;
   @observable sosyalInput='';
   @observable tek = null;
+  @observable falPhotos = [];
+
 
   @action setSocials(sosyals) {
     this.socials=sosyals
@@ -23,7 +25,14 @@ export default class SocialStore {
   }
   @action addComment(comment,index) {
 
-    //this.socials[index].comments.push(comment)
+
+  }
+  @action addPhoto(image) {
+
+    this.falPhotos.push(image)
+    if(this.falPhotos.length>3){
+      this.falPhotos=this.falPhotos.slice(-3)
+    }
 
   }
 }

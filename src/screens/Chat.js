@@ -12,6 +12,7 @@ import {
   Dimensions,
   Image,
   BackAndroid,
+  ImageBackground,
   Animated,
   Easing,
   Switch,
@@ -91,6 +92,7 @@ class CustomMessage extends Message {
 }
 
 @inject("userStore")
+@inject("socialStore")
 @observer
 export default class Chat extends React.Component {
   constructor(props) {
@@ -546,7 +548,9 @@ export default class Chat extends React.Component {
     if (payload.payload=='secdim') {
 
       this.setState({falPhotos:[image]})
-      AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
+      this.props.socialStore.addPhoto(image)
+      this.props.socialStore.addPhoto(image)
+      //AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
     }
 
     if(payload=="appstart"){
@@ -569,7 +573,7 @@ export default class Chat extends React.Component {
     }
     else if (payload.payload=='sosyalfal') {
       //this.popupSosyal.show()
-      this.props.navigation.navigate('FalPaylas')
+      this.props.navigation.navigate('FalPaylas',{falType:this.state.falType})
     }
     else{
       if(payload.type=="postback"){
@@ -781,7 +785,7 @@ export default class Chat extends React.Component {
         }
       });
 
-      AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
+      //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
       this.props.userStore.setAktifUnread(0)
 
   }
@@ -921,12 +925,13 @@ export default class Chat extends React.Component {
       var imajlar= this.state.falPhotos;
       for (let i = 0; i < message.length ; i++) {
         imajlar.push(message[i].image)
+        this.props.socialStore.addPhoto(message[i].image)
       }
       if(imajlar.length>3){
         imajlar=imajlar.slice(3)
       }
-      this.setState({falPhotos:imajlar})
-      AsyncStorage.setItem('falPhotos',JSON.stringify(imajlar));
+    //  this.props.socialStore.setPhotos({falPhotos:imajlar})
+      //AsyncStorage.setItem('falPhotos',JSON.stringify(imajlar));
     }
     whoosh.play();
   }

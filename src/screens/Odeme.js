@@ -283,7 +283,7 @@ export default class Odeme extends React.Component {
             <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
             <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
             {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
-            
+
           </View>
         </View>
         <View style={{flex:1}}>
@@ -304,7 +304,7 @@ export default class Odeme extends React.Component {
                     </Text>
                     <View style={styles.corner}>
                       <Text style={[styles.label]}>
-                        6.99
+                        8.99
                       </Text>
                       <Icon name="try" color={'#2f4f4f'} size={14} />
                     </View>
@@ -323,7 +323,7 @@ export default class Odeme extends React.Component {
                     </Text>
                     <View style={styles.corner}>
                       <Text style={[styles.label]}>
-                        9.99
+                        12.99
                       </Text>
                       <Icon name="try" color={'#2f4f4f'} size={14} />
                     </View>
@@ -348,7 +348,7 @@ export default class Odeme extends React.Component {
                     </Text>
                     <View style={styles.corner}>
                       <Text style={[styles.label]}>
-                        13.99
+                        17.99
                       </Text>
                       <Icon name="try" color={'#2f4f4f'} size={14} />
                     </View>
@@ -371,7 +371,7 @@ export default class Odeme extends React.Component {
                   </Text>
                   <View style={styles.corner}>
                     <Text style={[styles.label]}>
-                      24.99
+                      29.99
                     </Text>
                     <Icon name="try" color={'#2f4f4f'} size={14} />
                   </View>
@@ -392,7 +392,7 @@ export default class Odeme extends React.Component {
                   </Text>
                   <View style={styles.corner}>
                     <Text style={[styles.label]}>
-                      44.99
+                      54.99
                     </Text>
                     <Icon name="try" color={'#2f4f4f'} size={14} />
                   </View>

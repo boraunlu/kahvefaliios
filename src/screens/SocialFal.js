@@ -12,12 +12,13 @@ import {
   Keyboard,
   ActivityIndicator,
   Alert,
+    ImageBackground,
   Share
 } from 'react-native';
 
 import firebase from 'firebase';
 import Backend from '../Backend';
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions,SafeAreaView } from 'react-navigation'
 import moment from 'moment';
 import Lightbox from 'react-native-lightbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -115,6 +116,13 @@ export default class SocialFal extends React.Component {
  _keyboardDidHide = () =>  {
   // alert('Keyboard Hidden');
   this.setState({keyboardHeight:0})
+ }
+
+ startChat = (fireID) => {
+   const { navigate } = this.props.navigation;
+   var falsever= this.state.profinfo
+   falsever.avatar=falsever.profile_pic.uri
+   navigate( "ChatFalsever",{falsever:falsever} )
  }
 
  updateSize = (height) => {
@@ -443,13 +451,14 @@ export default class SocialFal extends React.Component {
 
           }, this)
         }
+        {this.renderYorumYap()}
         </ScrollView>
       )
     }
     else{
       return(
         <View style={{flex:1}}>
-          <Text style={{textAlign:'center',marginTop:20,color:'black',fontSize:16}}>Haydi bu fala ilk yorum yapan sen ol 😉</Text>
+          <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
         </View>
       )
     }
@@ -457,6 +466,15 @@ export default class SocialFal extends React.Component {
 
   }
 
+  renderYorumYap = () => {
+    if(this.state.comments.length<3){
+      return(
+        <View style={{flex:1}}>
+          <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+        </View>
+      )
+    }
+  }
 
     renderProfInfo = () => {
       if(this.state.profinfo){
@@ -494,15 +512,15 @@ export default class SocialFal extends React.Component {
         }
         return(
         <View>
-          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
-            <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
-
+          <ImageBackground style={{backgroundColor:'transparent',alignSelf:'center',height:94,width:94,paddingTop:7}} source={require('../static/images/cerceve.png')}>
+            <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
+          </ImageBackground>
+          <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
           <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
           {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
           {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
           <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
             <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-
           </View>
           <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
             <View style={{justifyContent:'center'}}>
@@ -515,6 +533,7 @@ export default class SocialFal extends React.Component {
             <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
           </View>
           {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
+        
         </View>
 
       )
@@ -588,7 +607,7 @@ export default class SocialFal extends React.Component {
       var v1count=this.state.voters1.length
       var v2count=this.state.voters2.length
 
-      var v1percentage=v1count*100/(v1count+v2count)
+      var v1percentage=parseInt(v1count*100/(v1count+v2count))
       var v2percentage =100-v1percentage
       if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
       return(
@@ -744,7 +763,7 @@ export default class SocialFal extends React.Component {
 
     return (
 
-      <View style={styles.containerrr}>
+      <SafeAreaView style={styles.containerrr}>
         <ScrollView>
           {this.renderAktifStripe()}
           {this.renderBody()}
@@ -755,7 +774,7 @@ export default class SocialFal extends React.Component {
 
          dialogStyle={{marginTop:-250}}
          width={0.9}
-         height={370}
+         height={400}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>
@@ -785,7 +804,7 @@ export default class SocialFal extends React.Component {
             <Text style={{color:'teal'}}>Gönder</Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </SafeAreaView>
 
     );
   }

@@ -152,9 +152,6 @@ export default class ChatFalsever extends React.Component {
         else {
           mesaj._id="asdf"
         }
-
-
-
         this.setState((previousState) => {
           return {
             messages: GiftedChat.append(previousState.messages, mesaj),
@@ -202,9 +199,6 @@ export default class ChatFalsever extends React.Component {
         text: messages[0].text
       })
     })
-
-    // for demo purpose
-    //this.answerDemo(messages);
   }
 
 
@@ -298,6 +292,7 @@ export default class ChatFalsever extends React.Component {
           onSend={(message) => {
             this.sendMessageToFalsever(message)
           }}
+          locale={'tr'}
           loadEarlier={false}
           user={{
             _id: Backend.getUid(),

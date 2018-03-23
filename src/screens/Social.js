@@ -123,7 +123,7 @@ export default class Social extends React.Component {
     if(this.props.userStore.user){
       if(this.props.userStore.user.timesUsed>0){
         //this.popupSosyal.show()
-        this.props.navigation.navigate('FalPaylas')
+        this.props.navigation.navigate('FalPaylas',{falType:10})
       }
       else {
         Alert.alert("Çok Hızlısın :)","Sosyal Pano'da fal paylaşabilmeniz için öncelikle Ana Sayfa'da bulunan fallardan birine baktırmanız gerekmektedir")
@@ -519,9 +519,9 @@ export default class Social extends React.Component {
                </Text>
 
            </View>
-           <View style={{padding:15,justifyContent:'center',width:60,borderColor:'teal'}}>
-
-             <Text style={{textAlign:'center',color:'black'}}>{item.comments?item.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
+           <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:60,borderColor:'teal',flexDirection:'row'}}>
+              {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+              <Text style={{textAlign:'center',color:'black'}}>{item.comments?item.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
            </View>
          </View>
 

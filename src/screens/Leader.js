@@ -12,9 +12,17 @@ import {
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
+import moment from 'moment';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function replaceGecenHafta(string) {
+    return string.replace("geçen hafta ","")
+}
 
 export default class Leader extends React.Component {
   constructor(props) {
@@ -95,10 +103,10 @@ export default class Leader extends React.Component {
         unvan = "Fal Uzmanı"
         kolor='rgb(0,185,241)'
       }
-      else if (falPuan>175&&falPuan<301) {
+      else if (falPuan>175) {
         seviye = 5
-        limit = 125
-        gosterilenpuan=falPuan-175
+        limit = 12500
+        gosterilenpuan=falPuan
         unvan = "Fal Profesörü"
         kolor='rgb(249,50,12)'
       }
@@ -125,6 +133,7 @@ export default class Leader extends React.Component {
           </View>
           <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
         </View>
+        {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
       </View>
 
     )
@@ -133,6 +142,42 @@ export default class Leader extends React.Component {
       return(<ActivityIndicator/>)
     }
 
+  }
+
+  renderKendiFali = (kendiFali) =>{
+    var sosyal=kendiFali
+    return(
+    <View>
+      <Text style={{fontWeight:'bold',textAlign:'center',marginBottom:10,fontSize:16}}>Yorum Bekleyen Falı</Text>
+      <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,1)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
+       <View style={{flexDirection:'row',height:60,}}>
+         <View style={{padding:10,flex:1}}>
+
+           <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+             {sosyal.question}
+            </Text>
+            <Text style={{fontWeight:'normal',fontSize:14}}>
+              {sosyal.name} - <Text style={{color:'gray'}}>
+               {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+              </Text>
+             </Text>
+
+         </View>
+         <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
+
+           <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+         </View>
+       </View>
+
+      </TouchableOpacity>
+    </View>
+    )
+
+  }
+
+  navigateToFal = (fal) => {
+    const { navigate } = this.props.navigation;
+    navigate( "SocialFal",{fal:fal} )
   }
 
   showProfPopup = (fireid,profPhoto) =>{
@@ -377,9 +422,9 @@ export default class Leader extends React.Component {
 
         <PopupDialog
 
-         dialogStyle={{marginTop:-250}}
+         dialogStyle={{marginTop:-200}}
          width={0.9}
-         height={325}
+         height={380}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>
