@@ -118,11 +118,32 @@ export default class SocialFal extends React.Component {
   this.setState({keyboardHeight:0})
  }
 
- startChat = (fireID) => {
-   const { navigate } = this.props.navigation;
-   var falsever= this.state.profinfo
-   falsever.avatar=falsever.profile_pic.uri
-   navigate( "ChatFalsever",{falsever:falsever} )
+ startChat = (falsever,seviye) => {
+   var creditNeeded=seviye*10
+   if(this.props.userStore.userCredit<creditNeeded){
+     Alert.alert(
+       'Kredi Gerekli',
+       'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
+       [
+         {text: 'İstemiyorum', onPress: () => {}},
+         {text: 'Tamam', onPress: () => {
+           const { navigate } = this.props.navigation;
+           navigate( "Odeme")
+
+         }},
+       ],
+     )
+   }
+   else {
+     const { navigate } = this.props.navigation;
+     falsever.avatar=falsever.profile_pic.uri
+     navigate( "ChatFalsever",{falsever:falsever} )
+     Backend.addCredits(creditNeeded*-1)
+     this.props.userStore.increment(creditNeeded*-1)
+     var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+      bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+   }
+
  }
 
  updateSize = (height) => {
@@ -279,7 +300,7 @@ export default class SocialFal extends React.Component {
         }else if (falPuan>100&&falPuan<176) {
           seviye = 4
         }
-        else if (falPuan>175&&falPuan<301) {
+        else if (falPuan>175) {
           seviye = 5
         }
         var comment={comment:this.state.commentInput,parentIndex:this.state.replyingTo,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
@@ -533,7 +554,13 @@ export default class SocialFal extends React.Component {
             <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
           </View>
           {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
-        
+          <TouchableOpacity style={{height:30,borderRadius:4,width:'60%',backgroundColor:'teal',flexDirection:'row',alignSelf:'center',marginTop:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+              <Icon name="paper-plane" color={'white'} size={18} />
+            <Text style={{color:'white',fontSize:16,fontWeight:'bold'}}> Özel Mesaj</Text>
+
+            <Text style={{color:'white',fontSize:12}}>{"     "+seviye*10}</Text>
+            <Image source={require('../static/images/coins.png')} style={{width:12, height: 12,marginLeft:3}}/>
+          </TouchableOpacity>
         </View>
 
       )
@@ -774,7 +801,7 @@ export default class SocialFal extends React.Component {
 
          dialogStyle={{marginTop:-250}}
          width={0.9}
-         height={400}
+         height={420}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>

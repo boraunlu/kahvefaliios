@@ -257,10 +257,10 @@ export default class Social extends React.Component {
         unvan = "Fal Uzmanı"
         kolor='rgb(0,185,241)'
       }
-      else if (falPuan>175&&falPuan<301) {
+      else if (falPuan>175) {
         seviye = 5
-        limit = 125
-        gosterilenpuan=falPuan-175
+        limit = 12500
+        gosterilenpuan=falPuan
         unvan = "Fal Profesörü"
         kolor='rgb(249,50,12)'
       }

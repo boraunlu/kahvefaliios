@@ -173,6 +173,14 @@ class Backend {
       var deleteref = firebase.database().ref('messages/'+this.getUid()+'/'+falciNo);
       deleteref.remove()
   }
+  deleteFalsever(falciNo){
+
+    var deleteref2 =  firebase.database().ref('messages/'+this.getUid()+'/falsever/bilgiler/'+falciNo);
+      deleteref2.remove()
+      var deleteref =  firebase.database().ref('messages/'+this.getUid()+'/falsever/mesajlar/'+falciNo);
+        deleteref.remove()
+
+  }
   saveNewUser(token){
     this.messagesRef = firebase.database().ref('messages/'+this.getUid());
     this.messagesRef.push({

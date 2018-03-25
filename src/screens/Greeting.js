@@ -100,9 +100,7 @@ static navigationOptions = ({ navigation }) => ({
      tabBarIcon: ({ tintColor }) => (
        <Icon name="home" color={tintColor} size={25} />
        ),
-     headerRight:
-      <View>{typeof navigation.state.params.crredit !== 'undefined' ? <TouchableOpacity  onPress={() => {navigation.state.params.odemeyegit("Odeme")}} style={{marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold',}}>{navigation.state.params.crredit}</Text></TouchableOpacity> : <View/>}</View>,
-
+  
   })
 
 

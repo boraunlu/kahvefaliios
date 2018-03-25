@@ -95,6 +95,20 @@ export default class Mesajlar extends React.Component {
 
     }
 
+    deleteFalsever = (falciNo,index) => {
+
+      Alert.alert(
+        'Konuşmayı Sil',
+        'Bu konuşmayı kalıcı olarak silmek istediğine emin misin?',
+        [
+
+          {text: 'Hayır', onPress: () => {}, style: 'cancel'},
+          {text: 'Evet', onPress: () => {Backend.deleteFalsever(falciNo);}},
+        ],
+      )
+
+    }
+
     removeThread = (index) => {
       var newList = this.state.messages;
       newList.splice(index, 1);
@@ -317,7 +331,7 @@ export default class Mesajlar extends React.Component {
                    {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
                   </Text>
                 </View>
-                <TouchableOpacity onPress={() => {this.delete(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
+                <TouchableOpacity onPress={() => {this.deleteFalsever(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
                 </TouchableOpacity>
               </View>
