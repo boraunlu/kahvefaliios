@@ -136,7 +136,7 @@ export default class Social extends React.Component {
 
   componentDidMount() {
     this.props.navigation.setParams({ showpopup: this.showpopup  })
-    var marquees=["Beğenmediğiniz yorumları 👎 tuşuna basarak işaretleyebilirsiniz.","Rahatsız edici yorumlar yapan kullanıcıların hesabı kapatılacaktır.","Siz de sağ üstteki '+ Fal Paylaş' butonuna basarak falınızı burada paylaşabilirsiniz!","Beğendiğiniz yorumları ❤️'lemeyi unutmayın :)","Profilinize sizi en iyi anlatan cümleyi yazmayı unutmayın!","Şehir bilginizi profil sayfanızdan girebilirsiniz."]
+    var marquees=["Artık diğer falseverlere özel mesaj atabilirsiniz!","Beğenmediğiniz yorumları 👎 tuşuna basarak işaretleyebilirsiniz.","Rahatsız edici yorumlar yapan kullanıcıların hesabı kapatılacaktır.","Siz de sağ üstteki '+ Fal Paylaş' butonuna basarak falınızı burada paylaşabilirsiniz!","Beğendiğiniz yorumları ❤️'lemeyi unutmayın :)","Profilinize sizi en iyi anlatan cümleyi yazmayı unutmayın!","Şehir bilginizi profil sayfanızdan girebilirsiniz."]
     var marquee=''
     for (var i = 0; i < marquees.length; i++) {
       marquee=marquee+"  ||  "+marquees[i]
@@ -158,10 +158,8 @@ export default class Social extends React.Component {
         this.props.socialStore.setTek(responseJson.tek)
         var sosyals=Array.from(responseJson.sosyals)
         this.props.socialStore.setSocials(sosyals)
-
-        /*
-
-        this.props.socialStore.setCommenteds(commenteds)*/
+        //var commenteds=Array.from(responseJson.commenteds)
+        //this.props.socialStore.setCommenteds(commenteds)
         var commenteds=[]
         var id = Backend.getUid()
         for (var i = 0; i < sosyals.length; i++) {
@@ -340,127 +338,8 @@ export default class Social extends React.Component {
 
   }
 
-  renderSosyaller = () => {
 
-    if(this.props.socialStore.socials){
-      var sosyaller = this.props.socialStore.socials
-      if(sosyaller.length>0){
-        return (
-
-           sosyaller.map(function (sosyal,index) {
-
-             var profile_pic=null
-             sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
-             return (
-               <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
-                <View style={{flexDirection:'row',height:60,}}>
-
-                <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
-
-                  <View style={{padding:10,flex:1}}>
-
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
-                      {sosyal.question}
-                     </Text>
-                     <Text style={{fontWeight:'normal',fontSize:14}}>
-                       {sosyal.name} - <Text style={{color:'gray'}}>
-                        {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-                       </Text>
-                      </Text>
-
-                  </View>
-                  <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
-
-                    <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
-                  </View>
-                </View>
-
-               </TouchableOpacity>
-               );
-           }, this)
-        )
-      }
-      else if(sosyaller.length==0){
-        return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />)
-      }
-    }
-    else{
-      return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />
-      )
-    }
-  }
-
-  renderSosyaller = () => {
-
-    if(this.props.socialStore.socials){
-      var sosyaller = this.props.socialStore.socials
-      if(sosyaller.length>0){
-        return (
-
-           sosyaller.map(function (sosyal,index) {
-
-             var profile_pic=null
-             sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
-             return (
-               <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
-                <View style={{flexDirection:'row',height:60,}}>
-
-                <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
-
-                  <View style={{padding:10,flex:1}}>
-
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
-                      {sosyal.question}
-                     </Text>
-                     <Text style={{fontWeight:'normal',fontSize:14}}>
-                       {sosyal.name} - <Text style={{color:'gray'}}>
-                        {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-                       </Text>
-                      </Text>
-
-                  </View>
-                  <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
-
-                    <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
-                  </View>
-                </View>
-
-               </TouchableOpacity>
-               );
-           }, this)
-        )
-      }
-      else if(sosyaller.length==0){
-        return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />)
-      }
-    }
-    else{
-      return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />
-      )
-    }
-  }
-
-    renderSosyaller2 = () => {
+    renderSosyaller = () => {
 
           if(this.props.socialStore.socials){
             var sosyaller = this.props.socialStore.socials
@@ -530,62 +409,8 @@ export default class Social extends React.Component {
     }
   _keyExtractor = (item, index) => index;
 
+
   renderCommenteds = () => {
-
-    if(this.props.socialStore.commenteds){
-      var sosyaller = this.props.socialStore.commenteds
-      if(sosyaller.length>0){
-        return (
-          sosyaller.map(function (sosyal,index) {
-
-            var profile_pic=null
-            sosyal.profile_pic?profile_pic={uri:sosyal.profile_pic}:sosyal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
-            return (
-              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(sosyal,index)}}>
-               <View style={{flexDirection:'row',height:60,}}>
-
-               <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
-
-                 <View style={{padding:10,flex:1}}>
-
-                   <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
-                     {sosyal.question}
-                    </Text>
-                    <Text style={{fontWeight:'normal',fontSize:14}}>
-                      {sosyal.name} - <Text style={{color:'gray'}}>
-                       {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-                      </Text>
-                     </Text>
-
-                 </View>
-                 <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
-                   <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
-                 </View>
-               </View>
-
-              </TouchableOpacity>
-              );
-          }, this)
-
-        )
-      }
-      else if(sosyaller.length==0){
-        return(
-          <Text style={{textAlign:'center',padding:10,backgroundColor:'white'}}>Son 2 gün içinde yorum yaptığın fal bulunmuyor. Haydi hemen fallara yorum yap ve falpuanları toplamaya başla 😉</Text>)
-      }
-    }
-    else{
-      return(
-        <ActivityIndicator
-          animating={true}
-          style={[styles.centering, {height: 80}]}
-          size="large"
-        />
-      )
-    }
-  }
-
-  renderCommenteds2 = () => {
 
     if(this.props.socialStore.commenteds){
       var sosyaller = this.props.socialStore.commenteds
@@ -686,10 +511,10 @@ export default class Social extends React.Component {
            tabBarPosition='overlayTop'
            >
            <View         tabLabel='Yorum Bekleyenler' >
-            {this.renderSosyaller2()}
+            {this.renderSosyaller()}
           </View>
            <View         tabLabel='Yorumladıklarınız'>
-            {this.renderCommenteds2()}
+            {this.renderCommenteds()}
           </View>
          </ScrollableTabView>
             </View>

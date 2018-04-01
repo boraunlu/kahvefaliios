@@ -7,6 +7,7 @@ export default class UserStore {
   @observable userCredit= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
+  @observable falseverUnread= 0;
   @observable sharedWeek= false;
   @observable aktifLastMessage= '';
   @observable age = null;
@@ -15,6 +16,7 @@ export default class UserStore {
   @observable isAgent= false;
   @observable bio= '';
   @observable city= '';
+  @observable dmBlocked= false;
 
 
 
@@ -35,8 +37,12 @@ export default class UserStore {
     this.aktifUnread =this.aktifUnread+1
   }
 
+
   @action setAktifLastMessage(value) {
     this.aktifLastMessage =value
+  }
+  @action increaseFalseverUnread(value) {
+    this.falseverUnread =this.falseverUnread+value
   }
 
   @action setSharedTrue() {
@@ -48,6 +54,10 @@ export default class UserStore {
   @action setCommentedTrue() {
     this.user.commented =true
     this.userCredit = this.userCredit+15;
+  }
+  @action changeDmStatus() {
+    this.dmBlocked=!this.dmBlocked
+    Backend.changeDmStatus(this.dmBlocked)
   }
   @action changeAge(value) {
     this.age=value
@@ -112,7 +122,7 @@ export default class UserStore {
   }
 
   @computed get totalNoti() {
-        return this.bizdenUnread + this.aktifUnread;
+        return this.falseverUnread+this.bizdenUnread + this.aktifUnread;
   }
 
   @computed get meslek() {
@@ -199,6 +209,7 @@ export default class UserStore {
     this.bio=user.bio
     this.age=user.age
     this.city=user.city
+    this.dmBlocked=user.dmBlocked
     this.sharedWeek=user.sharedToday
     if(user.lastMessage){
       this.aktifLastMessage=user.lastMessage.text

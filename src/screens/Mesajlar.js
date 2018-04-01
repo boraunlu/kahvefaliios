@@ -10,7 +10,8 @@ import {
   Button,
   ActivityIndicator,
   TextInput,
-  Alert
+  Alert,
+  Switch
 } from 'react-native';
 
 import firebase from 'firebase';
@@ -156,8 +157,13 @@ export default class Mesajlar extends React.Component {
         var data = falsevers
         var output =[]
         for (var key in data) {
-            data[key].fireID = key;   // save key so you can access it from the array (will modify original data)
+            data[key].fireID = key;
             output.push(data[key]);
+            if(data[key].read==false){
+
+                  this.props.userStore.increaseFalseverUnread(1)
+            }
+
         }
 
         this.setState({falsevers:output})
@@ -310,13 +316,15 @@ export default class Mesajlar extends React.Component {
     }
     else if (this.state.falsevers.length==0) {
       return(
-        <Text style={{textAlign:'center',backgroundColor:'transparent'}}> Eski falın bulunmuyor </Text>
+        null
       )
     }
     else{
       var messages = this.state.falsevers
       return (
+        <View>
 
+        {
          messages.map(function (message,index) {
            return (
              <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.props.navigation.navigate('ChatFalsever',{falsever:message})}}>
@@ -330,7 +338,9 @@ export default class Mesajlar extends React.Component {
                    <Text>
                    {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
                   </Text>
+
                 </View>
+                  {message.read ? null:   <View style={{marginTop:17,marginRight:15,height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
                 <TouchableOpacity onPress={() => {this.deleteFalsever(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
                 </TouchableOpacity>
@@ -339,6 +349,12 @@ export default class Mesajlar extends React.Component {
              </TouchableOpacity>
              );
          }, this)
+       }
+       <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',backgroundColor:'white',borderTopWidth:1,borderColor:'gray',padding:10}}>
+        <Text style={{fontSize:14}}>Özel mesaj almak istemiyorum</Text>
+        <Switch value={this.props.userStore.dmBlocked} onValueChange={()=>{this.props.userStore.changeDmStatus()}}/>
+       </View>
+       </View>
       )
     }
   }

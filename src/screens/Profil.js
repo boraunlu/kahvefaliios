@@ -228,7 +228,7 @@ export default class Profil extends React.Component {
 
   uploadProfilePic = (image) => {
     this.setState({cameraVisible:false,spinnerVisible:true})
-      
+
     ImageResizer.createResizedImage(image, 500, 500,'JPEG',80)
     .then(({uri}) => {
       console.log("uri "+uri)
@@ -410,6 +410,7 @@ export default class Profil extends React.Component {
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
             {this.renderBio()}
             <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
+            
             <View style={styles.pickerContainer}>
               <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
               <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>

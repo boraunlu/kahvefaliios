@@ -11,6 +11,7 @@ import {
   Dimensions,
   Image,
   BackAndroid,
+  ImageBackground,
   Animated,
   Alert,
   Easing,
@@ -19,17 +20,21 @@ import {
 
 import firebase from 'firebase';
 import { NavigationActions } from 'react-navigation'
+import Toast from 'react-native-root-toast';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
 import CustomView from '../components/CustomView';
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
 
 
 
-
+@inject("userStore")
+@observer
 export default class ChatFalsever extends React.Component {
   constructor(props) {
     super(props);
@@ -143,6 +148,7 @@ export default class ChatFalsever extends React.Component {
   }
 
   componentDidMount() {
+    const { params } = this.props.navigation.state;
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/mesajlar/'+this.state.falsever.fireID);
     falseverref.on('child_added',function(snapshot,key){
         var mesaj=snapshot.val()
@@ -158,6 +164,34 @@ export default class ChatFalsever extends React.Component {
           };
         });
     }.bind(this))
+
+
+    if(params.first){
+      let toast = Toast.show('2 gün boyunca bu falseverle sohbet edebilirsiniz!', {
+        duration: Toast.durations.SHORT,
+        position: 70,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+      });
+      let toast2 = Toast.show('Haydi durma, mesajını aşağıya yaz!', {
+        duration: Toast.durations.LONG,
+        delay: 3000,
+        position: 0,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+      });
+    }
+    if(!params.falsever.read){
+      this.props.userStore.increaseFalseverUnread(-1)
+      var falseverbilgiref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+this.state.falsever.fireID);
+      var updates = {};
+      updates['/read'] = true;
+      falseverbilgiref.update(updates)
+    }
+
+
   }
 
 
@@ -283,36 +317,31 @@ export default class ChatFalsever extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/Aurora.jpg')}  style={styles.containerimage}>
+          <GiftedChat
+            messages={this.state.messages}
 
+            onSend={(message) => {
+              this.sendMessageToFalsever(message)
+            }}
+            locale={'tr'}
+            loadEarlier={false}
+            user={{
+              _id: Backend.getUid(),
+              name: Backend.getName(),
+              avatar:Backend.getAvatar(),
+            }}
 
-        <GiftedChat
-          messages={this.state.messages}
-
-          onSend={(message) => {
-            this.sendMessageToFalsever(message)
-          }}
-          locale={'tr'}
-          loadEarlier={false}
-          user={{
-            _id: Backend.getUid(),
-            name: Backend.getName(),
-            avatar:Backend.getAvatar(),
-          }}
-          renderActions={this.renderCustomActions}
-          renderBubble={this.renderBubble}
-          renderCustomView={this.renderCustomView}
-          renderFooter={this.renderFooter}
-          renderSend={this.renderSend}
-          renderComposer={this.renderComposer}
-          renderInputToolbar={this.renderInputToolbar}
-          >
+            renderBubble={this.renderBubble}
+            renderCustomView={this.renderCustomView}
+            renderFooter={this.renderFooter}
+            renderSend={this.renderSend}
+            renderComposer={this.renderComposer}
+            renderInputToolbar={this.renderInputToolbar}
+            >
 
           </GiftedChat>
-
-
-
-          </Image>
+        </ImageBackground>
 
     );
   }

@@ -23,6 +23,8 @@ import moment from 'moment';
 import Lightbox from 'react-native-lightbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 import { observable } from 'mobx';
@@ -119,31 +121,36 @@ export default class SocialFal extends React.Component {
  }
 
  startChat = (falsever,seviye) => {
-   var creditNeeded=seviye*10
-   if(this.props.userStore.userCredit<creditNeeded){
-     Alert.alert(
-       'Kredi Gerekli',
-       'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
-       [
-         {text: 'İstemiyorum', onPress: () => {}},
-         {text: 'Tamam', onPress: () => {
-           const { navigate } = this.props.navigation;
-           navigate( "Odeme")
-
-         }},
-       ],
-     )
+   if(falsever.dmBlocked){
+     Alert.alert(falsever.name+" özel mesaj almak istememektedir")
    }
    else {
-     const { navigate } = this.props.navigation;
+     var creditNeeded=seviye*10
      falsever.avatar=falsever.profile_pic.uri
-     navigate( "ChatFalsever",{falsever:falsever} )
-     Backend.addCredits(creditNeeded*-1)
-     this.props.userStore.increment(creditNeeded*-1)
-     var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
-      bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
-   }
+     if(this.props.userStore.userCredit<creditNeeded){
+       Alert.alert(
+         'Kredi Gerekli',
+         'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
+         [
+           {text: 'İstemiyorum', onPress: () => {}},
+           {text: 'Tamam', onPress: () => {
+             this.payChat(creditNeeded,falsever)
 
+           }},
+         ],
+       )
+     }
+     else {
+       const { navigate } = this.props.navigation;
+
+       navigate( "ChatFalsever",{falsever:falsever,first:true} )
+       Backend.addCredits(creditNeeded*-1)
+       this.props.userStore.increment(creditNeeded*-1)
+       var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+       bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+       Backend.startChat(falsever,creditNeeded)
+     }
+   }
  }
 
  updateSize = (height) => {
@@ -193,6 +200,38 @@ export default class SocialFal extends React.Component {
       // iOS only:
 
     })
+  }
+
+  payChat = (creditNeeded,falsever) => {
+    this.setState({spinnerVisible:true})
+    var products = [
+       'com.grepsi.kahvefaliios.chat50',
+    ];
+
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){this.setState({spinnerVisible:false})}
+      else{
+
+        var identifier = 'com.grepsi.kahvefaliios.chat50'
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               navigate( "ChatFalsever",{falsever:falsever,first:true} )
+               Backend.addCredits(50-creditNeeded)
+               Backend.startChat(falsever,creditNeeded)
+               this.props.userStore.increment(50-creditNeeded)
+               var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+               bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+             }
+           }
+        });
+      }
+    });
   }
 
   showProfPopup = (fireid,profPhoto) =>{
@@ -499,6 +538,10 @@ export default class SocialFal extends React.Component {
 
     renderProfInfo = () => {
       if(this.state.profinfo){
+        var infoText=""
+        this.state.profinfo.age?infoText=infoText+this.state.profinfo.age+" yaşında":null
+        this.state.profinfo.iliski?infoText=infoText+", "+this.state.profinfo.iliski:null
+        this.state.profinfo.meslek?infoText=infoText+", "+this.state.profinfo.meslek:null
         var falPuan =this.state.profinfo.falPuan
         var seviye = 1
         var limit =20
@@ -537,7 +580,7 @@ export default class SocialFal extends React.Component {
             <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
           </ImageBackground>
           <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
-          <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
+          <Text style={{alignSelf:'center'}}>{infoText}</Text>
           {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
           {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
           <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
@@ -799,9 +842,9 @@ export default class SocialFal extends React.Component {
         </ScrollView>
         <PopupDialog
 
-         dialogStyle={{marginTop:-250}}
+         dialogStyle={{marginTop:-230}}
          width={0.9}
-         height={420}
+         height={430}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>

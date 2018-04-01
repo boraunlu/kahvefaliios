@@ -6,15 +6,23 @@ import {
   Image,
   ScrollView,
   ActivityIndicator,
-  TouchableOpacity
+  TouchableOpacity,
+  ImageBackground,
+  Alert
 } from 'react-native';
 
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
+
 
 function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -24,6 +32,8 @@ function replaceGecenHafta(string) {
     return string.replace("geçen hafta ","")
 }
 
+@inject("userStore")
+@observer
 export default class Leader extends React.Component {
   constructor(props) {
     super(props);
@@ -39,7 +49,70 @@ export default class Leader extends React.Component {
       title: 'Puan Tablosu',
     };
 
+    payChat = (creditNeeded,falsever) => {
+      this.setState({spinnerVisible:true})
+      var products = [
+         'com.grepsi.kahvefaliios.chat50',
+      ];
 
+      InAppUtils.loadProducts(products, (error, products) => {
+        if(error){this.setState({spinnerVisible:false})}
+        else{
+
+          var identifier = 'com.grepsi.kahvefaliios.chat50'
+          InAppUtils.purchaseProduct(identifier, (error, response) => {
+            this.setState({spinnerVisible:false})
+             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             if(error){
+
+             }
+             else{
+               if(response && response.productIdentifier) {
+                 navigate( "ChatFalsever",{falsever:falsever,first:true} )
+                 Backend.addCredits(50-creditNeeded)
+                 this.props.userStore.increment(50-creditNeeded)
+                 Backend.startChat(falsever,creditNeeded)
+                 var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+                 bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+               }
+             }
+          });
+        }
+      });
+    }
+
+    startChat = (falsever,seviye) => {
+      if(falsever.dmBlocked){
+        Alert.alert(falsever.name+" özel mesaj almak istememektedir")
+      }
+      else {
+        var creditNeeded=seviye*10
+        falsever.avatar=falsever.profile_pic.uri
+        if(this.props.userStore.userCredit<creditNeeded){
+          Alert.alert(
+            'Kredi Gerekli',
+            'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
+            [
+              {text: 'İstemiyorum', onPress: () => {}},
+              {text: 'Tamam', onPress: () => {
+                this.payChat(creditNeeded,falsever)
+
+              }},
+            ],
+          )
+        }
+        else {
+          const { navigate } = this.props.navigation;
+
+          navigate( "ChatFalsever",{falsever:falsever,first:true} )
+          Backend.addCredits(creditNeeded*-1)
+          this.props.userStore.increment(creditNeeded*-1)
+          var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+          bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+          Backend.startChat(falsever,creditNeeded)
+        }
+      }
+    }
 
 
 
@@ -112,15 +185,15 @@ export default class Leader extends React.Component {
       }
       return(
       <View>
-        <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
-          <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
-
+        <ImageBackground style={{backgroundColor:'transparent',alignSelf:'center',height:94,width:94,paddingTop:7}} source={require('../static/images/cerceve.png')}>
+          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
+        </ImageBackground>
+        <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
         <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
         {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
         {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
         <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
           <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-
         </View>
         <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
           <View style={{justifyContent:'center'}}>
@@ -129,11 +202,17 @@ export default class Leader extends React.Component {
               <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
               </View>
             </View>
-
           </View>
           <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
         </View>
         {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
+        <TouchableOpacity style={{height:30,borderRadius:4,width:'60%',backgroundColor:'teal',flexDirection:'row',alignSelf:'center',marginTop:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+            <Icon name="paper-plane" color={'white'} size={18} />
+          <Text style={{color:'white',fontSize:16,fontWeight:'bold'}}> Özel Mesaj</Text>
+
+          <Text style={{color:'white',fontSize:12}}>{"     "+seviye*10}</Text>
+          <Image source={require('../static/images/coins.png')} style={{width:12, height: 12,marginLeft:3}}/>
+        </TouchableOpacity>
       </View>
 
     )
@@ -420,21 +499,21 @@ export default class Leader extends React.Component {
        </ScrollView>
      </ScrollableTabView>
 
-        <PopupDialog
+     <PopupDialog
 
-         dialogStyle={{marginTop:-200}}
-         width={0.9}
-         height={380}
-         ref={(popupDialog) => { this.popupDialog = popupDialog; }}
-         >
-           <View style={{flex:1}}>
-             <View style={{padding:10,paddingTop:15}}>
-              {this.renderProfInfo()}
+      dialogStyle={{marginTop:-230}}
+      width={0.9}
+      height={430}
+      ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+      >
+        <View style={{flex:1}}>
+          <ScrollView style={{padding:10,paddingTop:15}}>
+           {this.renderProfInfo()}
 
 
-             </View>
-           </View>
-         </PopupDialog>
+          </ScrollView>
+        </View>
+      </PopupDialog>
       </Image>
 
     );

@@ -715,7 +715,7 @@ loadMessages = (callback) => {
 
 
             bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:message[i].text})
-            tobilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:message[i].user.name,avatar:message[i].user.avatar,text:message[i].text})
+            tobilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:false,name:message[i].user.name,avatar:message[i].user.avatar,text:message[i].text})
             mesajlarref.push({
               type: "text",
               text: message[i].text,
@@ -1032,7 +1032,7 @@ loadMessages = (callback) => {
   }
 
   postSosyal = (question,images,anonim,poll1,poll2) => {
-    fetch('https://eventfluxbot.herokuapp.com/webhook/postSosyal', {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/postSosyal', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -1060,6 +1060,34 @@ loadMessages = (callback) => {
       body: JSON.stringify({
         bio:bio,
         uid:this.getUid()
+      })
+    })
+  }
+  changeDmStatus = (status) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/changeDm', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: this.getUid(),
+        status:status
+      })
+    })
+  }
+
+  startChat = (falsever,credit) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/startChat', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: this.getUid(),
+        falsever:falsever.fireID,
+        credit:credit
       })
     })
   }

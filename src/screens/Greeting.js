@@ -72,6 +72,7 @@ function generateRandom(uzunluk, mevcut,gender,falType) {
     return (num === mevcut ) ? generateRandom(uzunluk, mevcut,gender,falType) : num;
 }
 
+@inject("socialStore")
 @inject("userStore")
 @observer
 export default class Greeting extends React.Component {
@@ -100,7 +101,7 @@ static navigationOptions = ({ navigation }) => ({
      tabBarIcon: ({ tintColor }) => (
        <Icon name="home" color={tintColor} size={25} />
        ),
-  
+
   })
 
 
@@ -418,17 +419,7 @@ static navigationOptions = ({ navigation }) => ({
 
     if(prevState.userData==null&&this.state.userData!==null){
       this.fadeButtons();
-
-
     }
-    if(this.props.navigation.state.params.crredit){
-      if(this.props.navigation.state.params.crredit!==this.props.userStore.userCredit){
-        this.props.navigation.setParams({ crredit: this.props.userStore.userCredit })
-      }
-    }
-
-    //alert(this.props.userStore.userCredit)
-
   }
 
   componentDidMount() {
@@ -453,6 +444,7 @@ static navigationOptions = ({ navigation }) => ({
          //alert(JSON.stringify(responseJson))
          this.props.userStore.setUser(responseJson)
          this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
+         //this.props.socialStore.setTek(responseJson.lastSosyal)
 
      })
 

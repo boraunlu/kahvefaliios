@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ActivityIndicator, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
+import {ActivityIndicator,Switch, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ProgressBar from 'react-native-progress/Bar';
 import Picker from 'react-native-picker';
@@ -24,6 +24,10 @@ export default class UserData extends Component {
 
   componentDidUpdate = () => {
 
+  }
+
+  changeDmStatus(){
+    this.props.userStore.changeDmStatus()
   }
 
   renderUserData(){
@@ -63,22 +67,23 @@ export default class UserData extends Component {
 
       return (
         <View >
-        <TouchableOpacity  onPress={() => {this.props.setDestination('FalPuan')}}>
-          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
-            <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-            <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
-          </View>
-          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
-            <View style={{justifyContent:'center'}}>
-              <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-              <ProgressBar borderColor={kolor} color={kolor} height={16} borderRadius={8} progress={gosterilenpuan/limit} width={200} />
+          <TouchableOpacity  onPress={() => {this.props.setDestination('FalPuan')}}>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
+              <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
+              <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
             </View>
-            <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+              <View style={{justifyContent:'center'}}>
+                <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+                <ProgressBar borderColor={kolor} color={kolor} height={16} borderRadius={8} progress={gosterilenpuan/limit} width={200} />
+              </View>
+              <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+            </View>
+          </TouchableOpacity>
+          <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center'}}>
+           <Text style={{fontSize:14}}>Özel mesaj almak istemiyorum</Text>
+           <Switch value={this.props.userStore.dmBlocked} onValueChange={()=>{this.changeDmStatus()}}/>
           </View>
-        </TouchableOpacity>
-
-
-
         </View>
       );
     } else {
