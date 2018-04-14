@@ -210,15 +210,15 @@ export default class Mesajlar extends React.Component {
   }
 
   componentDidUpdate(prevProps,prevState) {
-      
 
+    /*
     if(this.props.userStore.isAgent==true&&this.state.agentCheck==false){
       this.setState({agentCheck:true})
       this.trackTickets();
       if(this.props.userStore.hasTicket){
 
       }
-    }
+    }*/
   }
 
   componentWillMount() {

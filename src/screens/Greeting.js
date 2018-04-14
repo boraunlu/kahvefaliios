@@ -576,26 +576,6 @@ componentWillUnmount() {
         <Animated.View style={{opacity:this.state.buttonOpacity}}>
 
         <View style={{}}>
-          <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainersosyal} onPress={() => {this.startAgent()}}>
-              <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimagesosyal}>
-
-                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>
-
-                  <Text style={styles.faltypeyazi}>
-                    Sik Falı
-                  </Text>
-                  <Text style={styles.faltypeyazikucuk}>
-                    Diğer falseverle buluşma yeriniz!
-                  </Text>
-                </View>
-                <View style={{position:'absolute',right:10,top:13,backgroundColor:'transparent'}}>
-                  <Icon name="chevron-right" color={"white"} size={50} />
-                </View>
-              </ImageBackground>
-            </TouchableOpacity>
-
-          </View>
         <View style={{flexDirection:'row'}}>
           <TouchableOpacity style={styles.faltypecontainersosyal} onPress={() => {this.props.navigation.navigate('Social')}}>
             <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimagesosyal}>
