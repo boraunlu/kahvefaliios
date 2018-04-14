@@ -355,6 +355,27 @@ static navigationOptions = ({ navigation }) => ({
 
   }
 
+  startAgent = () => {
+    var user = firebase.auth().currentUser;
+    var pushRef = firebase.database().ref('tickets');
+    var ticket={
+      fireID: user.uid,
+      text: "Yeni Fal",
+      status:0,
+      senderName:user.displayName,
+      senderPhoto:user.photoURL,
+      createdAt: firebase.database.ServerValue.TIMESTAMP,
+    }
+    pushRef.push(ticket).then(function(value){
+      var ticketKey = /[^/]*$/.exec(value)[0];
+      ticket.key=ticketKey
+      //Backend.createTicket(ticket);
+      this.props.navigation.navigate('Countdown',{ticket:ticket})
+    }.bind(this))
+    //Backend.createTicket();
+    //this.props.navigation.navigate('ChatAgent')
+  }
+
 
   fadeButtons = () => {
     this.state.buttonOpacity.setValue(0)
@@ -556,6 +577,46 @@ componentWillUnmount() {
 
         <View style={{}}>
           <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainersosyal} onPress={() => {this.startAgent()}}>
+              <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimagesosyal}>
+
+                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    Sik Falı
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Diğer falseverle buluşma yeriniz!
+                  </Text>
+                </View>
+                <View style={{position:'absolute',right:10,top:13,backgroundColor:'transparent'}}>
+                  <Icon name="chevron-right" color={"white"} size={50} />
+                </View>
+              </ImageBackground>
+            </TouchableOpacity>
+
+          </View>
+        <View style={{flexDirection:'row'}}>
+          <TouchableOpacity style={styles.faltypecontainersosyal} onPress={() => {this.props.navigation.navigate('Social')}}>
+            <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimagesosyal}>
+
+              <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>
+
+                <Text style={styles.faltypeyazi}>
+                  Sosyal Fal
+                </Text>
+                <Text style={styles.faltypeyazikucuk}>
+                  Diğer falseverle buluşma yeriniz!
+                </Text>
+              </View>
+              <View style={{position:'absolute',right:10,top:13,backgroundColor:'transparent'}}>
+                <Icon name="chevron-right" color={"white"} size={50} />
+              </View>
+            </ImageBackground>
+          </TouchableOpacity>
+
+        </View>
+          <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.startgunluk1()}}>
               <ImageBackground source={require('../static/images/gunluk.jpg')} style={styles.faltypeimage}>
 
@@ -641,26 +702,7 @@ componentWillUnmount() {
               </ImageBackground>
             </TouchableOpacity>
           </View>
-          <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.props.navigation.navigate('Social')}}>
-              <ImageBackground source={require('../static/images/karilar.png')} style={styles.faltypeimage}>
 
-                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,128,128, 0.8)'}}>
-
-                  <Text style={styles.faltypeyazi}>
-                    Sosyal Fal
-                  </Text>
-                  <Text style={styles.faltypeyazikucuk}>
-                    Diğer falseverle buluşma yeriniz!
-                  </Text>
-                </View>
-                <View style={{position:'absolute',right:10,top:25,backgroundColor:'transparent'}}>
-                  <Icon name="chevron-right" color={"white"} size={50} />
-                </View>
-              </ImageBackground>
-            </TouchableOpacity>
-
-          </View>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupHand.show()}}>
               <ImageBackground source={require('../static/images/elfali.jpg')} style={styles.faltypeimage}>
@@ -710,6 +752,7 @@ componentWillUnmount() {
         <ScrollView style={{flex:1,padding:0}}>
 
           <View style={{borderBottomWidth:0,borderColor:'#1194F7',marginBottom:20}}>
+
             <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:5,alignSelf:'stretch'}}>
               <View>
                 <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
@@ -955,11 +998,28 @@ const styles = StyleSheet.create({
     marginRight:10,
     borderBottomWidth:1
   },
+  faltypecontainersosyal:{
+    flex:1,
+    height:75,
+    borderWidth:1,
+    borderColor:'white',
+    marginLeft:10,
+    marginTop:10,
+    marginRight:10,
+    borderBottomWidth:1
+  },
   faltypeimage:{
     alignItems:'center',
     alignSelf: 'stretch',
     width: null,
     height:98,
+    flexDirection:'column-reverse'
+  },
+  faltypeimagesosyal:{
+    alignItems:'center',
+    alignSelf: 'stretch',
+    width: null,
+    height:73,
     flexDirection:'column-reverse'
   },
   button1:{

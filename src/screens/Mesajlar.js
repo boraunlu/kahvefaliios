@@ -21,6 +21,8 @@ import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+import { NativeModules } from 'react-native'
+const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
@@ -82,6 +84,39 @@ export default class Mesajlar extends React.Component {
         })
 
     }
+
+    payChat = (creditNeeded,falsever) => {
+      this.setState({spinnerVisible:true})
+      var products = [
+         'com.grepsi.kahvefaliios.chat50',
+      ];
+
+      InAppUtils.loadProducts(products, (error, products) => {
+        if(error){this.setState({spinnerVisible:false})}
+        else{
+
+          var identifier = 'com.grepsi.kahvefaliios.chat50'
+          InAppUtils.purchaseProduct(identifier, (error, response) => {
+            this.setState({spinnerVisible:false})
+             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             if(error){
+
+             }
+             else{
+               if(response && response.productIdentifier) {
+                 navigate( "ChatFalsever",{falsever:falsever,first:true} )
+                 Backend.addCredits(50-creditNeeded)
+                 Backend.startChat(falsever,creditNeeded)
+                 this.props.userStore.increment(50-creditNeeded)
+                 var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+                 bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+               }
+             }
+          });
+        }
+      });
+    }
+
     delete = (falciNo,index) => {
 
       Alert.alert(
@@ -160,8 +195,10 @@ export default class Mesajlar extends React.Component {
             data[key].fireID = key;
             output.push(data[key]);
             if(data[key].read==false){
-
-                  this.props.userStore.increaseFalseverUnread(1)
+              this.props.userStore.increaseFalseverUnread(1)
+            }
+            if(moment().diff(data[key].createdAt,'days')>2){
+              data[key].timePassed=true
             }
 
         }
@@ -173,23 +210,22 @@ export default class Mesajlar extends React.Component {
   }
 
   componentDidUpdate(prevProps,prevState) {
-        //alert(prevProps.userStore.isAgent)
-        /*
+      
+
     if(this.props.userStore.isAgent==true&&this.state.agentCheck==false){
       this.setState({agentCheck:true})
       this.trackTickets();
       if(this.props.userStore.hasTicket){
 
       }
-    }*/
+    }
   }
 
   componentWillMount() {
-//alert(this.props.userStore.isAgent)
 
   }
 
-  /*
+
   trackTickets = () => {
     var ticketref= firebase.database().ref('tickets');
     ticketref.orderByChild("status").equalTo(0).on('value',function(snapshot){
@@ -224,8 +260,40 @@ export default class Mesajlar extends React.Component {
       }
 
     }.bind(this))
-  }*/
+  }
 
+  goToFalsever = (message) => {
+    if(message.timePassed){
+      Alert.alert(
+        "Konuşma Süresi Doldu",
+        "Bu falsever ile konuşman süreniz sona ermiştir. 20 Kredi kullanarak konuşmaya devam edebilirsiniz.",
+        [
+          {text: 'İstemiyorum', onPress: () => {}},
+          {text: 'Tamam', onPress: () => {
+            if(this.props.userStore.userCredit<20){
+              this.payChat(20,message)
+            }
+            else {
+              const { navigate } = this.props.navigation;
+
+              navigate( "ChatFalsever",{falsever:message,first:true} )
+              Backend.addCredits(-20)
+              this.props.userStore.increment(-20)
+              var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+message.fireID);
+              bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:message.name,avatar:message.avatar,text:" "})
+              Backend.startChat(message,20)
+            }
+
+          }},
+        ],
+      )
+
+    }
+    else {
+        this.props.navigation.navigate('ChatFalsever',{falsever:message})
+    }
+
+  }
   renderAktif = () => {
     if(this.state.aktifChat==null){
       return null
@@ -292,6 +360,9 @@ export default class Mesajlar extends React.Component {
                    {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
                   </Text>
                 </View>
+
+
+
                 <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
                 </TouchableOpacity>
@@ -327,7 +398,7 @@ export default class Mesajlar extends React.Component {
         {
          messages.map(function (message,index) {
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.props.navigation.navigate('ChatFalsever',{falsever:message})}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.goToFalsever(message)}}>
               <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <Image source={{uri:message.avatar}} style={styles.falciAvatar}></Image>
 
@@ -340,6 +411,8 @@ export default class Mesajlar extends React.Component {
                   </Text>
 
                 </View>
+                {message.timePassed?       <View style={{alignSelf:'center',marginRight:10}}><Icon name="exclamation-circle" color={'red'} size={26} /></View>:null}
+
                   {message.read ? null:   <View style={{marginTop:17,marginRight:15,height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
                 <TouchableOpacity onPress={() => {this.deleteFalsever(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
@@ -367,21 +440,21 @@ export default class Mesajlar extends React.Component {
         if(this.state.activeTicket){
           return(
             <View>
-            <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
-            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',this.state.activeTicket)}}>
-             <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+              <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
+              <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',this.state.activeTicket)}}>
+               <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
 
 
-               <View style={{padding:10,flex:2}}>
-                 <Text style={{fontWeight:'bold',fontSize:16}}>
-                  Bu senin
-                  </Text>
+                 <View style={{padding:10,flex:2}}>
+                   <Text style={{fontWeight:'bold',fontSize:16}}>
+                    Bu senin
+                    </Text>
+
+                 </View>
 
                </View>
 
-             </View>
-
-            </TouchableOpacity>
+              </TouchableOpacity>
             </View>
           )
         }
@@ -498,6 +571,7 @@ export default class Mesajlar extends React.Component {
     return (
       <Image source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
+          {this.renderAgent()}
           {this.renderFalsevers()}
           {this.renderAktif()}
           {this.renderBizden()}

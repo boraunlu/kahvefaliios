@@ -628,9 +628,8 @@ export default class SocialFal extends React.Component {
              {sosyal.question}
             </Text>
             <Text style={{fontWeight:'normal',fontSize:14}}>
-              {sosyal.name} - <Text style={{color:'gray'}}>
                {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-              </Text>
+          
              </Text>
 
          </View>

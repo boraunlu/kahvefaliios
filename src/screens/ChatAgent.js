@@ -16,6 +16,7 @@ import {
   Alert,
   Easing,
   ActivityIndicator,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 
@@ -28,9 +29,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
 import firebase from 'firebase';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
-
-
+@inject("userStore")
+@observer
 export default class ChatAgent extends React.Component {
   constructor(props) {
     super(props);
@@ -43,13 +46,14 @@ export default class ChatAgent extends React.Component {
       modalVisible: false,
       modalElements:[],
       initialLoaded:false,
-      loadingVisible:false,
+      loadingVisible:true,
       quick_reply: null,
       buttons: null,
       ticket:null,
       inputVisible:true,
       falSender:null,
       resolved:false,
+      falsever:null,
 
     };
 
@@ -69,8 +73,7 @@ export default class ChatAgent extends React.Component {
   }
   static navigationOptions = ({ navigation }) => ({
     headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#1194F7'} size={25} onPress={() => {navigation.state.params.navBack()}} />  ,
-    headerTitle:"Fal Cevapla",
-    headerRight:<Text onPress={() => {navigation.state.params.resolveTicket()}} >Gönder</Text>  ,
+    headerTitle:<Text>flasever</Text>,
 
   })
 
@@ -147,6 +150,13 @@ export default class ChatAgent extends React.Component {
 
   }
 
+  sendMessageToFalsever = (messages) => {
+
+    Backend.sendMessageToFalsever(messages,this.state.falsever)
+
+  }
+
+
   navBack = () => {
     const {goBack} = this.props.navigation;
     if(this.state.resolved){
@@ -173,29 +183,69 @@ export default class ChatAgent extends React.Component {
   componentDidMount() {
     this.props.navigation.setParams({navBack: this.navBack,resolveTicket:this.resolveTicket  })
     const { params } = this.props.navigation.state;
-
     var ticketref= firebase.database().ref('tickets/'+params.ticket.key);
-    ticketref.update({status:1,agentID:Backend.getUid()})
-    fetch('https://eventfluxbot.herokuapp.com/appapi/getFortuneSender', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: params.ticket.fireID,
-        agentID: Backend.getUid(),
-        ticketKey:params.ticket.key
-      })
-    })
-    .then((response) => response.json())
-     .then((responseJson) => {
+    if(params.ticket.status==1){
+      this.setState({loadingVisible:false})
+    }
+    else {
+      if(this.props.userStore.isAgent&&Backend.getUid()==!params.ticket.fireID){
 
-        this.setState({falSender:responseJson});
-         //alert(JSON.stringify(responseJson))
+        var user = firebase.auth().currentUser;
+        ticketref.update({status:1,agentID:Backend.getUid(),agentName:user.displayName,agentPhoto:user.photoURL})
+        fetch('https://eventfluxbot.herokuapp.com/appapi/getFortuneSender', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            uid: params.ticket.fireID,
+            agentID: Backend.getUid(),
+
+            ticketKey:params.ticket.key
+          })
+        })
+        .then((response) => response.json())
+         .then((responseJson) => {
+
+            this.setState({falSender:responseJson});
+             //alert(JSON.stringify(responseJson))
 
 
-     })
+         })
+       }
+       else {
+         ticketref.on('child_changed', function(childSnapshot, prevChildKey) {
+           var child=childSnapshot.val()
+           if(child.status=1){
+             var agent={}
+             agent.name=child.agentName;
+             agent.avatar=child.agentPhoto;
+             agent.fireID=child.agentID;
+             this.setState({loadingVisible:false,falsever:agent})
+           }
+         });
+       }
+    }
+
+
+    /*
+     this.props.navigation.setParams({ showpopup: this.showpopup  })
+     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/mesajlar/'+this.state.falsever.fireID);
+     falseverref.on('child_added',function(snapshot,key){
+         var mesaj=snapshot.val()
+         if(key){
+             mesaj._id=key
+         }
+         else {
+           mesaj._id="asdf"
+         }
+         this.setState((previousState) => {
+           return {
+             messages: GiftedChat.append(previousState.messages, mesaj),
+           };
+         });
+      }.bind(this))*/
      //this.props.userStore.setTicket(params.ticket.key)
   }
 
@@ -404,13 +454,31 @@ export default class ChatAgent extends React.Component {
     return (
 
         <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
-
+          <Modal
+            animationType={"none"}
+            transparent={false}
+            visible={this.state.loadingVisible}
+            onRequestClose={() => {}}
+            >
+            <Image source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null, resizeMode:'stretch',justifyContent:'center' }}>
+               <View style={{ height: 100,backgroundColor:'white',justifyContent:'center' }}>
+                <Text style={{textAlign:'center'}}>
+                  Uygun falcı aranıyor...
+                  </Text>
+                 <ActivityIndicator
+                   animating={true}
+                   style={[styles.centering, {height: 80}]}
+                   size="large"
+                 />
+               </View>
+             </Image>
+          </Modal>
 
           <GiftedChat
             messages={this.state.messages}
 
             onSend={(message) => {
-              this.onSend(message)
+              this.sendMessageToFalsever(message)
             }}
             loadEarlier={false}
             user={{

@@ -1091,6 +1091,19 @@ loadMessages = (callback) => {
       })
     })
   }
+
+  createTicket = () => {
+    fetch('https://eventfluxbot.herokuapp.com/webhook/createTicket', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: this.getUid(),
+      })
+    })
+  }
 }
 
 export default new Backend();

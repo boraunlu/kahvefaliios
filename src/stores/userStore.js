@@ -222,7 +222,6 @@ export default class UserStore {
     }
     if(user.isAgent){
       this.isAgent = user.isAgent
-
     }
   }
 

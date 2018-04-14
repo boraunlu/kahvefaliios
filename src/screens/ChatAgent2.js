@@ -50,7 +50,7 @@ function replaceGecenHafta(string) {
 
 @inject("userStore")
 @observer
-export default class ChatFalsever extends React.Component {
+export default class ChatAgent2 extends React.Component {
   constructor(props) {
     super(props);
 
