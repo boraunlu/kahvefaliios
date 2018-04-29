@@ -7,13 +7,14 @@ import {
   View,
   Image,
   ScrollView,
+  ImageBackground,
   Button,
   ActivityIndicator,
   TextInput,
   Alert,
   Switch
 } from 'react-native';
-
+import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import NotificationIcon from '../components/NotificationIcon';
@@ -569,16 +570,16 @@ export default class Mesajlar extends React.Component {
 
 
     return (
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1}}>
-          {this.renderAgent()}
+
           {this.renderFalsevers()}
           {this.renderAktif()}
           {this.renderBizden()}
           <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
           {this.renderBody()}
         </ScrollView>
-      </Image>
+      </ImageBackground>
     );
   }
 }

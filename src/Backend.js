@@ -579,7 +579,6 @@ loadMessages = (callback) => {
               type:"text"
             })
           })
-          .then(function(response){});
         }
         lastmessagetext=message[0].text
       }
@@ -743,7 +742,7 @@ loadMessages = (callback) => {
               type:"text"
             })
           })
-          .then(function(response){});
+
         }
         lastmessagetext=message[0].text
       }

@@ -3,10 +3,11 @@ package com.kahvefaliios;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.reactlibrary.googlesignin.RNGoogleSignInPackage;
+import org.reactnative.camera.RNCameraPackage;
 import fr.bamlab.rnimageresizer.ImageResizerPackage;
 import com.evollu.react.fcm.FIRMessagingPackage;
 import com.sbugert.rnadmob.RNAdMobPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.beefe.picker.PickerViewPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.bugsnag.BugsnagReactNative;
@@ -42,10 +43,11 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new RNGoogleSignInPackage(),
+            new RNCameraPackage(),
             new ImageResizerPackage(),
             new FIRMessagingPackage(),
             new RNAdMobPackage(),
-            new RNGoogleSigninPackage(),
             new PickerViewPackage(),
             new VectorIconsPackage(),
             BugsnagReactNative.getPackage(),
@@ -56,6 +58,11 @@ public class MainApplication extends Application implements ReactApplication {
             new RCTCameraPackage(),
             new FBSDKPackage()
       );
+    }
+
+    @Override
+    protected String getJSMainModuleName() {
+      return "index";
     }
   };
 

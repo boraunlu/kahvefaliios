@@ -10,6 +10,7 @@ import {
 import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from './CameraPick';
 import Camera from 'react-native-camera';
+import PropTypes from 'prop-types';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -207,23 +208,5 @@ const styles = StyleSheet.create({
 });
 
 CustomActions.contextTypes = {
-  actionSheet: React.PropTypes.func,
-};
-
-CustomActions.defaultProps = {
-  onSend: () => {},
-  options: {},
-  icon: null,
-  containerStyle: {},
-  wrapperStyle: {},
-  iconTextStyle: {},
-};
-
-CustomActions.propTypes = {
-  onSend: React.PropTypes.func,
-  options: React.PropTypes.object,
-  icon: React.PropTypes.func,
-  containerStyle: View.propTypes.style,
-  wrapperStyle: View.propTypes.style,
-  iconTextStyle: Text.propTypes.style,
+  actionSheet: PropTypes.func,
 };

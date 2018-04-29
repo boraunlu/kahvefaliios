@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Modal, Button,ScrollView, Image,Dimensions, Text,TouchableHighlight, TouchableOpacity, View , StyleSheet} from 'react-native';
-
+import PropTypes from 'prop-types';
 
 class Element extends Component {
 

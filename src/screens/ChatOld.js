@@ -17,14 +17,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Sound from 'react-native-sound'
-import Toast from 'react-native-root-toast';
+//import Toast from 'react-native-root-toast';
 
-
+import PropTypes from 'prop-types';
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-import CustomView from '../components/CustomView';
+
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
@@ -407,7 +407,7 @@ export default class ChatOld extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/splash4.png')}  style={styles.containerimage}>
 
 
           <GiftedChat
@@ -435,7 +435,7 @@ export default class ChatOld extends React.Component {
 
             </GiftedChat>
 
-          </Image>
+          </ImageBackground>
 
     );
   }

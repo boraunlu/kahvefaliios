@@ -16,20 +16,18 @@ import {
   Button,
   Easing,
   Alert,
-  Keyboard
+  Keyboard,
+  ImageBackground
 } from 'react-native';
-
-
-import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
+import axios from 'axios';
+import PropTypes from 'prop-types';
+//import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Spinner from 'react-native-loading-spinner-overlay';
 
 import Video from 'react-native-video'
 //import Picker from 'react-native-picker'
-import { Form,
-  Separator,InputField, LinkField,
-  SwitchField, PickerField,DatePickerField,TimePickerField
-} from 'react-native-form-generator';
+
 
 
 const FBSDK = require('react-native-fbsdk');
@@ -89,6 +87,7 @@ export default class Login extends React.Component {
     };
 
   gugilsignin = () => {
+    /*
     GoogleSignin.signIn()
     .then((user) => {
 
@@ -105,7 +104,7 @@ export default class Login extends React.Component {
     .catch((err) => {
       console.log('WRONG SIGNIN', err);
     })
-    .done();
+    .done();*/
   }
     handleFormChange = (formData) => {
       /*
@@ -160,19 +159,14 @@ _keyboardDidShow = (event) => {
                       }
                     }
                   }
-                  fetch('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
-                    method: 'POST',
-                    headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                      uid: user.uid,
-                      token: token
-                    })
+
+                  axios.post('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
+                    uid: user.uid,
+                    token: token
                   })
-                  .then((response) => response.json())
-                  .then((responseJson) => {
+                  .then( (response) => {
+                    var responseJson=response.data
+
                     this.setState({spinnerVisible:false})
                     this._navigateTo('Greeting')
                     if(responseJson.cevap=="ilk"){
@@ -180,6 +174,11 @@ _keyboardDidShow = (event) => {
 
                     }
                   })
+                  .catch(function (error) {
+
+                  });
+
+
 
                 }.bind(this))
                 .catch(function(error) {
@@ -270,19 +269,19 @@ _keyboardDidShow = (event) => {
             displayName: this.state.name,
 
           }).then(function() {
-            fetch('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
-              method: 'POST',
-              headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                uid: user.uid,
-                name: this.state.name,
-                gender:this.state.gender
-              })
+
+            axios.post('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
+              uid: user.uid,
+              name: this.state.name,
+              gender:this.state.gender
             })
-            .then((response) => this._navigateTo('Greeting'))
+            .then( (response) => {
+              this._navigateTo('Greeting')
+            })
+            .catch(function (error) {
+
+            });
+            
           }.bind(this), function(error) {
           // An error happened.
           });
@@ -306,7 +305,7 @@ _keyboardDidShow = (event) => {
     }
 
   componentDidMount() {
-    GoogleSignin.configure({ iosClientId: '658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc.apps.googleusercontent.com' })
+    //GoogleSignin.configure({ iosClientId: '658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc.apps.googleusercontent.com' })
       this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
   }
 

@@ -3,6 +3,7 @@ import {ActivityIndicator, Dimensions, Image,Text,TextInput,TouchableHighlight,B
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Picker from 'react-native-picker';
 import * as Animatable from 'react-native-animatable';
+import PropTypes from 'prop-types';
 
 
 
@@ -44,6 +45,7 @@ export default class ProfilePicker extends Component {
        },
 
    });
+    Picker.show()
   }
 
   initiliskiPicker = () => {
@@ -61,6 +63,7 @@ export default class ProfilePicker extends Component {
        },
 
    });
+    Picker.show()
   }
 
   initAgePicker = () => {
@@ -82,6 +85,7 @@ export default class ProfilePicker extends Component {
        },
 
    });
+    Picker.show()
   }
 
 
@@ -139,7 +143,7 @@ var styles = StyleSheet.create({
 
   },
   picker:{
-    flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
+    flexDirection:'row',justifyContent:'space-between',padding:5,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
   },
   nameinput:{
     fontSize:14,fontWeight:'bold',backgroundColor:'transparent',color:'dimgray',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30

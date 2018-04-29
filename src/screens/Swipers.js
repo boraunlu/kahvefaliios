@@ -7,12 +7,13 @@ import {
   Image,
   ScrollView,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
+  ImageBackground
 } from 'react-native';
 
 
 import { NavigationActions } from 'react-navigation'
-
+import PropTypes from 'prop-types';
 import Swiper from 'react-native-swiper';
 
 export default class Swipers extends React.Component {
@@ -51,16 +52,16 @@ static navigationOptions = {
     return (
       <Swiper style={styles.wrapper} loop={false} ref="sliderX" showsButtons={true} >
          <View style={styles.slide1}>
-           <Image source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableOpacity></Image>
+           <ImageBackground source={require('../static/images/swipe1.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1);}}><View></View></TouchableOpacity></ImageBackground>
          </View>
          <View style={styles.slide2}>
-           <Image source={require('../static/images/swipe2.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></Image>
+           <ImageBackground source={require('../static/images/swipe2.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></ImageBackground>
          </View>
          <View style={styles.slide2}>
-           <Image source={require('../static/images/swipe3.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></Image>
+           <ImageBackground source={require('../static/images/swipe3.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this.refs.sliderX.scrollBy(1)}}><View></View></TouchableOpacity></ImageBackground>
          </View>
          <View style={styles.slide3}>
-           <Image source={require('../static/images/swipe4.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this._navigateTo('Login');}}><View></View></TouchableOpacity></Image>
+           <ImageBackground source={require('../static/images/swipe4.png')} resizeMode={'cover'} style={styles.covers}><TouchableOpacity style={{flex:1}} onPress={() => {this._navigateTo('Login');}}><View></View></TouchableOpacity></ImageBackground>
          </View>
        </Swiper>
     );

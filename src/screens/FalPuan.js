@@ -10,7 +10,7 @@ import {
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
-
+import PropTypes from 'prop-types';
 
 export default class FalPuan extends React.Component {
   constructor(props) {
@@ -46,7 +46,7 @@ export default class FalPuan extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView>
           <Image style={{alignSelf:'center',height:60,width:60, borderRadius:30,marginTop:20,marginBottom:20}} source={require('../static/images/anneLogo3.png')}></Image>
           <View style={{borderRadius:10,flex:1,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10}}>
@@ -100,7 +100,7 @@ export default class FalPuan extends React.Component {
             </View>
           </View>
         </ScrollView>
-      </Image>
+      </ImageBackground>
 
     );
   }

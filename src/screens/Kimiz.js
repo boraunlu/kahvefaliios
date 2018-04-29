@@ -5,12 +5,13 @@ import {
   View,
   Image,
   ScrollView,
+  ImageBackground,
 } from 'react-native';
 
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
-
+import PropTypes from 'prop-types';
 
 export default class Kimiz extends React.Component {
   constructor(props) {
@@ -46,7 +47,7 @@ export default class Kimiz extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView>
           <Image style={{alignSelf:'center',height:80,width:80, borderRadius:40,marginTop:30,marginBottom:30}} source={require('../static/images/anneLogo3.png')}></Image>
           <View style={{borderRadius:10,backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10}}>
@@ -60,7 +61,7 @@ export default class Kimiz extends React.Component {
 
           </View>
         </ScrollView>
-      </Image>
+      </ImageBackground>
 
     );
   }

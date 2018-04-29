@@ -18,8 +18,9 @@ import {
 } from 'react-native';
 
 
-
+import PropTypes from 'prop-types';
 import firebase from 'firebase';
+import axios from 'axios';
 import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -33,7 +34,7 @@ import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
 import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
-import Marquee from '@remobile/react-native-marquee';
+//import Marquee from '@remobile/react-native-marquee';
 
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
@@ -448,26 +449,21 @@ static navigationOptions = ({ navigation }) => ({
     this.generatefalcisayisi()
 
     FCM.setBadgeNumber(0);
-    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+      uid: Backend.getUid(),
     })
-    .then((response) => response.json())
-     .then((responseJson) => {
+    .then( (response) => {
+      var responseJson=response.data
+      
+      this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit,marquee:"       Canlı falcı sayısı: "+this.generatefalcisayisi()+"     ||     "+responseJson.marquee});
+       //alert(JSON.stringify(responseJson))
+       this.props.userStore.setUser(responseJson)
+       this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
+    })
+    .catch(function (error) {
 
-        this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit,marquee:"       Canlı falcı sayısı: "+this.generatefalcisayisi()+"     ||     "+responseJson.marquee});
-         //alert(JSON.stringify(responseJson))
-         this.props.userStore.setUser(responseJson)
-         this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
-         //this.props.socialStore.setTek(responseJson.lastSosyal)
-
-     })
+    });
 
 
      Backend.lastMessageUpdate((message) => {
@@ -554,12 +550,12 @@ componentWillUnmount() {
             </View>
           )
         }
-        else{
+        else{/*
           return (  <View style={styles.marqueeContainer}>
           <Marquee speed={15} style={styles.marquee}>
                   {this.state.marquee}
               </Marquee>
-              </View>)
+              </View>)*/
         }
 
       }
@@ -725,7 +721,7 @@ componentWillUnmount() {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.containerasd}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.containerasd}>
 
         <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
 
@@ -761,10 +757,10 @@ componentWillUnmount() {
           ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
           dialogStyle={{marginTop:-150}}
           overlayOpacity={0.75}
-          width={'80%'}
-          height={'65%'}
+          width={0.8}
+          height={0.7}
         >
-          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
+          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
             {this.state.userData ? this.state.userData.appGunlukUsed ?
                 (<View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -801,17 +797,17 @@ componentWillUnmount() {
                 </View>
               </View>
             </View>
-          </Image>
+          </ImageBackground>
         </PopupDialog>
         <PopupDialog
 
           ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
           dialogStyle={{marginTop:-150}}
           overlayOpacity={0.75}
-          width={'80%'}
-          height={'70%'}
+          width={0.8}
+          height={0.7}
         >
-          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
+          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
               <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                 <Text style={[styles.label]}>
@@ -843,16 +839,16 @@ componentWillUnmount() {
                 </View>
               </View>
             </View>
-          </Image>
+          </ImageBackground>
         </PopupDialog>
         <PopupDialog
           ref={(popupDialog) => { this.popupDetay = popupDialog; }}
           dialogStyle={{marginTop:-150}}
-          width={'80%'}
-          height={'70%'}
+          width={0.8}
+          height={0.7}
           overlayOpacity={0.75}
         >
-          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
+          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
             <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
               <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                 <Text style={[styles.label]}>
@@ -882,17 +878,17 @@ componentWillUnmount() {
                 </View>
               </View>
             </View>
-          </Image>
+          </ImageBackground>
         </PopupDialog>
         <PopupDialog
 
           ref={(popupDialog) => { this.popupHand = popupDialog; }}
           dialogStyle={{marginTop:-150}}
-          width={'80%'}
-          height={'70%'}
+          width={0.8}
+          height={0.7}
           overlayOpacity={0.75}
         >
-          <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
+          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
             <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
               {this.state.userData ? this.state.userData.handUsed ?
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -920,7 +916,7 @@ componentWillUnmount() {
                 </View>
               </View>
             </View>
-          </Image>
+          </ImageBackground>
         </PopupDialog>
         <PopupDialog
           ref={(popupDialog) => { this.popupParaiste = popupDialog; }}
@@ -931,7 +927,7 @@ componentWillUnmount() {
         >
           <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/paraisteback.jpg')}>
 
-            <Image source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
+            <ImageBackground source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
             <Text style={{backgroundColor:'transparent',color:'white',marginLeft:15,marginRight:15,fontSize:16}}>
               {"Sevgili "+this.props.userStore.userName+",\n\nÜcretsiz günlük fal haklarını maalesef tükettin 😞\n\n"}
               Bir kere <Text style={{fontWeight:'bold'}}>AŞK</Text> veya <Text style={{fontWeight:'bold'}}>DETAYLI</Text> fal baktırırsan, tam <Text style={{fontWeight:'bold',fontSize:18,color:'#ffbacd'}}>250 adet</Text> bedava günlük fal hakkı kazanacaksın!🎉🎊
@@ -948,7 +944,7 @@ componentWillUnmount() {
             </View>
           </ImageBackground>
         </PopupDialog>
-      </Image>
+      </ImageBackground>
 
     );
   }

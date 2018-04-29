@@ -2,6 +2,7 @@ import React from 'react';
 import {
   StyleSheet,
   Text,
+  ImageBackground,
   View,
   Image,
     FlatList,
@@ -19,7 +20,8 @@ import {
   ActionSheetIOS,
   RefreshControl
 } from 'react-native';
-
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -34,7 +36,7 @@ import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
-import Marquee from '@remobile/react-native-marquee';
+//import Marquee from '@remobile/react-native-marquee';
 var esLocale = require('moment/locale/tr');
 moment.locale('tr', esLocale);
 
@@ -142,42 +144,39 @@ export default class Social extends React.Component {
       marquee=marquee+"  ||  "+marquees[i]
     }
     this.setState({marquee:marquee})
-    fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+      uid: Backend.getUid(),
     })
-    .then((response) => response.json())
-     .then((responseJson) => {
+    .then( (response) => {
 
-        this.props.socialStore.setTek(responseJson.tek)
-        var sosyals=Array.from(responseJson.sosyals)
-        this.props.socialStore.setSocials(sosyals)
-        //var commenteds=Array.from(responseJson.commenteds)
-        //this.props.socialStore.setCommenteds(commenteds)
-        var commenteds=[]
-        var id = Backend.getUid()
-        for (var i = 0; i < sosyals.length; i++) {
-          var sosyal = sosyals[i]
-          var comments=sosyal.comments
-          if(comments.length>0){
+      var responseJson=response.data
+      this.props.socialStore.setTek(responseJson.tek)
+      var sosyals=Array.from(responseJson.sosyals)
+      this.props.socialStore.setSocials(sosyals)
+      //var commenteds=Array.from(responseJson.commenteds)
+      //this.props.socialStore.setCommenteds(commenteds)
+      var commenteds=[]
+      var id = Backend.getUid()
+      for (var i = 0; i < sosyals.length; i++) {
+        var sosyal = sosyals[i]
+        var comments=sosyal.comments
+        if(comments.length>0){
 
-            for (var x = 0; x < comments.length; x++) {
-              if(comments[x].fireID==id){
-                commenteds.push(sosyal)
-                break;
-              }
+          for (var x = 0; x < comments.length; x++) {
+            if(comments[x].fireID==id){
+              commenteds.push(sosyal)
+              break;
             }
           }
         }
-        this.props.socialStore.setCommenteds(commenteds)
+      }
+      this.props.socialStore.setCommenteds(commenteds)
+    })
+    .catch(function (error) {
 
-     })
+    });
+
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
   }
@@ -407,7 +406,7 @@ export default class Social extends React.Component {
         </TouchableOpacity>
         );
     }
-  _keyExtractor = (item, index) => index;
+  _keyExtractor = (item, index) => index.toString();
 
 
   renderCommenteds = () => {
@@ -447,42 +446,39 @@ export default class Social extends React.Component {
 
   _onRefresh = () => {
     this.setState({refreshing: true});
-    fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+      uid: Backend.getUid(),
     })
-    .then((response) => response.json())
-    .then((responseJson) => {
+    .then( (response) => {
 
-        var sosyals=Array.from(responseJson.sosyals)
-        this.props.socialStore.setSocials(sosyals)
-        this.props.socialStore.setTek(responseJson.tek)
+      var responseJson=response.data
+      var sosyals=Array.from(responseJson.sosyals)
+      this.props.socialStore.setSocials(sosyals)
+      this.props.socialStore.setTek(responseJson.tek)
 
-        var commenteds=[]
-        var id = Backend.getUid()
-        for (var i = 0; i < sosyals.length; i++) {
-          var sosyal = sosyals[i]
-          var comments=sosyal.comments
-          if(comments.length>0){
+      var commenteds=[]
+      var id = Backend.getUid()
+      for (var i = 0; i < sosyals.length; i++) {
+        var sosyal = sosyals[i]
+        var comments=sosyal.comments
+        if(comments.length>0){
 
-            for (var x = 0; x < comments.length; x++) {
-              if(comments[x].fireID==id){
-                commenteds.push(sosyal)
-                break;
-              }
+          for (var x = 0; x < comments.length; x++) {
+            if(comments[x].fireID==id){
+              commenteds.push(sosyal)
+              break;
             }
           }
         }
-        this.props.socialStore.setCommenteds(commenteds)
-        this.setState({refreshing: false});
+      }
+      this.props.socialStore.setCommenteds(commenteds)
+      this.setState({refreshing: false});
+    })
+    .catch(function (error) {
 
-     })
+    });
+
   }
 
   render() {
@@ -490,18 +486,14 @@ export default class Social extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/Aurora.jpg')} style={styles.container}>
+      <ImageBackground source={require('../static/images/Aurora.jpg')} style={styles.container}>
 
         <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
         <View style={{flex:1,width:'100%'}}>
 
 
             {this.renderInfo()}
-            <View style={styles.marqueeContainer}>
-              <Marquee speed={15} style={styles.marquee}>
-                {this.state.marquee}
-              </Marquee>
-            </View>
+
             {this.renderTek()}
 
               <View style={{flex:1}}>
@@ -519,7 +511,7 @@ export default class Social extends React.Component {
          </ScrollableTabView>
             </View>
         </View>
-      </Image>
+      </ImageBackground>
 
     );
   }

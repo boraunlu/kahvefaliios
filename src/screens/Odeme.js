@@ -8,18 +8,20 @@ import {
   Image,
   Keyboard,
   ScrollView,
+  ImageBackground,
   Button,
   Dimensions,
   Linking,
   ActivityIndicator,
   Alert,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
-import {AdMobRewarded} from 'react-native-admob'
+//import {AdMobRewarded} from 'react-native-admob'
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
@@ -146,7 +148,7 @@ export default class Odeme extends React.Component {
         [
           {text: 'İstemiyorum', onPress: () => {}},
           {text: 'Tamam', onPress: () => {
-            AdMobRewarded.showAd((error) => error && Alert.alert("Reklam Yok","Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
+            ///AdMobRewarded.showAd((error) => error && Alert.alert("Reklam Yok","Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
           }},
         ],
       )
@@ -193,33 +195,21 @@ export default class Odeme extends React.Component {
   componentDidMount() {
 
     Keyboard.dismiss()
-    /*
-    fetch('https://eventfluxbot.herokuapp.com/webhook/getCredits', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-      })
-    })
-    .then((response) => response.json())
-     .then((responseJson) => {
-      this.setState({credit:responseJson.credit,sharedWeek:responseJson.sharedToday})
-     })
-*/
-     AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
-     //AdMobRewarded.setTestDeviceID('EMULATOR');
+
+
+     /*AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
+
 
      AdMobRewarded.addEventListener('rewardedVideoDidRewardUser',
        (type, amount) => {Backend.addCredits(5,"reklam"); Alert.alert('Tebrikler','5 Kredi hesabınıza eklendi!',); this.props.userStore.increment(5) }
-     );
+     );*/
 
      /*
      AdMobRewarded.addEventListener('rewardedVideoDidFailToLoad',
        (error) => alert('Reklam yüklenirken bir sorun oluştu.', error)
      );*/
+
+     /*
      AdMobRewarded.addEventListener('rewardedVideoDidOpen',
        () => {}
      );
@@ -232,11 +222,11 @@ export default class Odeme extends React.Component {
        () => {}
      );
 
-     AdMobRewarded.requestAd((error) => error && console.log(error));
+     AdMobRewarded.requestAd((error) => error && console.log(error));*/
   }
 
   componentWillUnmount() {
-    AdMobRewarded.removeAllListeners();
+    //AdMobRewarded.removeAllListeners();
   }
 
 
@@ -245,7 +235,7 @@ export default class Odeme extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
       <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
       <ScrollView>
         <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:15,alignSelf:'stretch'}}>
@@ -288,7 +278,7 @@ export default class Odeme extends React.Component {
         </View>
         <View style={{flex:1}}>
           <View style={{flex:1,backgroundColor:'teal',padding:2}}><Text style={{textAlign:'center',color:'white',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
-          <Image style={styles.container2} source={require('../static/images/hazine.jpg')}>
+          <ImageBackground style={styles.container2} source={require('../static/images/hazine.jpg')}>
           <View style={{borderColor:'white',borderWidth:1}}>
             <View style={{flexDirection:'row'}}>
               <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(100)}}>
@@ -401,12 +391,12 @@ export default class Odeme extends React.Component {
               </TouchableOpacity>
             </View>
           </View>
-          </Image>
+        </ImageBackground>
         </View>
 
 
         </ScrollView>
-      </Image>
+      </ImageBackground>
 
     );
   }

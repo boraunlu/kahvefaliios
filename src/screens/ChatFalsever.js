@@ -21,12 +21,14 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import { NavigationActions } from 'react-navigation'
-import Toast from 'react-native-root-toast';
+//import Toast from 'react-native-root-toast';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-import CustomView from '../components/CustomView';
+
 import Backend from '../Backend';
 import moment from 'moment';
 var esLocale = require('moment/locale/tr');
@@ -190,6 +192,7 @@ export default class ChatFalsever extends React.Component {
 
 
     if(params.first){
+      /*
       let toast = Toast.show('2 gün boyunca bu falseverle sohbet edebilirsiniz!', {
         duration: Toast.durations.SHORT,
         position: 70,
@@ -204,7 +207,7 @@ export default class ChatFalsever extends React.Component {
         shadow: true,
         animation: true,
         hideOnPress: true,
-      });
+      });*/
     }
     if(!params.falsever.read){
       this.props.userStore.increaseFalseverUnread(-1)
@@ -221,79 +224,77 @@ export default class ChatFalsever extends React.Component {
 
     this.popupDialog.show()
     this.setState({profinfo:null})
-    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: fireid,
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+      uid: fireid,
     })
-    .then((response) => response.json())
-   .then((responseJson) => {
-     //alert(responseJson.profile_pic)
-     responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+    .then( (response) => {
+      var responseJson=response.data
 
-     var meslek =''
-     switch(responseJson.workStatus) {
-       case 1:
-           meslek='Çalışıyor';
-           break;
-       case 2:
-           meslek='İş arıyor';
-           break;
-       case 3:
-           meslek='Öğrenci';
-           break;
-       case 4:
-           meslek='Çalışmıyor';
-           break;
-       case 5:
-           meslek='Kamuda Çalışıyorum';
-           break;
-       case 6:
-           meslek='Özel Sektör';
-           break;
-       case 7:
-           meslek='Kendi İşim';
-           break;
-     }
-     var iliski =''
-     switch(responseJson.relStatus) {
-         case "0":
-             iliski='İlişkisi Yok';
-             break;
-         case "1":
-             iliski='Sevgilisi Var';
-             break;
-         case "2":
-             iliski='Evli';
-             break;
-         case "3":
-             iliski='Nişanlı';
-             break;
-         case "4":
-             iliski='Platonik';
-             break;
-         case "5":
-             iliski='Ayrı Yaşıyor';
-             break;
-         case "6":
-             iliski='Yeni Ayrılmış';
-             break;
-         case "7":
-             iliski='Boşanmış';
-             break;
+      responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
 
-     }
-     responseJson.iliski=iliski
-     responseJson.meslek=meslek
-     //alert(responseJson.sosyal)
-     this.setState({profinfo:responseJson});
+      var meslek =''
+      switch(responseJson.workStatus) {
+        case 1:
+            meslek='Çalışıyor';
+            break;
+        case 2:
+            meslek='İş arıyor';
+            break;
+        case 3:
+            meslek='Öğrenci';
+            break;
+        case 4:
+            meslek='Çalışmıyor';
+            break;
+        case 5:
+            meslek='Kamuda Çalışıyorum';
+            break;
+        case 6:
+            meslek='Özel Sektör';
+            break;
+        case 7:
+            meslek='Kendi İşim';
+            break;
+      }
+      var iliski =''
+      switch(responseJson.relStatus) {
+          case "0":
+              iliski='İlişkisi Yok';
+              break;
+          case "1":
+              iliski='Sevgilisi Var';
+              break;
+          case "2":
+              iliski='Evli';
+              break;
+          case "3":
+              iliski='Nişanlı';
+              break;
+          case "4":
+              iliski='Platonik';
+              break;
+          case "5":
+              iliski='Ayrı Yaşıyor';
+              break;
+          case "6":
+              iliski='Yeni Ayrılmış';
+              break;
+          case "7":
+              iliski='Boşanmış';
+              break;
 
-      })
+      }
+      responseJson.iliski=iliski
+      responseJson.meslek=meslek
+      //alert(responseJson.sosyal)
+      this.setState({profinfo:responseJson});
+
+    })
+    .catch(function (error) {
+
+    });
+
   }
 
 
@@ -324,17 +325,11 @@ export default class ChatFalsever extends React.Component {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
-    fetch('https://eventfluxbot.herokuapp.com/sendMail', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-        text: messages[0].text
-      })
+    axios.post('https://eventfluxbot.herokuapp.com/sendMail', {
+      uid: Backend.getUid(),
+      text: messages[0].text
     })
+
   }
 
 
@@ -423,6 +418,11 @@ export default class ChatFalsever extends React.Component {
 
     Backend.sendMessageToFalsever(messages,this.state.falsever)
 
+  }
+
+  navigateToFal = (fal) => {
+    const { navigate } = this.props.navigation;
+    navigate( "SocialFal",{fal:fal} )
   }
 
   renderKendiFali = (kendiFali) =>{

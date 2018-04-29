@@ -19,11 +19,11 @@ import {
   TouchableWithoutFeedback
 } from 'react-native';
 
-
+import PropTypes from 'prop-types';
 import { NavigationActions } from 'react-navigation'
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-import CustomView from '../components/CustomView';
+
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ChatModal from '../components/ChatModal';
@@ -453,14 +453,14 @@ export default class ChatAgent extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/splash4.png')}  style={styles.containerimage}>
           <Modal
             animationType={"none"}
             transparent={false}
             visible={this.state.loadingVisible}
             onRequestClose={() => {}}
             >
-            <Image source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null, resizeMode:'stretch',justifyContent:'center' }}>
+            <ImageBackground source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null, resizeMode:'stretch',justifyContent:'center' }}>
                <View style={{ height: 100,backgroundColor:'white',justifyContent:'center' }}>
                 <Text style={{textAlign:'center'}}>
                   Uygun falcı aranıyor...
@@ -471,7 +471,7 @@ export default class ChatAgent extends React.Component {
                    size="large"
                  />
                </View>
-             </Image>
+             </ImageBackground>
           </Modal>
 
           <GiftedChat
@@ -498,7 +498,7 @@ export default class ChatAgent extends React.Component {
 
             </GiftedChat>
                {this.renderFalSender()}
-          </Image>
+          </ImageBackground>
 
     );
   }

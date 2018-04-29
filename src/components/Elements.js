@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button,ScrollView,Animated, Dimensions, Image,Text,TouchableHighlight, TouchableOpacity, View , StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import PropTypes from 'prop-types';
 
 class Element extends Component {
 

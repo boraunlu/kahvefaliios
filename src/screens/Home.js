@@ -11,8 +11,8 @@ import {
   Image,
 } from 'react-native';
 
-
-
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import { NavigationActions } from 'react-navigation'
 import firebase from 'firebase';
 import Backend from '../Backend';
@@ -60,17 +60,17 @@ export default class Home extends React.Component {
 
              FCM.getFCMToken().then(token => {
 
-                 fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
-                   method: 'POST',
-                   headers: {
-                     'Accept': 'application/json',
-                     'Content-Type': 'application/json',
-                   },
-                   body: JSON.stringify({
-                     uid: user.uid,
-                     token: token
-                   })
-                 })
+               axios.post('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
+                 uid: user.uid,
+                 token: token
+               })
+               .then( (response) => {
+
+               })
+               .catch(function (error) {
+
+               });
+
                  // store fcm token in your server
              });
              this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
@@ -104,17 +104,17 @@ export default class Home extends React.Component {
              });
              this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
                  //console.log(token)
-                 fetch('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
-                   method: 'POST',
-                   headers: {
-                     'Accept': 'application/json',
-                     'Content-Type': 'application/json',
-                   },
-                   body: JSON.stringify({
-                     uid: user.uid,
-                     token: token
-                   })
+                 axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+                   uid: user.uid,
+                   token: token
                  })
+                 .then( (response) => {
+
+                 })
+                 .catch(function (error) {
+
+                 });
+              
              });
         //alert("hey");
       } else {
@@ -124,20 +124,6 @@ export default class Home extends React.Component {
       }
     }.bind(this));
 
-    NetInfo.isConnected.fetch().then(isConnected => {
-      //alert('First, is ' + (isConnected ? 'online' : 'offline'));
-    });
-    function handleFirstConnectivityChange(isConnected) {
-      //alert('Then, is ' + (isConnected ? 'online' : 'offline'));
-      NetInfo.isConnected.removeEventListener(
-        'change',
-        handleFirstConnectivityChange
-      );
-    }
-    NetInfo.isConnected.addEventListener(
-      'change',
-      handleFirstConnectivityChange
-    );
     FCM.requestPermissions(); // for iOS
   }
 componentWillUnmount() {

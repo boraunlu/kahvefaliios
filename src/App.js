@@ -10,16 +10,15 @@ import codePush from "react-native-code-push";
 
 import Login from './screens/Login';
 import Chat from './screens/Chat';
+
 import ChatOld from './screens/ChatOld';
 import ChatBizden from './screens/ChatBizden';
 import ChatAgent from './screens/ChatAgent';
 import ChatFalsever from './screens/ChatFalsever';
-import Countdown from './screens/Countdown';
 import Social from './screens/Social';
 import SocialFal from './screens/SocialFal';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
-import FalseverProfil from './screens/FalseverProfil';
 import Greeting from './screens/Greeting';
 import Kimiz from './screens/Kimiz';
 import Mesajlar from './screens/Mesajlar';
@@ -54,11 +53,10 @@ let KahvefaliappNav = StackNavigator({
     Kimiz: { screen: Kimiz },
     Chat: {screen:Chat},
     ChatOld: {screen:ChatOld},
-    Countdown: {screen:Countdown},
-    SocialFal: {screen:SocialFal},
     ChatBizden: {screen:ChatBizden},
     ChatAgent: {screen:ChatAgent},
     ChatFalsever: {screen:ChatFalsever},
+    SocialFal: {screen:SocialFal},
     Swipers: {screen:Swipers},
     FalPuan: {screen:FalPuan},
     FalPaylas: {screen:FalPaylas},

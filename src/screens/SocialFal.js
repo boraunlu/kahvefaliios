@@ -15,7 +15,8 @@ import {
     ImageBackground,
   Share
 } from 'react-native';
-
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import { NavigationActions,SafeAreaView } from 'react-navigation'
@@ -238,79 +239,75 @@ export default class SocialFal extends React.Component {
 
     this.popupDialog.show()
     this.setState({profinfo:null})
-    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: fireid,
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+      uid: fireid,
     })
-    .then((response) => response.json())
-   .then((responseJson) => {
-     //alert(responseJson.profile_pic)
-     responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+    .then( (response) => {
 
-     var meslek =''
-     switch(responseJson.workStatus) {
-       case 1:
-           meslek='Çalışıyor';
-           break;
-       case 2:
-           meslek='İş arıyor';
-           break;
-       case 3:
-           meslek='Öğrenci';
-           break;
-       case 4:
-           meslek='Çalışmıyor';
-           break;
-       case 5:
-           meslek='Kamuda Çalışıyorum';
-           break;
-       case 6:
-           meslek='Özel Sektör';
-           break;
-       case 7:
-           meslek='Kendi İşim';
-           break;
-     }
-     var iliski =''
-     switch(responseJson.relStatus) {
-         case "0":
-             iliski='İlişkisi Yok';
-             break;
-         case "1":
-             iliski='Sevgilisi Var';
-             break;
-         case "2":
-             iliski='Evli';
-             break;
-         case "3":
-             iliski='Nişanlı';
-             break;
-         case "4":
-             iliski='Platonik';
-             break;
-         case "5":
-             iliski='Ayrı Yaşıyor';
-             break;
-         case "6":
-             iliski='Yeni Ayrılmış';
-             break;
-         case "7":
-             iliski='Boşanmış';
-             break;
+      var responseJson=response.data
+      responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
 
-     }
-     responseJson.iliski=iliski
-     responseJson.meslek=meslek
-     //alert(responseJson.sosyal)
-     this.setState({profinfo:responseJson});
+      var meslek =''
+      switch(responseJson.workStatus) {
+        case 1:
+            meslek='Çalışıyor';
+            break;
+        case 2:
+            meslek='İş arıyor';
+            break;
+        case 3:
+            meslek='Öğrenci';
+            break;
+        case 4:
+            meslek='Çalışmıyor';
+            break;
+        case 5:
+            meslek='Kamuda Çalışıyorum';
+            break;
+        case 6:
+            meslek='Özel Sektör';
+            break;
+        case 7:
+            meslek='Kendi İşim';
+            break;
+      }
+      var iliski =''
+      switch(responseJson.relStatus) {
+          case "0":
+              iliski='İlişkisi Yok';
+              break;
+          case "1":
+              iliski='Sevgilisi Var';
+              break;
+          case "2":
+              iliski='Evli';
+              break;
+          case "3":
+              iliski='Nişanlı';
+              break;
+          case "4":
+              iliski='Platonik';
+              break;
+          case "5":
+              iliski='Ayrı Yaşıyor';
+              break;
+          case "6":
+              iliski='Yeni Ayrılmış';
+              break;
+          case "7":
+              iliski='Boşanmış';
+              break;
 
-      })
+      }
+      responseJson.iliski=iliski
+      responseJson.meslek=meslek
+      //alert(responseJson.sosyal)
+      this.setState({profinfo:responseJson});
+    })
+    .catch(function (error) {
+
+    });
   }
 
   navigateToFal = (fal) => {
@@ -629,7 +626,7 @@ export default class SocialFal extends React.Component {
             </Text>
             <Text style={{fontWeight:'normal',fontSize:14}}>
                {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-          
+
              </Text>
 
          </View>

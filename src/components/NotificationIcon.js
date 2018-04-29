@@ -4,6 +4,7 @@ import { Text, Image, View } from 'react-native';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import PropTypes from 'prop-types';
 
 @inject("userStore")
 @observer

@@ -20,10 +20,11 @@ import {
   ActionSheetIOS,
 } from 'react-native';
 
+import axios from 'axios';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
-
+import PropTypes from 'prop-types';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
@@ -196,23 +197,20 @@ export default class FalPaylas extends React.Component {
       this.setState({sosyalInput:'',falPhotos:[]})
      setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
      setTimeout(()=>{
-       fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-         method: 'POST',
-         headers: {
-           'Accept': 'application/json',
-           'Content-Type': 'application/json',
-         },
-         body: JSON.stringify({
-           uid: Backend.getUid(),
-         })
-       })
-       .then((response) => response.json())
-       .then((responseJson) => {
-          // this.setState({tek:responseJson.tek});
-           this.props.socialStore.setSocials(responseJson.sosyals)
-          this.props.socialStore.setTek(responseJson.tek)
 
-        })
+       axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+         uid: Backend.getUid(),
+       })
+       .then( (response) => {
+         var responseJson=response.data
+
+         this.props.socialStore.setSocials(responseJson.sosyals)
+        this.props.socialStore.setTek(responseJson.tek)
+       })
+       .catch(function (error) {
+
+       });
+
 
       },1050)
     }
@@ -245,23 +243,19 @@ export default class FalPaylas extends React.Component {
 
                    this.setState({sosyalInput:'',falPhotos:[]})
 
-                   fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                     method: 'POST',
-                     headers: {
-                       'Accept': 'application/json',
-                       'Content-Type': 'application/json',
-                     },
-                     body: JSON.stringify({
-                       uid: Backend.getUid(),
-                     })
+                   axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+                     uid: Backend.getUid(),
                    })
-                   .then((response) => response.json())
-                   .then((responseJson) => {
-                      // this.setState({tek:responseJson.tek});
-                       this.props.socialStore.setSocials(responseJson.sosyals)
-                      this.props.socialStore.setTek(responseJson.tek)
+                   .then( (response) => {
+                     var responseJson=response.data
 
-                    })
+                     this.props.socialStore.setSocials(responseJson.sosyals)
+                    this.props.socialStore.setTek(responseJson.tek)
+                   })
+                   .catch(function (error) {
+
+                   });
+                   
                     setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
 
                  }

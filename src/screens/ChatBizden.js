@@ -17,11 +17,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 
-
+import axios from 'axios';
+import PropTypes from 'prop-types';
 import { NavigationActions } from 'react-navigation'
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-import CustomView from '../components/CustomView';
+
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
@@ -185,17 +186,12 @@ export default class ChatBizden extends React.Component {
         messages: GiftedChat.append(previousState.messages, messages),
       };
     });
-    fetch('https://eventfluxbot.herokuapp.com/sendMail', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: Backend.getUid(),
-        text: messages[0].text
-      })
+
+    axios.post('https://eventfluxbot.herokuapp.com/sendMail', {
+      uid: Backend.getUid(),
+      text: messages[0].text
     })
+  
 
     // for demo purpose
     //this.answerDemo(messages);
@@ -277,7 +273,7 @@ export default class ChatBizden extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/splash4.png')}  style={styles.containerimage}>
 
 
           <GiftedChat
@@ -304,7 +300,7 @@ export default class ChatBizden extends React.Component {
 
             </GiftedChat>
 
-          </Image>
+          </ImageBackground>
 
     );
   }

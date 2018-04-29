@@ -1,4 +1,4 @@
-'use strict';
+
 import React, { Component } from 'react';
 import {
   Dimensions,
@@ -8,6 +8,7 @@ import {
   Image,
   View
 } from 'react-native';
+import PropTypes from 'prop-types';
 import Camera from 'react-native-camera';
 import Icon from 'react-native-vector-icons/FontAwesome';
 

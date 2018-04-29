@@ -19,19 +19,17 @@ import {
   Alert,
   TextInput,
   AsyncStorage,
-  ActivityIndicator,
+  ActivityIndicator
 } from 'react-native';
 import Sound from 'react-native-sound'
-import Toast from 'react-native-root-toast';
-
-
+import PropTypes from 'prop-types';
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
 import firebase from 'firebase'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-import CustomView from '../components/CustomView';
+
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
@@ -57,6 +55,7 @@ const shareLinkContent = {
   contentUrl: "https://facebook.com/kahvefalisohbeti",
   contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
 };
+
 
 var whoosh = new Sound('yourturn.mp3', Sound.MAIN_BUNDLE, (error) => {
   if (error) {
@@ -816,6 +815,7 @@ export default class Chat extends React.Component {
           });
 
           this.sendPayload("appstart")
+          /*
           let toast = Toast.show(falcilar[this.state.falciNo].name+' sohbete bağlandı!', {
             duration: Toast.durations.SHORT,
             position: 70,
@@ -830,7 +830,7 @@ export default class Chat extends React.Component {
             shadow: true,
             animation: true,
             hideOnPress: true,
-          });
+          });*/
         }
       }, randomTime)
 
@@ -975,13 +975,6 @@ export default class Chat extends React.Component {
     );
   }
 
-  renderCustomView(props) {
-    return (
-      <CustomView
-        {...props}
-      />
-    );
-  }
   renderSend(props) {
     return (
       <Send
@@ -1087,7 +1080,7 @@ export default class Chat extends React.Component {
   render() {
     return (
 
-        <Image source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/splash4.png')}  style={styles.containerimage}>
 
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <GiftedChat
@@ -1104,7 +1097,7 @@ export default class Chat extends React.Component {
             }}
             renderActions={this.renderCustomActions}
             renderBubble={this.renderBubble}
-            renderCustomView={this.renderCustomView}
+
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}
@@ -1120,7 +1113,7 @@ export default class Chat extends React.Component {
               visible={this.state.loadingVisible}
               onRequestClose={() => {}}
               >
-              <Image source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null, resizeMode:'stretch',justifyContent:'center' }}>
+              <ImageBackground source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null,justifyContent:'center' }}>
                  <View style={{ height: 100,backgroundColor:'white',justifyContent:'center' }}>
                   <Text style={{textAlign:'center'}}>
                     Uygun falcı aranıyor...
@@ -1131,7 +1124,7 @@ export default class Chat extends React.Component {
                      size="large"
                    />
                  </View>
-               </Image>
+               </ImageBackground>
             </Modal>
 
             <Elements
@@ -1156,7 +1149,7 @@ export default class Chat extends React.Component {
             />
             <PopupDialog
              dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Puan Ver" />}
-             width={'90%'}
+             width={0.9}
              height={320}
              dialogStyle={{marginTop:-250}}
              ref={(popupDialog) => { this.popupDialog = popupDialog; }}>
@@ -1195,7 +1188,7 @@ export default class Chat extends React.Component {
            </PopupDialog>
             <PopupDialog
               dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Bahşiş" />}
-              width={'90%'}
+              width={0.9}
               height={320}
               dialogStyle={{marginTop:-200}}
               ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}>
@@ -1222,10 +1215,10 @@ export default class Chat extends React.Component {
               ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
               dialogStyle={{marginTop:-150}}
               overlayOpacity={0.75}
-              width={'80%'}
-              height={'65%'}
+              width={0.8}
+              height={0.65}
             >
-              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
+              <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
                 <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
                 {this.props.userStore.user.appGunlukUsed ?
                     (<View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -1262,17 +1255,17 @@ export default class Chat extends React.Component {
                     </View>
                   </View>
                 </View>
-              </Image>
+              </ImageBackground>
             </PopupDialog>
             <PopupDialog
 
               ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
               dialogStyle={{marginTop:-150}}
               overlayOpacity={0.75}
-              width={'80%'}
-              height={'70%'}
+              width={0.8}
+              height={0.7}
             >
-              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
+              <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
                 <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                     <Text style={[styles.label]}>
@@ -1304,16 +1297,16 @@ export default class Chat extends React.Component {
                     </View>
                   </View>
                 </View>
-              </Image>
+              </ImageBackground>
             </PopupDialog>
             <PopupDialog
               ref={(popupDialog) => { this.popupDetay = popupDialog; }}
               dialogStyle={{marginTop:-150}}
-              width={'80%'}
-              height={'70%'}
+              width={0.8}
+              height={0.7}
               overlayOpacity={0.75}
             >
-              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
+              <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
                 <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                     <Text style={[styles.label]}>
@@ -1343,17 +1336,17 @@ export default class Chat extends React.Component {
                     </View>
                   </View>
                 </View>
-              </Image>
+              </ImageBackground>
             </PopupDialog>
             <PopupDialog
 
               ref={(popupDialog) => { this.popupHand = popupDialog; }}
               dialogStyle={{marginTop:-150}}
-              width={'80%'}
-              height={'70%'}
+              width={0.8}
+              height={0.7}
               overlayOpacity={0.75}
             >
-              <Image style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
+              <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
                 <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
                   {this.props.userStore.user.handUsed ?
                       <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
@@ -1381,17 +1374,17 @@ export default class Chat extends React.Component {
                     </View>
                   </View>
                 </View>
-              </Image>
+              </ImageBackground>
             </PopupDialog>
             <PopupDialog
 
               ref={(popupDialog) => { this.popupSoru = popupDialog; }}
               dialogStyle={{marginTop:-150}}
-              width={'80%'}
-              height={'50%'}
+              width={0.8}
+              height={0.5}
               overlayOpacity={0.75}
             >
-              <Image style={{flex:1,width: null,height: null,alignItems:'center',}} source={require('../static/images/greenback.jpg')}>
+              <ImageBackground style={{flex:1,width: null,height: null,alignItems:'center',}} source={require('../static/images/greenback.jpg')}>
 
                   <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
                     <Text style={[styles.label]}>
@@ -1418,13 +1411,13 @@ export default class Chat extends React.Component {
                     </View>
                   </View>
 
-              </Image>
+              </ImageBackground>
             </PopupDialog>
             <PopupDialog
 
               ref={(popupDialog) => { this.popupSosyal = popupDialog; }}
               dialogStyle={this.state.keyboardVisible?styles.marginKeyboardVisible:styles.marginKeyboardNotVisible}
-              width={'80%'}
+              width={0.8}
               height={450}
               overlayOpacity={0.75}
             >
@@ -1489,7 +1482,7 @@ export default class Chat extends React.Component {
 
               </View>
             </PopupDialog>
-          </Image>
+          </ImageBackground>
 
     );
   }

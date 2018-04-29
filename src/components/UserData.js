@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import {ActivityIndicator,Switch, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import ProgressBar from 'react-native-progress/Bar';
 import Picker from 'react-native-picker';
+import PropTypes from 'prop-types';
 
 require('../components/data/falcilar.js');
 import moment from 'moment';
@@ -75,7 +75,11 @@ export default class UserData extends Component {
             <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
               <View style={{justifyContent:'center'}}>
                 <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                <ProgressBar borderColor={kolor} color={kolor} height={16} borderRadius={8} progress={gosterilenpuan/limit} width={200} />
+                <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
+                  <View style={{height:18,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                  </View>
+                </View>
+
               </View>
               <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
             </View>

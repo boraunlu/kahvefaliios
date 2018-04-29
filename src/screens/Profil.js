@@ -7,6 +7,7 @@ import {
   ScrollView,
   TouchableHighlight,
   TouchableOpacity,
+  ImageBackground,
   Button,
   TextInput,
   ActionSheetIOS,
@@ -14,7 +15,8 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-
+import PropTypes from 'prop-types';
+import axios from 'axios';
 import firebase from 'firebase';
 import Backend from '../Backend';
 import UserData from '../components/UserData';
@@ -29,7 +31,6 @@ import Camera from 'react-native-camera';
 import ProfilePicker from '../components/ProfilePicker';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import ImageResizer from 'react-native-image-resizer';
-import ProgressBar from 'react-native-progress/Bar';
 import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-native-simple-radio-button';
 
 import { observable } from 'mobx';
@@ -85,20 +86,18 @@ export default class Profil extends React.Component {
         this.popupDialog2.dismiss(() => {
 
         });
-        fetch('https://eventfluxbot.herokuapp.com/sendMail', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uid: Backend.getUid(),
-            text: this.state.text
-          })
+        axios.post('https://eventfluxbot.herokuapp.com/sendMail', {
+          uid: Backend.getUid(),
+          text: this.state.text
         })
-        .then((response) => {
+        .then( (response) => {
 
         })
+        .catch(function (error) {
+
+        });
+
+
       }
     }
 
@@ -112,20 +111,17 @@ export default class Profil extends React.Component {
         this.popupDialog3.dismiss(() => {
 
         });
-        fetch('https://eventfluxbot.herokuapp.com/sendMail', {
-          method: 'POST',
-          headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            uid: Backend.getUid(),
-            text: "başvuru "+this.state.kendi
-          })
+        axios.post('https://eventfluxbot.herokuapp.com/sendMail', {
+          uid: Backend.getUid(),
+          text: "başvuru "+this.state.kendi
         })
-        .then((response) => {
+        .then( (response) => {
           Keyboard.dismiss()
         })
+        .catch(function (error) {
+
+        });
+    
       }
     }
 
@@ -268,6 +264,7 @@ export default class Profil extends React.Component {
        },
 
    });
+    Picker.show()
   }
 
   initiliskiPicker = () => {
@@ -285,6 +282,7 @@ export default class Profil extends React.Component {
        },
 
    });
+    Picker.show()
   }
 
   initAgePicker = () => {
@@ -306,6 +304,7 @@ export default class Profil extends React.Component {
        },
 
    });
+    Picker.show()
   }
 
   initCityPicker = () => {
@@ -325,6 +324,7 @@ export default class Profil extends React.Component {
        },
 
    });
+    Picker.show()
   }
 
 
@@ -341,24 +341,6 @@ export default class Profil extends React.Component {
         this.setState({userName:user.displayName})
     }
 
-    /*
-    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        uid: user.uid,
-      })
-    })
-    .then((response) => response.json())
-     .then((responseJson) => {
-       //alert(JSON.stringify(responseJson));
-          this.setState({userData:responseJson});
-         //alert(JSON.stringify(responseJson))
-
-     })*/
   }
   logout = () => {
 
@@ -397,7 +379,7 @@ export default class Profil extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
         <ScrollView style={{flex:1,width:'100%'}}>
           <View style={{elevation:3,paddingTop:15,marginTop:20,width:'100%',backgroundColor:'white',flexDirection:'column'}}>
             <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{position:'absolute',top:10,left:10,marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold'}}>{this.props.userStore.userCredit}</Text></TouchableOpacity>
@@ -410,7 +392,7 @@ export default class Profil extends React.Component {
             <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
             {this.renderBio()}
             <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
-            
+
             <View style={styles.pickerContainer}>
               <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
               <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
@@ -475,8 +457,8 @@ export default class Profil extends React.Component {
         <PopupDialog
          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Kullanım Koşulları" />}
          dialogStyle={{marginTop:-250}}
-         width={'90%'}
-         height={'60%'}
+         width={0.9}
+         height={0.6}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
        >
            <View style={{flex:1}}>
@@ -515,8 +497,8 @@ export default class Profil extends React.Component {
          <PopupDialog
           dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
           dialogStyle={{marginTop:-250}}
-          width={'90%'}
-          height={'30%'}
+          width={0.9}
+          height={0.3}
           ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}
         >
         <View style={{flex:1}}>
@@ -539,8 +521,8 @@ export default class Profil extends React.Component {
         <PopupDialog
          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
          dialogStyle={{marginTop:-250}}
-         width={'90%'}
-         height={'50%'}
+         width={0.9}
+         height={0.5}
          ref={(popupDialog) => { this.popupSikayet = popupDialog; }}
        >
        <View style={{flex:1}}>
@@ -568,8 +550,8 @@ export default class Profil extends React.Component {
       <PopupDialog
            dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
            dialogStyle={{marginTop:-300}}
-           width={'90%'}
-           height={'40%'}
+           width={0.9}
+           height={0.4}
            ref={(popupDialog) => { this.popupDialog3 = popupDialog; }}
          >
          <View style={{flex:1,padding:5}}>
@@ -602,7 +584,7 @@ export default class Profil extends React.Component {
          </View>
         </PopupDialog>
 
-      </Image>
+      </ImageBackground>
 
     );
   }
@@ -633,7 +615,7 @@ const styles = StyleSheet.create({
 
   },
   picker:{
-    borderWidth:2,borderColor:'teal',flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'#f1f1f1',width:'100%',height:30,borderRadius:5
+    borderWidth:2,borderColor:'teal',flexDirection:'row',justifyContent:'space-between',padding:5,marginBottom:10,alignItems:'center',backgroundColor:'#f1f1f1',width:'100%',height:30,borderRadius:5
   },
   nameinput:{
     fontSize:14,fontWeight:'bold',backgroundColor:'transparent',color:'dimgray',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30
