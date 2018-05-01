@@ -22,7 +22,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { NavigationActions } from 'react-navigation'

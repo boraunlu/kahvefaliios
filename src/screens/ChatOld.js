@@ -15,6 +15,7 @@ import {
   Alert,
   Easing,
   ActivityIndicator,
+  ImageBackground
 } from 'react-native';
 import Sound from 'react-native-sound'
 //import Toast from 'react-native-root-toast';
@@ -300,13 +301,7 @@ export default class ChatOld extends React.Component {
     );
   }
 
-  renderCustomView(props) {
-    return (
-      <CustomView
-        {...props}
-      />
-    );
-  }
+
   renderSend(props) {
     return (
       <Send
@@ -424,7 +419,6 @@ export default class ChatOld extends React.Component {
             }}
             renderActions={this.renderCustomActions}
             renderBubble={this.renderBubble}
-            renderCustomView={this.renderCustomView}
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}

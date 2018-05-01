@@ -23,7 +23,7 @@ import {
 
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation'
 //import Toast from 'react-native-root-toast';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
@@ -469,13 +469,7 @@ export default class ChatFalsever extends React.Component {
     );
   }
 
-  renderCustomView(props) {
-    return (
-      <CustomView
-        {...props}
-      />
-    );
-  }
+
   renderSend(props) {
     return (
       <Send
@@ -536,7 +530,6 @@ export default class ChatFalsever extends React.Component {
             }}
 
             renderBubble={this.renderBubble}
-            renderCustomView={this.renderCustomView}
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}

@@ -19,7 +19,7 @@ import {
 
 
 import PropTypes from 'prop-types';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import axios from 'axios';
 import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
@@ -455,7 +455,7 @@ static navigationOptions = ({ navigation }) => ({
     })
     .then( (response) => {
       var responseJson=response.data
-      
+
       this.setState({greetingMessage:responseJson.greeting,userData:responseJson,credit:responseJson.credit,marquee:"       Canlı falcı sayısı: "+this.generatefalcisayisi()+"     ||     "+responseJson.marquee});
        //alert(JSON.stringify(responseJson))
        this.props.userStore.setUser(responseJson)

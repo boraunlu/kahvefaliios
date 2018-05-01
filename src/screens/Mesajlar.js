@@ -15,7 +15,7 @@ import {
   Switch
 } from 'react-native';
 import PropTypes from 'prop-types';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import NotificationIcon from '../components/NotificationIcon';
 import { NavigationActions } from 'react-navigation'
@@ -203,7 +203,14 @@ export default class Mesajlar extends React.Component {
             }
 
         }
-
+        output.sort(function(b, a){
+            var keyA = new Date(a.createdAt),
+                keyB = new Date(b.createdAt);
+            // Compare the 2 dates
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        })
         this.setState({falsevers:output})
     }.bind(this))
 

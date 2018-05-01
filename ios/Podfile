@@ -29,9 +29,12 @@ pod 'Folly', podspec: '../node_modules/react-native/third-party-podspecs/Folly.p
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
-    pod 'Firebase/Core', '4.0.0'
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
   pod 'Firebase/Messaging'
   pod 'Firebase/AdMob'
+  pod 'Firebase/Database'
+  pod 'Firebase/Storage'
   pod 'CodePush', :path => '../node_modules/react-native-code-push'
   #pod 'react-native-camera', path: '../node_modules/react-native-camera'
   #pod 'GoogleSignIn'

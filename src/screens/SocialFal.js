@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { NavigationActions,SafeAreaView } from 'react-navigation'
 import moment from 'moment';

@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 
 import RNFetchBlob from 'react-native-fetch-blob'
-import firebase from 'firebase'
+import firebase from 'react-native-firebase'
 import moment from 'moment';
 import ImageResizer from 'react-native-image-resizer';
 
@@ -26,12 +26,13 @@ class Backend {
 
 
   constructor() {
+    /*
     firebase.initializeApp({
       apiKey: "AIzaSyC2sedAgmiRTUMuCll4Jsfz-Su2vo3KqO4",
      authDomain: "kahve-fali-7323a.firebaseapp.com",
      databaseURL: "https://kahve-fali-7323a.firebaseio.com",
      storageBucket: "kahve-fali-7323a.appspot.com",
-    });
+    });*/
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         this.setUid(user.uid);
@@ -84,43 +85,38 @@ class Backend {
 
   }
   uploadImage(uri){
+
     return new Promise((resolve, reject) => {
-      ImageResizer.createResizedImage(uri, 500, 500,'JPEG',80)
-      .then(({uri}) => {
-        console.log("uri "+uri)
-        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-          let uploadBlob = null
-          var imageName = "";
-          var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-          for( var i=0; i < 13; i++ ){
-             imageName += possible.charAt(Math.floor(Math.random() * possible.length));
-          }
-          var mime ='image/jpg'
-          const imageRef = firebase.storage().ref('posts').child(imageName)
-          fs.readFile(uploadUri, 'base64')
-          .then((data) => {
-            return Blob.build(data, { type: `${mime};BASE64` })
-          })
-          .then((blob) => {
-            uploadBlob = blob
-            return imageRef.put(blob, { contentType: mime })
-          })
-          .then(() => {
-            uploadBlob.close()
-            return imageRef.getDownloadURL()
-          })
-          .then((url) => {
-            resolve(url)
+     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://','') : uri
+     ImageResizer.createResizedImage(uri, 500, 500,'JPEG',80)
+       .then(({uri}) => {
+         let uploadBlob = null
+         var imageName = "";
+         var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-          })
-          .catch((error) => {
-            reject(error)
-          })
-      }).catch((err) => {
-        console.log(err);
-          reject(error)
-      });
+         for( var i=0; i < 13; i++ ){
+            imageName += possible.charAt(Math.floor(Math.random() * possible.length));
+         }
+         var mime ='image/jpg'
+         const imageRef = firebase.storage().ref('posts').child(imageName)
+         imageRef.put(uri, { contentType: mime })
+
+         .then(() => {
+
+           return imageRef.getDownloadURL()
+         })
+         .then((url) => {
+           resolve(url)
+
+         })
+         .catch((error) => {
+           reject(error)
+         })
+       }).catch((err) => {
+         console.log(err);
+           reject(error)
+       });
 
    })
 
@@ -200,7 +196,9 @@ class Backend {
 
 
     const loadInitial = (data) => {
+
       const messages = data.val();
+
       var callbackobj = [];
       var simdi = moment()
       var saat = simdi.hour();
@@ -224,12 +222,21 @@ class Backend {
       else{
         this.lastKeyLoaded="asdf"
       }
-
+      callbackobj.sort(function(b, a){
+          var keyA = new Date(a.createdAt),
+              keyB = new Date(b.createdAt);
+          // Compare the 2 dates
+          if(keyA < keyB) return -1;
+          if(keyA > keyB) return 1;
+          return 0;
+      })
+      console.log(callbackobj)
       callback(callbackobj);
     };
     this.clearUnread()
-    this.messagesRef.limitToLast(50).once('value',loadInitial);
+    this.messagesRef.orderByKey().once('value',loadInitial);
   }
+
 
   loadOldMessages = (falciNo) => {
     return new Promise((resolve, reject) => {
@@ -261,6 +268,14 @@ class Backend {
 
             }
         });
+        callbackobj.sort(function(b, a){
+            var keyA = new Date(a.createdAt),
+                keyB = new Date(b.createdAt);
+            // Compare the 2 dates
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        })
         resolve(callbackobj)
       })
       .catch((error) => {
@@ -505,10 +520,12 @@ loadMessages = (callback) => {
             var aktif =null
             var output = [];
             var data = dataSnapshot.val()
-
+            //console.log(data)
             for (var key in data) {
+              if(data[key]!==null){
                 data[key].key = key;   // save key so you can access it from the array (will modify original data)
                 output.push(data[key]);
+              }
             }
             if(output.length>0){
               output.sort(function(a,b) {
@@ -942,45 +959,37 @@ loadMessages = (callback) => {
   uploadProfilePic = (uri) => {
 
     return new Promise((resolve, reject) => {
-     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      uri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+      const imageRef = firebase.storage().ref('profilepics').child(this.getUid())
+      var mime ='image/jpg'
+      imageRef.put(uri, { contentType: mime })
+      .then(() => {
 
-       let uploadBlob = null
-       var mime ='image/jpg'
-       const imageRef = firebase.storage().ref('profilepics').child(this.getUid())
-       fs.readFile(uploadUri, 'base64')
-       .then((data) => {
-         return Blob.build(data, { type: `${mime};BASE64` })
-       })
-       .then((blob) => {
-         uploadBlob = blob
-         return imageRef.put(blob, { contentType: mime })
-       })
-       .then(() => {
-         uploadBlob.close()
-         return imageRef.getDownloadURL()
-       })
-       .then((url) => {
-         resolve(url)
-         firebase.auth().currentUser.updateProfile({
-           photoURL:url
-         })
-         fetch('https://eventfluxbot.herokuapp.com/appapi/setProfilePic', {
-           method: 'POST',
-           headers: {
-             'Accept': 'application/json',
-             'Content-Type': 'application/json',
-           },
-           body: JSON.stringify({
-             url: url,
-             uid:this.getUid()
-           })
-         })
+        return imageRef.getDownloadURL()
+      })
+      .then((url) => {
+        resolve(url)
+        firebase.auth().currentUser.updateProfile({
+          photoURL:url
+        })
+        fetch('https://eventfluxbot.herokuapp.com/appapi/setProfilePic', {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            url: url,
+            uid:this.getUid()
+          })
+        })
 
 
-       })
-       .catch((error) => {
-         reject(error)
-       })
+      })
+      .catch((error) => {
+        reject(error)
+      })
+
    })
 
   }

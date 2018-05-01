@@ -46,6 +46,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		84B11F29716543C5B9533EE3 /* MaterialCommunityIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3ADF6241671D440A8562CF02 /* MaterialCommunityIcons.ttf */; };
 		86C925766AF940F4AF581B4D /* libRCTFBSDK.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60A855BFCB224FD2BE6EDC2A /* libRCTFBSDK.a */; };
+		8E234FE2B3CE41BCBAB56959 /* libRNFirebase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 30C0F989EE7B410F92E024FF /* libRNFirebase.a */; };
 		94F35302CBFF4F0386848F8A /* libBugsnagReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 23F5639E35414CD991F2E436 /* libBugsnagReactNative.a */; };
 		9FE62F112CB84AA7B09859E9 /* libRCTVideo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DC290A569F14026A7799668 /* libRCTVideo.a */; };
 		A1620785B862412DA7CABF9C /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0ECDAD3EB47347C3964990AF /* MaterialIcons.ttf */; };
@@ -315,6 +316,13 @@
 			remoteGlobalIDString = 358F4ED71D1E81A9004DF814;
 			remoteInfo = RCTBlob;
 		};
+		BD025E26209654FD0017A0BD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = D77CC3C99D994126A45EE6CF /* RNFirebase.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 134814201AA4EA6300B7C361;
+			remoteInfo = RNFirebase;
+		};
 		BD0D20441EBB959E005312A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 62B0414881DF43FA85D9956A /* CodePush.xcodeproj */;
@@ -518,13 +526,6 @@
 			remoteGlobalIDString = 54265A5692EB9F80345CBFFEBE517201;
 			remoteInfo = Protobuf;
 		};
-		BD958F3020855C5300D91636 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BD2D28E01EBA5C9900C9108C /* Pods.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 7DD9F9E50A38F7923CA069E30387D483;
-			remoteInfo = "react-native-camera";
-		};
 		BD958F6520855CFA00D91636 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BD958F6120855CFA00D91636 /* RNCamera.xcodeproj */;
@@ -605,6 +606,7 @@
 		2D02E4901E0B4A5D006451C7 /* kahvefaliios-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "kahvefaliios-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		2D16E6891FA4F8E400B85C8A /* libReact.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libReact.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F88628311014629BB97E35F /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
+		30C0F989EE7B410F92E024FF /* libRNFirebase.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFirebase.a; sourceTree = "<group>"; };
 		32DB5CC8563F480BAA17D80A /* RCTVideo.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTVideo.xcodeproj; path = "../node_modules/react-native-video/ios/RCTVideo.xcodeproj"; sourceTree = "<group>"; };
 		3ADF6241671D440A8562CF02 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		3D152F100E094DDABEFF6DDD /* libInAppUtils.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libInAppUtils.a; sourceTree = "<group>"; };
@@ -665,6 +667,7 @@
 		BDFEE1CD2054FA9F00351189 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = kahvefaliios/Images.xcassets; sourceTree = "<group>"; };
 		C11E46D3032C44E59E7032FB /* RCTBEEPickerManager.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RCTBEEPickerManager.xcodeproj; path = "../node_modules/react-native-picker/ios/RCTBEEPickerManager.xcodeproj"; sourceTree = "<group>"; };
 		C29A39E986D1433FB5C66C66 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
+		D77CC3C99D994126A45EE6CF /* RNFirebase.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNFirebase.xcodeproj; path = "../node_modules/react-native-firebase/ios/RNFirebase.xcodeproj"; sourceTree = "<group>"; };
 		D98A078599C745F892E2C71A /* libRNFIRMessaging.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNFIRMessaging.a; sourceTree = "<group>"; };
 		E1D3AC810E55DB80455E1584 /* Pods-kahvefaliios.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-kahvefaliios.debug.xcconfig"; path = "Pods/Target Support Files/Pods-kahvefaliios/Pods-kahvefaliios.debug.xcconfig"; sourceTree = "<group>"; };
 		E7E0F49E86E84CAA855F72C9 /* libRCTImageResizer.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRCTImageResizer.a; sourceTree = "<group>"; };
@@ -721,6 +724,7 @@
 				3B29737604EF4261BFD083EB /* libRNFIRMessaging.a in Frameworks */,
 				CB2BF06C0B464A1A8283D35C /* libRCTImageResizer.a in Frameworks */,
 				46F912EE4DB03B58C201FFB0 /* libPods-kahvefaliios.a in Frameworks */,
+				8E234FE2B3CE41BCBAB56959 /* libRNFirebase.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -943,6 +947,7 @@
 				C11E46D3032C44E59E7032FB /* RCTBEEPickerManager.xcodeproj */,
 				598EE9D00DFE435ABCBF72F4 /* RNFIRMessaging.xcodeproj */,
 				A73B238B6934467ABBD52C78 /* RCTImageResizer.xcodeproj */,
+				D77CC3C99D994126A45EE6CF /* RNFirebase.xcodeproj */,
 			);
 			name = Libraries;
 			sourceTree = "<group>";
@@ -1011,6 +1016,14 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		BD025E23209654FD0017A0BD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				BD025E27209654FD0017A0BD /* libRNFirebase.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		BD0D20411EBB959E005312A4 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1034,7 +1047,6 @@
 				BD2D28F41EBA5C9900C9108C /* libPods-kahvefaliiosTests.a */,
 				BD8A3C5A1F44D80200319BEC /* libProtobuf.a */,
 				BD0D20511EBB959E005312A4 /* libReact.a */,
-				BD958F3120855C5300D91636 /* libreact-native-camera.a */,
 				BD82DCAB2085413300A95607 /* libyoga.a */,
 			);
 			name = Products;
@@ -1164,6 +1176,7 @@
 				60CA432499CA472DBCF72064 /* libRNAdMobManager.a */,
 				D98A078599C745F892E2C71A /* libRNFIRMessaging.a */,
 				E7E0F49E86E84CAA855F72C9 /* libRCTImageResizer.a */,
+				30C0F989EE7B410F92E024FF /* libRNFirebase.a */,
 			);
 			name = "Recovered References";
 			sourceTree = "<group>";
@@ -1427,6 +1440,10 @@
 					ProjectRef = F1180790BDB14F938073ADDF /* RNFetchBlob.xcodeproj */;
 				},
 				{
+					ProductGroup = BD025E23209654FD0017A0BD /* Products */;
+					ProjectRef = D77CC3C99D994126A45EE6CF /* RNFirebase.xcodeproj */;
+				},
+				{
 					ProductGroup = BD4597961F434A8600D5A713 /* Products */;
 					ProjectRef = 598EE9D00DFE435ABCBF72F4 /* RNFIRMessaging.xcodeproj */;
 				},
@@ -1653,6 +1670,13 @@
 			remoteRef = ADBDB9261DFEBF0700ED6528 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		BD025E27209654FD0017A0BD /* libRNFirebase.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRNFirebase.a;
+			remoteRef = BD025E26209654FD0017A0BD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		BD0D20451EBB959E005312A4 /* libCodePush.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -1854,13 +1878,6 @@
 			fileType = archive.ar;
 			path = libProtobuf.a;
 			remoteRef = BD8A3C591F44D80200319BEC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		BD958F3120855C5300D91636 /* libreact-native-camera.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = "libreact-native-camera.a";
-			remoteRef = BD958F3020855C5300D91636 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		BD958F6620855CFA00D91636 /* libRNCamera.a */ = {
@@ -2317,11 +2334,15 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -2353,11 +2374,15 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = kahvefaliiosTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -2397,6 +2422,7 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -2445,6 +2471,7 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = kahvefaliios/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.1;
@@ -2492,10 +2519,14 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -2536,10 +2567,14 @@
 					"$(SRCROOT)/../node_modules/react-native-admob/ios",
 					"$(SRCROOT)/../node_modules/react-native-fcm/ios",
 					"$(SRCROOT)/../node_modules/react-native-image-resizer/ios/RCTImageResizer",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
 				);
 				INFOPLIST_FILE = "kahvefaliios-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -2564,10 +2599,16 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+				);
 				INFOPLIST_FILE = "kahvefaliios-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",
@@ -2592,10 +2633,16 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = "$(inherited)";
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase/**",
+				);
 				INFOPLIST_FILE = "kahvefaliios-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/$(TARGET_NAME)\"",
+				);
 				OTHER_LDFLAGS = (
 					"-ObjC",
 					"-lc++",

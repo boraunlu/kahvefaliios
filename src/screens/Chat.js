@@ -25,7 +25,7 @@ import Sound from 'react-native-sound'
 import PropTypes from 'prop-types';
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { NavigationActions } from 'react-navigation'
-import firebase from 'firebase'
+import firebase from 'react-native-firebase'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';

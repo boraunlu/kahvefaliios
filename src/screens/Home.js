@@ -14,7 +14,7 @@ import {
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import { NavigationActions } from 'react-navigation'
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { Client } from 'bugsnag-react-native';
 
@@ -43,6 +43,7 @@ export default class Home extends React.Component {
     }
 
   componentDidMount() {
+    console.log(firebase.database().app.name);
     const { navigate } = this.props.navigation;
 
     var init = false;
@@ -114,7 +115,7 @@ export default class Home extends React.Component {
                  .catch(function (error) {
 
                  });
-              
+
              });
         //alert("hey");
       } else {

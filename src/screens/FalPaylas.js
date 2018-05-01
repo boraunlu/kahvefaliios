@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 
 import axios from 'axios';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
@@ -255,7 +255,7 @@ export default class FalPaylas extends React.Component {
                    .catch(function (error) {
 
                    });
-                   
+
                     setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
 
                  }

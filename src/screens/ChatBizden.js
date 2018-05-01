@@ -15,6 +15,7 @@ import {
   Alert,
   Easing,
   ActivityIndicator,
+  ImageBackground
 } from 'react-native';
 
 import axios from 'axios';
@@ -191,7 +192,7 @@ export default class ChatBizden extends React.Component {
       uid: Backend.getUid(),
       text: messages[0].text
     })
-  
+
 
     // for demo purpose
     //this.answerDemo(messages);
@@ -222,13 +223,6 @@ export default class ChatBizden extends React.Component {
     );
   }
 
-  renderCustomView(props) {
-    return (
-      <CustomView
-        {...props}
-      />
-    );
-  }
   renderSend(props) {
     return (
       <Send
@@ -290,7 +284,7 @@ export default class ChatBizden extends React.Component {
             }}
             renderActions={this.renderCustomActions}
             renderBubble={this.renderBubble}
-            renderCustomView={this.renderCustomView}
+
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}

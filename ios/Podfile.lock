@@ -15,40 +15,76 @@ PODS:
   - CodePush/SSZipArchive (5.3.2):
     - React
   - DoubleConversion (1.1.5)
-  - Firebase/AdMob (4.0.0):
+  - Firebase/AdMob (4.13.0):
     - Firebase/Core
-    - Google-Mobile-Ads-SDK (= 7.20.0)
-  - Firebase/Core (4.0.0):
-    - FirebaseAnalytics (= 4.0.0)
-    - FirebaseCore (= 4.0.0)
-  - Firebase/Messaging (4.0.0):
+    - Google-Mobile-Ads-SDK (= 7.30.0)
+  - Firebase/Auth (4.13.0):
     - Firebase/Core
-    - FirebaseMessaging (= 2.0.0)
-  - FirebaseAnalytics (4.0.0):
+    - FirebaseAuth (= 4.6.1)
+  - Firebase/Core (4.13.0):
+    - FirebaseAnalytics (= 4.2.0)
+    - FirebaseCore (= 4.0.20)
+  - Firebase/Database (4.13.0):
+    - Firebase/Core
+    - FirebaseDatabase (= 4.1.5)
+  - Firebase/Messaging (4.13.0):
+    - Firebase/Core
+    - FirebaseMessaging (= 2.2.0)
+  - Firebase/Storage (4.13.0):
+    - Firebase/Core
+    - FirebaseStorage (= 2.2.0)
+  - FirebaseAnalytics (4.2.0):
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
-  - FirebaseCore (4.0.0):
+    - nanopb (~> 0.3)
+  - FirebaseAuth (4.6.1):
+    - FirebaseAnalytics (~> 4.2)
+    - GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)
+    - GTMSessionFetcher/Core (~> 1.1)
+  - FirebaseCore (4.0.20):
     - GoogleToolboxForMac/NSData+zlib (~> 2.1)
+  - FirebaseDatabase (4.1.5):
+    - FirebaseAnalytics (~> 4.1)
+    - FirebaseCore (~> 4.0)
+    - leveldb-library (~> 1.18)
   - FirebaseInstanceID (2.0.10):
     - FirebaseCore (~> 4.0)
-  - FirebaseMessaging (2.0.0):
-    - FirebaseAnalytics (~> 4.0)
+  - FirebaseMessaging (2.2.0):
+    - FirebaseAnalytics (~> 4.1)
     - FirebaseCore (~> 4.0)
     - FirebaseInstanceID (~> 2.0)
     - GoogleToolboxForMac/Logger (~> 2.1)
-    - Protobuf (~> 3.1)
+    - Protobuf (~> 3.5)
+  - FirebaseStorage (2.2.0):
+    - FirebaseAnalytics (~> 4.1)
+    - FirebaseCore (~> 4.0)
+    - GTMSessionFetcher/Core (~> 1.1)
   - Folly (2016.09.26.00):
     - boost-for-react-native
     - DoubleConversion
     - glog
   - glog (0.3.4)
-  - Google-Mobile-Ads-SDK (7.20.0)
+  - Google-Mobile-Ads-SDK (7.30.0)
+  - GoogleToolboxForMac/DebugUtils (2.1.4):
+    - GoogleToolboxForMac/Defines (= 2.1.4)
   - GoogleToolboxForMac/Defines (2.1.4)
   - GoogleToolboxForMac/Logger (2.1.4):
     - GoogleToolboxForMac/Defines (= 2.1.4)
   - GoogleToolboxForMac/NSData+zlib (2.1.4):
     - GoogleToolboxForMac/Defines (= 2.1.4)
+  - GoogleToolboxForMac/NSDictionary+URLArguments (2.1.4):
+    - GoogleToolboxForMac/DebugUtils (= 2.1.4)
+    - GoogleToolboxForMac/Defines (= 2.1.4)
+    - GoogleToolboxForMac/NSString+URLArguments (= 2.1.4)
+  - GoogleToolboxForMac/NSString+URLArguments (2.1.4)
+  - GTMSessionFetcher/Core (1.1.15)
+  - leveldb-library (1.20)
+  - nanopb (0.3.8):
+    - nanopb/decode (= 0.3.8)
+    - nanopb/encode (= 0.3.8)
+  - nanopb/decode (0.3.8)
+  - nanopb/encode (0.3.8)
   - Protobuf (3.5.0)
   - React (0.54.2):
     - React/Core (= 0.54.2)
@@ -106,8 +142,11 @@ DEPENDENCIES:
   - CodePush (from `../node_modules/react-native-code-push`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - Firebase/AdMob
-  - Firebase/Core (= 4.0.0)
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Database
   - Firebase/Messaging
+  - Firebase/Storage
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - React/Core (from `../node_modules/react-native`)
@@ -145,19 +184,25 @@ SPEC CHECKSUMS:
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   CodePush: af67b07310e4037ecd5c38f03c7a51c6350240b5
   DoubleConversion: ebb6747c5b66026ad4f97b789c3ceac6f18e57a6
-  Firebase: 284eea779b73fdff309791817da7c68bff8dd572
-  FirebaseAnalytics: 6f08e746f7d66f5452931bc2e822b5df9c66b64a
-  FirebaseCore: 85ad466044c2f013cdb167f85d426d15b128114a
+  Firebase: 5ec5e863d269d82d66b4bf56856726f8fb8f0fb3
+  FirebaseAnalytics: 7ef69e76a5142f643aeb47c780e1cdce4e23632e
+  FirebaseAuth: bf22cacf22c60ab454bf2636f556d8892b10b53f
+  FirebaseCore: 90cb1c53d69b556f112a1bf72b5fcfaad7650790
+  FirebaseDatabase: 5f0bc6134c5c237cf55f9e1249d406770a75eafd
   FirebaseInstanceID: 8d20d890d65c917f9f7d9950b6e10a760ad34321
-  FirebaseMessaging: 227406c05b0dc9290702d2e9f18ab5528f0c2cf2
+  FirebaseMessaging: 75cdb862e86c30e0913a2ff307e48d49357c5b73
+  FirebaseStorage: 0c223481c8f89ed300cf1239ddd2d9833622c65f
   Folly: 211775e49d8da0ca658aebc8eab89d642935755c
   glog: 1de0bb937dccdc981596d3b5825ebfb765017ded
-  Google-Mobile-Ads-SDK: 168312cdc167fa22746d4ea8e839fc4825dd2966
+  Google-Mobile-Ads-SDK: 7404f68120ae8682afeb5af001fbf4aad731c78e
   GoogleToolboxForMac: 91c824d21e85b31c2aae9bb011c5027c9b4e738f
+  GTMSessionFetcher: 5fa5b80fd20e439ef5f545fb2cb3ca6c6714caa2
+  leveldb-library: 08cba283675b7ed2d99629a4bc5fd052cd2bb6a5
+  nanopb: 5601e6bca2dbf1ed831b519092ec110f66982ca3
   Protobuf: 8a9838fba8dae3389230e1b7f8c104aa32389c03
   React: c237e42de9c70e5cac6eeb52b4cfd3a0910c1f00
   yoga: 55da126afc384965b96bff46652464373b330add
 
-PODFILE CHECKSUM: d8abc27e6fb80918381b4e6d329c7a6316eedf63
+PODFILE CHECKSUM: b60bc956ab9d54c661da4a5d42884b918f553bff
 
 COCOAPODS: 1.4.0

@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import PropTypes from 'prop-types';

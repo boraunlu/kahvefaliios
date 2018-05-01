@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
@@ -121,7 +121,7 @@ export default class Profil extends React.Component {
         .catch(function (error) {
 
         });
-    
+
       }
     }
 
@@ -403,22 +403,22 @@ export default class Profil extends React.Component {
 
           </View>
           <View style={{paddingTop:5,marginBottom:10,flex:1}}>
-            <View style={{marginBottom:5}}>
+            <View style={{marginBottom:5,backgroundColor:'white'}}>
               <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
             </View>
-            <View style={{marginBottom:5}}>
+            <View style={{marginBottom:5,backgroundColor:'white'}}>
 
                 <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
 
 
             </View>
-            <View style={{marginBottom:5}}>
+            <View style={{marginBottom:5,backgroundColor:'white'}}>
               <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>
             </View>
-            <View style={{marginBottom:5}}>
+            <View style={{marginBottom:5,backgroundColor:'white'}}>
               <Button title={"Kullanım Koşulları"} color={'rgb(0,185,241)'} onPress={() => {this.popupDialog.show()}}/>
             </View>
-            <View style={{marginBottom:5}}>
+            <View style={{marginBottom:5,backgroundColor:'white'}}>
               <Button title={"Çıkış Yap"} color={'rgb(249,50,12)'} onPress={() => {this.logout()}}/>
             </View>
           </View>

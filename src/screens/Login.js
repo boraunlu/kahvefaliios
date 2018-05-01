@@ -48,7 +48,7 @@ function getFirstWord(str) {
       return string.charAt(0).toUpperCase() + string.slice(1);
   }
 
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 
@@ -281,7 +281,7 @@ _keyboardDidShow = (event) => {
             .catch(function (error) {
 
             });
-            
+
           }.bind(this), function(error) {
           // An error happened.
           });

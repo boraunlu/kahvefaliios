@@ -16,7 +16,8 @@ import {
   Alert,
   Easing,
   ActivityIndicator,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  ImageBackground
 } from 'react-native';
 
 import PropTypes from 'prop-types';
@@ -28,7 +29,7 @@ import Backend from '../Backend';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
-import firebase from 'firebase';
+import firebase from 'react-native-firebase';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 
@@ -338,13 +339,7 @@ export default class ChatAgent extends React.Component {
     );
   }
 
-  renderCustomView(props) {
-    return (
-      <CustomView
-        {...props}
-      />
-    );
-  }
+
   renderSend(props) {
     return (
       <Send
@@ -488,7 +483,6 @@ export default class ChatAgent extends React.Component {
             }}
             renderActions={this.renderCustomActions}
             renderBubble={this.renderBubble}
-            renderCustomView={this.renderCustomView}
             renderFooter={this.renderFooter}
             renderSend={this.renderSend}
             renderComposer={this.renderComposer}
