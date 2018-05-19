@@ -21,7 +21,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-//import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
+import {GoogleSignin, GoogleSigninButton} from 'react-native-google-signin';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Spinner from 'react-native-loading-spinner-overlay';
 
@@ -87,7 +87,7 @@ export default class Login extends React.Component {
     };
 
   gugilsignin = () => {
-    /*
+
     GoogleSignin.signIn()
     .then((user) => {
 
@@ -104,7 +104,7 @@ export default class Login extends React.Component {
     .catch((err) => {
       console.log('WRONG SIGNIN', err);
     })
-    .done();*/
+    .done();
   }
     handleFormChange = (formData) => {
       /*
@@ -159,26 +159,29 @@ _keyboardDidShow = (event) => {
                       }
                     }
                   }
+                  firebase.links()
+                  .getInitialLink()
+                  .then((url) => {
+                   var dynamiclink= url
+                   axios.post('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
+                     uid: user.uid,
+                     token: token,
+                     dynamiclink:dynamiclink
+                   })
+                   .then( (response) => {
+                     var responseJson=response.data
 
-                  axios.post('https://eventfluxbot.herokuapp.com/webhook/appsignin', {
-                    uid: user.uid,
-                    token: token
+                     this.setState({spinnerVisible:false})
+                     this._navigateTo('Greeting')
+                     if(responseJson.cevap=="ilk"){
+                       setTimeout(function(){Alert.alert('Hoşgeldiniz!','Hoşgeldin '+responseJson.username+'! Seni burada da görmek çok güzel. Hediye olarak 20 Kredin hesabına eklendi.')},200)
+
+                     }
+                   })
+                   .catch(function (error) {
+
+                   });
                   })
-                  .then( (response) => {
-                    var responseJson=response.data
-
-                    this.setState({spinnerVisible:false})
-                    this._navigateTo('Greeting')
-                    if(responseJson.cevap=="ilk"){
-                      setTimeout(function(){Alert.alert('Hoşgeldiniz!','Hoşgeldin '+responseJson.username+'! Seni burada da görmek çok güzel. Hediye olarak 20 Kredin hesabına eklendi.')},200)
-
-                    }
-                  })
-                  .catch(function (error) {
-
-                  });
-
-
 
                 }.bind(this))
                 .catch(function(error) {
@@ -269,18 +272,24 @@ _keyboardDidShow = (event) => {
             displayName: this.state.name,
 
           }).then(function() {
+            firebase.links()
+            .getInitialLink()
+            .then((url) => {
+             var dynamiclink= url
+             axios.post('https://eventfluxbot.herokuapp.com/webhook/googlelogin', {
+               uid: user.uid,
+               name: this.state.name,
+               gender:this.state.gender,
+               dynamiclink:dynamiclink
+             })
+             .then( (response) => {
+               this._navigateTo('Greeting')
+             })
+             .catch(function (error) {
 
-            axios.post('https://eventfluxbot.herokuapp.com/appapi/googlelogin', {
-              uid: user.uid,
-              name: this.state.name,
-              gender:this.state.gender
-            })
-            .then( (response) => {
-              this._navigateTo('Greeting')
-            })
-            .catch(function (error) {
-
+             });
             });
+
 
           }.bind(this), function(error) {
           // An error happened.
@@ -305,7 +314,7 @@ _keyboardDidShow = (event) => {
     }
 
   componentDidMount() {
-    //GoogleSignin.configure({ iosClientId: '658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc.apps.googleusercontent.com' })
+    GoogleSignin.configure({ iosClientId: '658191739474-h72ah1kkrfn934guceiefqqvftcf3ghc.apps.googleusercontent.com' })
       this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
   }
 

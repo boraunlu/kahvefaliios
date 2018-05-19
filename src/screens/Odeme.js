@@ -14,6 +14,7 @@ import {
   Linking,
   ActivityIndicator,
   Alert,
+  Share
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -48,7 +49,8 @@ export default class Odeme extends React.Component {
       credit:this.props.userStore.userCredit,
       sharedWeek:this.props.userStore.sharedWeek,
       shareLinkContent: shareLinkContent,
-      spinnerVisible:false
+      spinnerVisible:false,
+      dynamiclink:null
   };
 
 }
@@ -62,7 +64,9 @@ export default class Odeme extends React.Component {
        ),
     };
 
-
+    advert = firebase.admob().rewarded('ca-app-pub-6158146193525843/9355345612');
+   AdRequest = firebase.admob.AdRequest;
+    request = new this.AdRequest();
 
     pay = (credit) => {
       this.setState({spinnerVisible:true})
@@ -109,6 +113,38 @@ export default class Odeme extends React.Component {
       });
 
     }
+    shareWithFriends = () => {
+      if(this.state.dynamiclink){
+        Share.share({
+          message: this.state.dynamiclink,
+          url: this.state.dynamiclink,
+          title: 'Kahve Falı Sohbeti'
+        }, {
+          // Android only:
+          dialogTitle: 'Kahve Falı Sohbeti',
+          // iOS only:
+
+        })
+      }
+
+      else {
+        firebase.links()
+          .createShortDynamicLink(link,'SHORT')
+          .then((url) => {
+            Share.share({
+              message: url,
+              url: url,
+              title: 'Kahve Falı Sohbeti'
+            }, {
+              // Android only:
+              dialogTitle: 'Kahve Falı Sohbeti',
+              // iOS only:
+
+            })
+        });
+      }
+    }
+
     shareLinkWithShareDialog = () => {
       if(this.props.userStore.sharedWeek==null){
 
@@ -148,8 +184,18 @@ export default class Odeme extends React.Component {
         [
           {text: 'İstemiyorum', onPress: () => {}},
           {text: 'Tamam', onPress: () => {
-            ///AdMobRewarded.showAd((error) => error && Alert.alert("Reklam Yok","Şu an için uygun reklam bulunmuyor, lütfen daha sonra tekrar dene."));
-          }},
+            var loaded=  this.advert.isLoaded()
+            if(loaded){
+                this.advert.show()
+            }
+            else {
+
+              Alert.alert("Reklam Hakkı","Bugünkü reklam izleme hakkınız tamamlanmıştır.")
+            }
+
+            //AdMobRewarded.showAd();
+            //AdMobRewarded.requestAd();
+        }},
         ],
       )
 
@@ -196,7 +242,29 @@ export default class Odeme extends React.Component {
 
     Keyboard.dismiss()
 
+    this.advert.loadAd(this.request.build());
+    this.advert.on('onAdLoaded', () => {
+      //console.log('Advert ready to show.');
 
+    });
+
+    this.advert.on('onRewarded', (event) => {
+      console.log('The user watched the entire video and will now be rewarded!', event);
+      Backend.addCredits(5,"reklam"); setTimeout(function(){Alert.alert('Tebrikler','5 Kredi hesabınıza eklendi!')},1000); this.props.userStore.increment(5);
+      this.advert.loadAd(this.request.build());
+    });
+
+    const link =
+    new firebase.links.DynamicLink('http://www.falsohbeti.com/indir?senderID='+Backend.getUid(), 'qwue3.app.goo.gl')
+    .android.setPackageName('com.kahvefaliapp')
+      .ios.setBundleId('com.grepsi.kahvefaliios');
+
+
+    firebase.links()
+      .createShortDynamicLink(link,'SHORT')
+      .then((url) => {
+        this.setState({dynamiclink:url})
+    });
      /*AdMobRewarded.setAdUnitID('ca-app-pub-6158146193525843/9355345612');
 
 
@@ -273,6 +341,15 @@ export default class Odeme extends React.Component {
             <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
             <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
             {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
+
+          </View>
+          <View style={{flexDirection:'row',flex:1,height:80}}>
+            <TouchableOpacity onPress={() => {this.shareWithFriends()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}>
+              <Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Uygulamayı indiren her arkadaşından 10 Kredi Kazan!</Text>
+              <View style={{padding:3,backgroundColor:'#EC7357',flex:1,borderRadius:3}}>
+                <Text style={{color:'white',textAlign:'center',fontSize:14,fontWeight:'bold'}}>Arkadaşlarınla Paylaş</Text>
+              </View>
+            </TouchableOpacity>
 
           </View>
         </View>

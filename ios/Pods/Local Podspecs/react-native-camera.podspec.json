@@ -1,6 +1,6 @@
 {
   "name": "react-native-camera",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "summary": "A Camera component for React Native. Also reads barcodes.",
   "description": "A Camera component for React Native. Also reads barcodes.",
   "license": "MIT",
@@ -12,7 +12,7 @@
   "homepage": "https://github.com/react-native-community/react-native-camera",
   "source": {
     "git": "https://github.com/react-native-community/react-native-camera",
-    "tag": "1.1.1"
+    "tag": "1.1.2"
   },
   "requires_arc": true,
   "platforms": {

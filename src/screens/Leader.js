@@ -475,7 +475,7 @@ export default class Leader extends React.Component {
 
     return (
 
-      <Image source={require('../static/images/splash4.png')} style={styles.container}>
+      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
       <ScrollableTabView
         style={{paddingTop:50,flex:1}}
        renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
@@ -507,7 +507,7 @@ export default class Leader extends React.Component {
           </ScrollView>
         </View>
       </PopupDialog>
-      </Image>
+    </ImageBackground>
 
     );
   }

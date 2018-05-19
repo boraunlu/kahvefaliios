@@ -14,6 +14,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import "RNFIRMessaging.h"
 #import <BugsnagReactNative/BugsnagReactNative.h>
+#import "RNFirebaseLinks.h"
 
 @implementation AppDelegate
 
@@ -49,6 +50,7 @@
 
   [[FBSDKApplicationDelegate sharedInstance] application:application
                            didFinishLaunchingWithOptions:launchOptions];
+  [FIROptions defaultOptions].deepLinkURLScheme = @"com.grepsi.kahvefaliios";
   [FIRApp configure];
   [BugsnagReactNative start];
   [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
@@ -63,7 +65,7 @@
  {
    [RNFIRMessaging didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
    }
-
+/*
   - (BOOL)application:(UIApplication *)application
               openURL:(NSURL *)url
     sourceApplication:(NSString *)sourceApplication
@@ -73,8 +75,31 @@
                                                           openURL:url
                                                 sourceApplication:sourceApplication
                                                        annotation:annotation
-            ]
- ;
+            ];
   }
+
+    - (BOOL)application:(UIApplication *)application
+                openURL:(NSURL *)url
+                options:(NSDictionary<NSString *, id> *)options {
+      return [[RNFirebaseLinks instance] application:application openURL:url options:options];
+    }*/
+
+- (BOOL)application:(UIApplication *)application
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
+  BOOL handled = [[FBSDKApplicationDelegate sharedInstance] application:application openURL:url sourceApplication:options[UIApplicationOpenURLOptionsSourceApplicationKey] annotation:options[UIApplicationOpenURLOptionsAnnotationKey]];
+  
+  if (!handled) {
+    handled = [[RNFirebaseLinks instance] application:application openURL:url options:options];
+  }
+  
+  return handled;
+}
+
+    - (BOOL)application:(UIApplication *)application
+    continueUserActivity:(NSUserActivity *)userActivity
+     restorationHandler:(void (^)(NSArray *))restorationHandler {
+      return [[RNFirebaseLinks instance] application:application continueUserActivity:userActivity restorationHandler:restorationHandler];
+    }
 
 @end

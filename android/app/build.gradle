@@ -138,9 +138,12 @@ android {
 }
 
 dependencies {
-    compile project(':react-native-firebase')
-    compile project(':react-native-google-sign-in')
     compile project(':react-native-camera')
+    compile project(':react-native-google-signin')
+    compile(project(':react-native-firebase')) {
+        transitive = false
+    }
+    compile project(':react-native-google-sign-in')
     compile project(':react-native-image-resizer')
     compile project(':react-native-fcm')
     compile project(':react-native-admob')

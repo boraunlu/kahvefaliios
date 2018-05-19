@@ -61,7 +61,6 @@ export default class Profil extends React.Component {
       pickerVisible: false,
       cameraVisible: false,
       spinnerVisible:false,
-      bio:this.props.userStore.bio
   };
 }
 

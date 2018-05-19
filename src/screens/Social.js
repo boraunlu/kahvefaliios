@@ -154,8 +154,11 @@ export default class Social extends React.Component {
       this.props.socialStore.setTek(responseJson.tek)
       var sosyals=Array.from(responseJson.sosyals)
       this.props.socialStore.setSocials(sosyals)
-      //var commenteds=Array.from(responseJson.commenteds)
-      //this.props.socialStore.setCommenteds(commenteds)
+      /*
+      var commenteds=Array.from(responseJson.commenteds)
+      this.props.socialStore.setCommenteds(commenteds)
+      */
+
       var commenteds=[]
       var id = Backend.getUid()
       for (var i = 0; i < sosyals.length; i++) {
@@ -399,7 +402,7 @@ export default class Social extends React.Component {
            </View>
            <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:60,borderColor:'teal',flexDirection:'row'}}>
               {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
-              <Text style={{textAlign:'center',color:'black'}}>{item.comments?item.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
+              <Text style={{textAlign:'center',color:'black'}}>{item.commentsNew?item.commentsNew.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({item.commentsNew.length})</Text>:"("+item.commentsNew.length+")":0}</Text>
            </View>
          </View>
 

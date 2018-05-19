@@ -2,17 +2,11 @@ import {
   Platform,
 } from 'react-native';
 
-import RNFetchBlob from 'react-native-fetch-blob'
 import firebase from 'react-native-firebase'
 import moment from 'moment';
 import ImageResizer from 'react-native-image-resizer';
 
 
-const fs = RNFetchBlob.fs
-const Blob = RNFetchBlob.polyfill.Blob
-
-window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
-window.Blob = Blob
 
 class Backend {
   uid = '';

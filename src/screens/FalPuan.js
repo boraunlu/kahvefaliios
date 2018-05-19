@@ -5,6 +5,7 @@ import {
   View,
   Image,
   ScrollView,
+  ImageBackground,
 } from 'react-native';
 
 import firebase from 'react-native-firebase';

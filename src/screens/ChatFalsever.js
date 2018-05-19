@@ -25,7 +25,7 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
 import { NavigationActions } from 'react-navigation'
-//import Toast from 'react-native-root-toast';
+import Toast from 'react-native-root-toast';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
 
@@ -192,7 +192,7 @@ export default class ChatFalsever extends React.Component {
 
 
     if(params.first){
-      /*
+
       let toast = Toast.show('2 gün boyunca bu falseverle sohbet edebilirsiniz!', {
         duration: Toast.durations.SHORT,
         position: 70,
@@ -207,7 +207,7 @@ export default class ChatFalsever extends React.Component {
         shadow: true,
         animation: true,
         hideOnPress: true,
-      });*/
+      });
     }
     if(!params.falsever.read){
       this.props.userStore.increaseFalseverUnread(-1)

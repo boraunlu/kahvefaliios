@@ -14,7 +14,8 @@ import {
   Alert,
   BackAndroid,
   ScrollView,
-  ImageBackground
+  ImageBackground,
+  AsyncStorage
 } from 'react-native';
 
 
@@ -89,7 +90,8 @@ export default class Greeting extends React.Component {
       greetingMessage:"...",
       spinnerVisible:false,
       checkValidation:false,
-      marquee:''
+      marquee:'',
+      reklam:null
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -411,6 +413,25 @@ static navigationOptions = ({ navigation }) => ({
     ).start()
   }
 
+  showReklamPopup = () => {
+    if(this.state.reklam){
+      AsyncStorage.getItem('reklam', (err, result) => {
+
+          if(result){
+            result=JSON.parse(result)
+            if(result.url!==this.state.reklam.url){
+
+              this.popupReklam.show()
+              AsyncStorage.setItem('reklam', JSON.stringify(this.state.reklam), () => {});
+            }
+          }
+          else {
+            this.popupReklam.show()
+            AsyncStorage.setItem('reklam', JSON.stringify(this.state.reklam), () => {});
+          }
+      });
+    }
+  }
 
  generatefalcisayisi = () => {
    var saat = moment().hour()
@@ -450,6 +471,8 @@ static navigationOptions = ({ navigation }) => ({
 
     FCM.setBadgeNumber(0);
 
+
+
     axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       uid: Backend.getUid(),
     })
@@ -460,6 +483,12 @@ static navigationOptions = ({ navigation }) => ({
        //alert(JSON.stringify(responseJson))
        this.props.userStore.setUser(responseJson)
        this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
+       if(responseJson.reklam){
+
+         setTimeout(()=>{this.showReklamPopup()},2000)
+         this.setState({reklam:responseJson.reklam})
+       }
+
     })
     .catch(function (error) {
 
@@ -474,6 +503,10 @@ static navigationOptions = ({ navigation }) => ({
        }
 
      })
+
+
+
+
   }
 
 componentWillMount() {
@@ -561,7 +594,28 @@ componentWillUnmount() {
       }
     }
   }
+  renderReklam = () => {
+    if(this.state.reklam){
+      return(
+        <PopupDialog
+          ref={(popupDialog) => { this.popupReklam = popupDialog; }}
+          dialogStyle={{marginTop:-150}}
+          width={0.8}
+          height={0.6}
+          overlayOpacity={0.75}
+        >
+          <TouchableOpacity style={{flex:1,width: null,height: null}} onPress={() => {this.popupReklam.dismiss();this.props.navigation.navigate(this.state.reklam.destination);}} source={{uri:this.state.reklam.url}}>
+            <Image source={{uri:this.state.reklam.url}} resizeMode={'stretch'} style={{flex:1,width: null,height: null}}/>
+            <TouchableOpacity style={{position:'absolute',top:10,right:10,width:20,height:20,borderRadius:10,backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={() => {this.popupReklam.dismiss()}}>
+              <Text>X</Text>
+            </TouchableOpacity>
 
+          </TouchableOpacity>
+        </PopupDialog>
+      )
+    }
+
+  }
   renderFalTypes = () => {
     if(this.state.userData==null){
       return null
@@ -927,7 +981,7 @@ componentWillUnmount() {
         >
           <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/paraisteback.jpg')}>
 
-            <ImageBackground source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
+            <Image source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
             <Text style={{backgroundColor:'transparent',color:'white',marginLeft:15,marginRight:15,fontSize:16}}>
               {"Sevgili "+this.props.userStore.userName+",\n\nÜcretsiz günlük fal haklarını maalesef tükettin 😞\n\n"}
               Bir kere <Text style={{fontWeight:'bold'}}>AŞK</Text> veya <Text style={{fontWeight:'bold'}}>DETAYLI</Text> fal baktırırsan, tam <Text style={{fontWeight:'bold',fontSize:18,color:'#ffbacd'}}>250 adet</Text> bedava günlük fal hakkı kazanacaksın!🎉🎊
@@ -944,6 +998,8 @@ componentWillUnmount() {
             </View>
           </ImageBackground>
         </PopupDialog>
+        {this.renderReklam()}
+
       </ImageBackground>
 
     );

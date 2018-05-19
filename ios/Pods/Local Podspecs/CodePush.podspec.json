@@ -1,6 +1,6 @@
 {
   "name": "CodePush",
-  "version": "5.3.2",
+  "version": "5.3.3",
   "summary": "React Native plugin for the CodePush service",
   "authors": {
     "name": "Microsoft Corporation"
@@ -9,7 +9,7 @@
   "homepage": "https://microsoft.github.io/code-push",
   "source": {
     "git": "https://github.com/Microsoft/react-native-code-push.git",
-    "tag": "v5.3.2-beta"
+    "tag": "v5.3.3"
   },
   "platforms": {
     "ios": "7.0",
@@ -17,41 +17,22 @@
   },
   "preserve_paths": "*.js",
   "libraries": "z",
+  "source_files": "ios/CodePush/*.{h,m}",
+  "public_header_files": [
+    "ios/CodePush/CodePush.h"
+  ],
   "dependencies": {
     "React": [
 
+    ],
+    "SSZipArchive": [
+      "~> 2.1"
+    ],
+    "JWT": [
+      "~> 3.0.0-beta.7"
+    ],
+    "Base64": [
+      "~> 1.1"
     ]
-  },
-  "subspecs": [
-    {
-      "name": "Core",
-      "source_files": "ios/CodePush/*.{h,m}",
-      "public_header_files": [
-        "ios/CodePush/CodePush.h"
-      ]
-    },
-    {
-      "name": "SSZipArchive",
-      "source_files": [
-        "ios/CodePush/SSZipArchive/*.{h,m}",
-        "ios/CodePush/SSZipArchive/aes/*.{h,c}",
-        "ios/CodePush/SSZipArchive/minizip/*.{h,c}"
-      ],
-      "private_header_files": [
-        "ios/CodePush/SSZipArchive/*.h",
-        "ios/CodePush/SSZipArchive/aes/*.h",
-        "ios/CodePush/SSZipArchive/minizip/*.h"
-      ]
-    },
-    {
-      "name": "JWT",
-      "source_files": "ios/CodePush/JWT/**/*.{h,m}",
-      "private_header_files": "ios/CodePush/JWT/**/*.h"
-    },
-    {
-      "name": "Base64",
-      "source_files": "ios/CodePush/Base64/**/*.{h,m}",
-      "private_header_files": "ios/CodePush/Base64/**/*.h"
-    }
-  ]
+  }
 }

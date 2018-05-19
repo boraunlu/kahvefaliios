@@ -29,7 +29,7 @@ import firebase from 'react-native-firebase'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import {GiftedChat, Actions,Bubble,Send,Composer,InputToolbar,Avatar,Message} from 'react-native-gifted-chat';
 import CustomActions from '../components/CustomActions';
-
+import Toast from 'react-native-root-toast'
 import Backend from '../Backend';
 import ChatModal from '../components/ChatModal';
 import Elements from '../components/Elements';
@@ -815,7 +815,7 @@ export default class Chat extends React.Component {
           });
 
           this.sendPayload("appstart")
-          /*
+
           let toast = Toast.show(falcilar[this.state.falciNo].name+' sohbete bağlandı!', {
             duration: Toast.durations.SHORT,
             position: 70,
@@ -830,7 +830,7 @@ export default class Chat extends React.Component {
             shadow: true,
             animation: true,
             hideOnPress: true,
-          });*/
+          });
         }
       }, randomTime)
 

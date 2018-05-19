@@ -29,15 +29,17 @@ pod 'Folly', podspec: '../node_modules/react-native/third-party-podspecs/Folly.p
   ]
   # Explicitly include Yoga if you are using RN >= 0.42.0
   pod "yoga", :path => "../node_modules/react-native/ReactCommon/yoga"
-  pod 'Firebase/Core'
+  pod 'Firebase/Core', '~> 4.13.0'
   pod 'Firebase/Auth'
+  
   pod 'Firebase/Messaging'
   pod 'Firebase/AdMob'
   pod 'Firebase/Database'
   pod 'Firebase/Storage'
-  pod 'CodePush', :path => '../node_modules/react-native-code-push'
+  pod 'Firebase/DynamicLinks'
+  #  pod 'CodePush', :path => '../node_modules/react-native-code-push'
   #pod 'react-native-camera', path: '../node_modules/react-native-camera'
-  #pod 'GoogleSignIn'
+  pod 'GoogleSignIn'
 
   target 'kahvefaliios-tvOSTests' do
     inherit! :search_paths
@@ -111,4 +113,17 @@ end
 
 post_install do |installer|
     react_native_fix
+	  installer.pods_project.targets.each do |target|
+    if target.name == "react-native-google-maps"
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'No'
+      end
+    end
+
+    if target.name == "React"
+      target.remove_from_project
+    end
+  end
 end
+
+

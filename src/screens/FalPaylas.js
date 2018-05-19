@@ -18,6 +18,7 @@ import {
   KeyboardAvoidingView,
   Modal,
   ActionSheetIOS,
+  ImageBackground,
 } from 'react-native';
 
 import axios from 'axios';
