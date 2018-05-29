@@ -1033,8 +1033,8 @@ loadMessages = (callback) => {
 
   }
 
-  postSosyal = (question,images,anonim,poll1,poll2) => {
-    fetch('https://eventfluxbot.herokuapp.com/appapi/postSosyal', {
+  postSosyal = (question,images,anonim,poll1,poll2,type) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/postSosyalNew', {
       method: 'POST',
       headers: {
         'Accept': 'application/json',
@@ -1046,7 +1046,8 @@ loadMessages = (callback) => {
         anonim: !anonim,
         uid:this.getUid(),
         poll1:poll1,
-        poll2:poll2
+        poll2:poll2,
+        type:type
       })
     })
 

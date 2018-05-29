@@ -15,7 +15,8 @@ import {
   BackAndroid,
   ScrollView,
   ImageBackground,
-  AsyncStorage
+  AsyncStorage,
+  Platform
 } from 'react-native';
 
 
@@ -27,7 +28,6 @@ import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Backend from '../Backend';
 import { NativeModules } from 'react-native'
-import FCM from 'react-native-fcm';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
@@ -35,6 +35,7 @@ import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
 import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
+import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 //import Marquee from '@remobile/react-native-marquee';
 
 const { InAppUtils } = NativeModules
@@ -483,11 +484,7 @@ static navigationOptions = ({ navigation }) => ({
        //alert(JSON.stringify(responseJson))
        this.props.userStore.setUser(responseJson)
        this.props.navigation.setParams({ crredit: responseJson.credit,odemeyegit: this.navigateto})
-       if(responseJson.reklam){
-
-         setTimeout(()=>{this.showReklamPopup()},2000)
-         this.setState({reklam:responseJson.reklam})
-       }
+      x
 
     })
     .catch(function (error) {
@@ -503,6 +500,48 @@ static navigationOptions = ({ navigation }) => ({
        }
 
      })
+
+     this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
+
+
+
+         // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
+         if(notif.local_notification){
+           //this is a local notification
+           //alert("local")
+         }
+         if(notif.opened_from_tray){
+           //alert("tray")
+           if(notif.deeplink){
+             var deeplink=JSON.parse(notif.deeplink)
+             //alert(deeplink.type)
+             if(deeplink.type=='falId'){
+               //alert("asd")
+               //this.props.navigation.navigate('SocialFal',{falId:notif.deeplink_value})
+             }
+           }
+         }
+
+         if(Platform.OS ==='ios'){
+           //FCM.setBadgeNumber(1);
+           //optional
+           //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
+           //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
+           //notif._notificationType is available for iOS platfrom
+           /*
+           switch(notif._notificationType){
+             case NotificationType.Remote:
+               notif.finish(RemoteNotificationResult.NewData) //other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
+               break;
+             case NotificationType.NotificationResponse:
+               notif.finish();
+               break;
+             case NotificationType.WillPresent:
+               notif.finish(WillPresentNotificationResult.None) //other types available: WillPresentNotificationResult.None
+               break;
+           }*/
+         }
+     });
 
 
 

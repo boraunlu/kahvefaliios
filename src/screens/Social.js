@@ -145,7 +145,7 @@ export default class Social extends React.Component {
     }
     this.setState({marquee:marquee})
 
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
       uid: Backend.getUid(),
     })
     .then( (response) => {
@@ -154,11 +154,11 @@ export default class Social extends React.Component {
       this.props.socialStore.setTek(responseJson.tek)
       var sosyals=Array.from(responseJson.sosyals)
       this.props.socialStore.setSocials(sosyals)
-      /*
+
       var commenteds=Array.from(responseJson.commenteds)
       this.props.socialStore.setCommenteds(commenteds)
-      */
 
+/*
       var commenteds=[]
       var id = Backend.getUid()
       for (var i = 0; i < sosyals.length; i++) {
@@ -174,7 +174,7 @@ export default class Social extends React.Component {
           }
         }
       }
-      this.props.socialStore.setCommenteds(commenteds)
+      this.props.socialStore.setCommenteds(commenteds)*/
     })
     .catch(function (error) {
 
@@ -352,7 +352,7 @@ export default class Social extends React.Component {
                   keyExtractor={this._keyExtractor}
                   refreshing={this.state.refreshing}
                   onRefresh={()=>{this._onRefresh()}}
-                    tabLabel='Yorum Bekleyenler'
+                  tabLabel='Yorum Bekleyenler'
                   renderItem={({item,index}) => this.renderItem(item,index)}
                 />
 
@@ -450,7 +450,7 @@ export default class Social extends React.Component {
   _onRefresh = () => {
     this.setState({refreshing: true});
 
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
       uid: Backend.getUid(),
     })
     .then( (response) => {
@@ -459,7 +459,9 @@ export default class Social extends React.Component {
       var sosyals=Array.from(responseJson.sosyals)
       this.props.socialStore.setSocials(sosyals)
       this.props.socialStore.setTek(responseJson.tek)
-
+      var commenteds=Array.from(responseJson.commenteds)
+      this.props.socialStore.setCommenteds(commenteds)
+      /*
       var commenteds=[]
       var id = Backend.getUid()
       for (var i = 0; i < sosyals.length; i++) {
@@ -475,7 +477,7 @@ export default class Social extends React.Component {
           }
         }
       }
-      this.props.socialStore.setCommenteds(commenteds)
+      this.props.socialStore.setCommenteds(commenteds)*/
       this.setState({refreshing: false});
     })
     .catch(function (error) {

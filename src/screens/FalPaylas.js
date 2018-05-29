@@ -34,12 +34,31 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
 import Camera from 'react-native-camera';
+import SwitchSelector from 'react-native-switch-selector';
 import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
 import ImageResizer from 'react-native-image-resizer';
+import * as Animatable from 'react-native-animatable';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
+import Sound from 'react-native-sound'
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
+
+
+var magic = new Sound('magic.mp3', Sound.MAIN_BUNDLE, (error) => {
+  if (error) {
+
+    return;
+  }
+
+});
+
+
+const options = [
+  { label: 'Günlük', value: 0 },
+    { label: 'Sosyal', value: 1 },
+    { label: 'Süper 🌟', value: 2 }
+];
 
 @inject("socialStore")
 @inject("userStore")
@@ -58,6 +77,7 @@ export default class FalPaylas extends React.Component {
       spinnerVisible:false,
       pollInput1:'',
       pollInput2:'',
+      super:0
   };
 }
 
@@ -70,45 +90,44 @@ export default class FalPaylas extends React.Component {
     renderphoto1 = () => {
       if(this.state.falPhotos[0]){
         return (
-          <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
-
-           <Image source={{uri:this.state.falPhotos[0]}} style={{ height: 70,width:70,alignSelf:'center'}}></Image>
-           </View>
-          );
+          <View style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} >
+            <Image source={{uri:this.state.falPhotos[0]}} style={{ height: 80,width:80,borderRadius:4,alignSelf:'center'}}></Image>
+          </View>
+        );
       }
       else {
         return(
-        <TouchableHighlight style={{height:70,width:70,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+          <TouchableOpacity style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Image source={require('../static/images/plus.png')} style={{ height: 40,width:40,alignSelf:'center'}}></Image></TouchableOpacity>
         )
       }
     }
     renderphoto2 = () => {
       if(this.state.falPhotos[1]){
         return (
-          <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
+          <View style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} >
 
-           <Image source={{uri:this.state.falPhotos[1]}} style={{ height: 70,width:70,alignSelf:'center'}}></Image>
+           <Image source={{uri:this.state.falPhotos[1]}} style={{ height: 80,width:80,borderRadius:4,alignSelf:'center'}}></Image>
            </View>
           );
       }
       else {
         return(
-          <TouchableHighlight style={{height:70,width:70,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+          <TouchableOpacity style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Image source={require('../static/images/plus.png')} style={{ height: 40,width:40,alignSelf:'center'}}></Image></TouchableOpacity>
         )
       }
     }
     renderphoto3 = () => {
       if(this.state.falPhotos[2]){
         return (
-          <View style={{width:50,height:50,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} >
+          <View style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} >
 
-           <Image source={{uri:this.state.falPhotos[2]}} style={{ height: 70,width:70,alignSelf:'center'}}></Image>
+            <Image source={{uri:this.state.falPhotos[2]}} style={{ height: 80,width:80,borderRadius:4,alignSelf:'center'}}></Image>
            </View>
           );
       }
       else {
         return(
-          <TouchableHighlight style={{height:70,width:70,alignSelf:'center',backgroundColor:'lightgray',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Icon name="plus" color={'black'} size={36} /></TouchableHighlight>
+          <TouchableOpacity style={{height:80,width:80,alignSelf:'center',backgroundColor:'white',borderRadius:4,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.changePhoto()}}><Image source={require('../static/images/plus.png')} style={{ height: 40,width:40,alignSelf:'center'}}></Image></TouchableOpacity>
         )
       }
     }
@@ -135,64 +154,79 @@ export default class FalPaylas extends React.Component {
     }
 
     sendSosyal = () => {
-      if(this.state.sosyalInput.length<20){
-
-        Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
-      }
-      else{
-        if((this.state.pollInput1.length>0&&this.state.pollInput2.length==0)||(this.state.pollInput2.length>0&&this.state.pollInput1.length==0)){
-              Alert.alert("Şıkları Giriniz","Lütfen her iki şıkkı da giriniz ya da ikisini de boş bırakınız")
+      var valid=false
+      if(this.state.super===0){
+        if(this.state.falPhotos.length>1){
+          valid=true
         }
         else {
-          if(this.state.falPhotos.length>1){
-            this.setState({spinnerVisible:true})
+            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
+        }
+      }
+      else {
 
-            Backend.uploadImages(this.state.falPhotos).then((urls) => {
+        if(this.state.falPhotos.length>1){
+          if(this.state.sosyalInput.length<20){
 
-              this.setState({spinnerVisible:false})
-              if(this.state.falType==2||this.state.falType==3){
-                this.postSosyal(urls)
-              }
-              else if(this.state.falType==1){
+            Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
+          }
+          else{
+            if((this.state.pollInput1.length>0&&this.state.pollInput2.length==0)||(this.state.pollInput2.length>0&&this.state.pollInput1.length==0)){
+                  Alert.alert("Şıkları Giriniz","Lütfen her iki şıkkı da giriniz ya da ikisini de boş bırakınız")
+            }
+            else {
+              valid=true
+            }
+          }
+        }
+        else {
+            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
+        }
 
-                if(this.props.userStore.userCredit<50){
-                  this.paySosyal(urls,50)
-                }
-                else{
-                  Backend.addCredits(-50)
-                  this.props.userStore.increment(-50)
-                  this.postSosyal(urls)
-                }
-              }
-              else {
-                if(this.props.userStore.userCredit<100){
-                  this.paySosyal(urls,100)
-                }
-                else{
-                  Backend.addCredits(-100)
-                  this.props.userStore.increment(-100)
-                  this.postSosyal(urls)
-                }
-              }
-            })
-            .catch(error => {
-              console.log(error)
-              this.setState({spinnerVisible:false})
-              Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
-            })
+      }
 
+      if(valid){
+        this.setState({spinnerVisible:true})
+
+        Backend.uploadImages(this.state.falPhotos).then((urls) => {
+
+          this.setState({spinnerVisible:false})
+          if(this.state.falType==2||this.state.falType==3){
+            this.postSosyal(urls)
+          }
+          else if(this.state.falType==1){
+
+            if(this.props.userStore.userCredit<50){
+              this.paySosyal(urls,50)
+            }
+            else{
+              Backend.addCredits(-50)
+              this.props.userStore.increment(-50)
+              this.postSosyal(urls)
+            }
           }
           else {
-              Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
+            if(this.props.userStore.userCredit<100){
+              this.paySosyal(urls,100)
+            }
+            else{
+              Backend.addCredits(-100)
+              this.props.userStore.increment(-100)
+              this.postSosyal(urls)
+            }
           }
-
-        }
+        })
+        .catch(error => {
+          console.log(error)
+          this.setState({spinnerVisible:false})
+          Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
+        })
       }
     }
 
 
     postSosyal = (urls) => {
-      Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
+      Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2,this.state.super)
 
       Keyboard.dismiss()
       this.setState({sosyalInput:'',falPhotos:[]})
@@ -238,7 +272,7 @@ export default class FalPaylas extends React.Component {
                }
                else{
                  if(response && response.productIdentifier) {
-                   Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2)
+                   Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2,this.state.super)
                    this.setState({modalVisible:false,inputVisible:false})
                    Keyboard.dismiss()
 
@@ -291,6 +325,95 @@ export default class FalPaylas extends React.Component {
 
     setCameraVisible = (visible = false) => {
       this.setState({cameraVisible: visible});
+    }
+
+    renderFalInfo = () => {
+      if(this.state.super===2){
+        return(
+          <View style={styles.box}>
+            <Text style={styles.faltypeyazipopup}>
+              Maksimum yorum, maksimum sohbet!
+            </Text>
+            <Animatable.Text   animation="pulse" easing="ease-out" iterationCount="infinite" style={[styles.faltypeyazikucukpopup]}>
+              {'\u2022'} Minimum 25 yorum gelmezse krediniz iade{"\n"}
+              {'\u2022'} Falınız hep panonun en üstünde kalır{"\n"}
+              {'\u2022'} Falınız 3 gün süre ile panoda kalır
+            </Animatable.Text>
+          </View>
+        )
+      }
+      else if(this.state.super===1){
+        return(
+          <View style={styles.box}>
+            <Text style={styles.faltypeyazipopup}>
+              Falınızı sosyal panoda tüm deneyimli falcıların yorumuna açın!
+            </Text>
+            <Animatable.Text   animation="pulse" easing="ease-out" iterationCount="infinite" style={[styles.faltypeyazikucukpopup]}>
+              {'\u2022'} Falınız 2 gün süre ile panoda kalır{"\n"}
+              {'\u2022'} Minimum 10 yorum gelmezse krediniz iade
+            </Animatable.Text>
+          </View>
+        )
+
+      }
+      else {
+        return(
+          <View style={styles.box}>
+            <Text style={styles.faltypeyazipopup}>
+              Falınıza BİR deneyimli yorumcudan yorum gelir.
+            </Text>
+            <Text style={styles.faltypeyazikucukpopup}>
+              Falınız sosyal panoda yer almaz.
+            </Text>
+          </View>
+        )
+      }
+
+    }
+    renderSosyalInput = () => {
+      if(this.state.super===1||this.state.super===2){
+        return(
+          <View style={{flex:1,width:'100%'}}>
+            <View style={{flex:1,width:'100%'}}>
+              <TextInput
+                multiline={true}
+                value={this.state.sosyalInput}
+                maxLength={150}
+                onChangeText={(text) =>{this.setState({sosyalInput:text})}}
+                placeholder={"Sorunuzu yazınız"}
+                style={{height:80,width:'100%',fontSize:14, padding:14,borderRadius:4,marginBottom:10,backgroundColor:'white'}}
+              />
+            </View>
+            <View style={{flexDirection:'row'}}>
+              <TextInput
+                maxLength={20}
+                value={this.state.pollInput1}
+                onChangeText={(text) =>{this.setState({pollInput1:text})}}
+                placeholder={"Örn. EVET"}
+                placeholderTextColor={'rgba(184,30,94,0.6)'}
+                style={{height:40,flex:1,marginRight:5,color:'blue',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+              />
+              <TextInput
+                maxLength={20}
+                value={this.state.pollInput2}
+                onChangeText={(text) =>{this.setState({pollInput2:text})}}
+                placeholder={"Örn. HAYIR"}
+                placeholderTextColor={'rgba(74,144,226,0.6)'}
+                style={{height:40,flex:1,marginLeft:5,color:'red',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+              />
+            </View>
+            <Text style={{color:'white',fontSize:10,marginTop:5}}>Not: Anket yapmak istemiyorsanız bu seçenekleri boş bırakabilirsiniz.</Text>
+          </View>
+        )
+
+      }
+      else {
+        return (
+          <TouchableOpacity onPress={()=>{alert("foto yokmuş")}}>
+            <Text style={{color:'white'}}>Fotoğrafım yok</Text>
+          </TouchableOpacity>
+        )
+      }
     }
 
 
@@ -375,87 +498,80 @@ export default class FalPaylas extends React.Component {
 
 
   render() {
-
+    var backgroundImage={}
+    if(this.state.super===0){
+      backgroundImage=require('../static/images/background.png')
+    }
+    else if (this.state.super===1) {
+      backgroundImage=require('../static/images/sosyalbg.jpeg')
+    }
+    else {
+      backgroundImage=require('../static/images/superbg.jpeg')
+    }
 
     return (
 
+      <ImageBackground source={backgroundImage} style={styles.container}>
+        <KeyboardAwareScrollView  style={{flex:1}} >
+          <View style={{flex:1,alignItems:'center',paddingBottom:40,paddingLeft:15,paddingRight:15}}>
+            <View style={{flex:1,marginLeft:-15,marginRight:-15,paddingLeft:15,paddingRight:15,alignSelf: 'stretch'}}>
+              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:15}}>
+              {this.state.falType ==2||this.state.falType ==3?
+                  null
+                  : this.state.falType==1?
 
-        <KeyboardAwareScrollView  style={{flex:1,backgroundColor:'#36797f'}} >
-        <View style={{flex:1,alignItems:'center',paddingBottom:40}}>
-            <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
-            <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
-            {this.state.falType ==2||this.state.falType ==3?
-                null
-                : this.state.falType==1?
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                    <Text style={[styles.label]}>
+                      50
+                    </Text>
 
-                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                  </View>
+                  :
+                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
+                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                    <Text style={[styles.label]}>
+                      100
+                    </Text>
 
-                  <Text style={[styles.label]}>
-                    50
-                  </Text>
-                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                </View>
-                :
-                <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,right:0}}>
+                  </View>
 
-                  <Text style={[styles.label]}>
-                    100
-                  </Text>
-                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                </View>
+              }
 
-            }
+              </View>
 
-            </View>
-            <Image source={require('../static/images/karilar.png')} style={{height:100,resizeMode:'contain',marginTop:10}}/>
-            <Text style={styles.faltypeyazipopup}>
-              Siz sorun, diğer falseverlerimiz cevaplasın!
-            </Text>
-            <Text style={styles.faltypeyazikucukpopup}>
-              Birlikten kuvvet doğar! Falınızı, aklınızdaki soru ile birlikte 2 gün boyunca Sosyal Panomuzda yayınlayın, diğer falseverlerin yorumuna sunun.   {"\n"}
-            </Text>
-            <TextInput
-              multiline={true}
-              value={this.state.sosyalInput}
-              maxLength={150}
-              onChangeText={(text) =>{this.setState({sosyalInput:text})}}
-              placeholder={"Sorunu yaz"}
-              style={{height:80,width:'90%',borderColor: 'gray',fontSize:14, borderWidth: 1,padding:3,borderRadius:10,marginBottom:10,backgroundColor:'white'}}
-            />
-            <Text style={{color:'white',fontWeight:'bold'}}>Anket şıklarınız</Text>
-            <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5}}>
-              <TextInput
-                maxLength={20}
-                value={this.state.pollInput1}
-                onChangeText={(text) =>{this.setState({pollInput1:text})}}
-                placeholder={"Örn. Evet"}
-                style={{height:40,width:'50%',borderColor: 'gray', borderWidth: 1,color:'blue',borderTopLeftRadius: 10,borderBottomLeftRadius: 10,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
-              />
-              <TextInput
-                maxLength={20}
-                value={this.state.pollInput2}
-                onChangeText={(text) =>{this.setState({pollInput2:text})}}
-                placeholder={"Örn. Hayır"}
-                style={{height:40,width:'50%',borderColor: 'gray', borderWidth: 1,color:'red',borderTopRightRadius: 10,borderBottomRightRadius: 10,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
-              />
-            </View>
-            <Text style={{color:'white',fontSize:12}}>Anket yapmak istemiyorsanız bu seçenekleri boş bırakabilirsiniz</Text>
-
-            <View style={{width:'100%',marginTop:20,flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:100,paddingBottom:40,paddingTop:20,justifyContent:'space-around'}}>
-            {
-              this.renderphoto1()
-            }
-            {
-              this.renderphoto2()
-            }
-            {
-              this.renderphoto3()
-            }
 
             </View>
 
-           <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{width:'100%',height:40,backgroundColor:'white',justifyContent:'center'}}>
-             <Text style={{textAlign:'center',fontWeight:'bold'}}>GÖNDER</Text>
+
+            <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
+              <SwitchSelector  options={options} buttonColor={'rgb(236,196,75)'} initial={this.state.super} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+            </View>
+
+            {this.renderFalInfo()}
+
+            <View style={{width:'100%',marginTop:20,flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:100,paddingBottom:40,paddingTop:20,justifyContent:'space-between'}}>
+              <View>
+                 <Image source={require('../static/images/fincan.png')} style={{ height: 30,marginBottom:5,width:30,alignSelf:'center'}}></Image>
+                 <Text style={{color:'white',fontSize:13,fontWeight:'bold'}}>
+                   FALINIZ
+                 </Text>
+              </View>
+              {
+                this.renderphoto1()
+              }
+              {
+                this.renderphoto2()
+              }
+              {
+                this.renderphoto3()
+              }
+
+            </View>
+            {this.renderSosyalInput()}
+
+           <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+             <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>PAYLAŞ</Text>
            </TouchableOpacity>
 
            <Modal
@@ -488,11 +604,12 @@ export default class FalPaylas extends React.Component {
              />
            </Modal>
 
-
+             <Spinner visible={this.state.spinnerVisible} textContent={"Fotoğraflarınız yükleniyor..."} textStyle={{color: '#DDD'}} />
 
            </View>
-        </KeyboardAwareScrollView >
 
+        </KeyboardAwareScrollView >
+        </ImageBackground>
 
     );
   }
@@ -504,16 +621,15 @@ export default class FalPaylas extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems:'center',
-    paddingRight:10,
-    paddingLeft:10,
-    backgroundColor:'teal'
+
+    alignSelf: 'stretch',
+    width: null,
 
   },
   coin:{
     height:15,
     width:15,
-    marginLeft:5,
+    marginRight:5,
   },
   label: {
     fontSize: 12,
@@ -527,20 +643,21 @@ const styles = StyleSheet.create({
   padding: 8,
 },
 faltypeyazi:{
-  textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+  textAlign: 'left',color:'white',fontWeight:'bold',fontSize:22
 },
 faltypeyazipopup:{
-  textAlign: 'center',color:'white',fontWeight:'bold',fontSize:18,marginTop:15
+  textAlign: 'left',color:'white',fontFamily:'SourceSansPro-Bold',fontSize:16,marginTop:5,marginBottom:5
 },
 faltypeyazikucuk:{
-  textAlign: 'center',color:'white',fontSize:14
+  textAlign: 'left',color:'white',fontSize:14
 },
 faltypeyazikucukpopup:{
-  color:'white',fontSize:14,margin:5,textAlign:'center',marginTop:15
+  color:'white',textAlign: 'left',fontSize:14,fontFamily:'SourceSansPro-Regular'
 },
 faltypeyazikucukpopup2:{
-  flex:1,color:'white',fontSize:14,padding:15,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
+  flex:1,color:'white',fontSize:14,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
 },
+box:{flex:1,borderColor:'white',borderRadius:5,paddingTop:10,marginTop:10,paddingLeft:20,paddingRight:20,width:'100%'}
 
 
 });

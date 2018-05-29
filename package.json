@@ -41,6 +41,7 @@
     "react-native-sound": "^0.10.9",
     "react-native-star-rating": "^1.0.9",
     "react-native-swiper": "^1.5.13",
+    "react-native-switch-selector": "^1.1.5",
     "react-native-vector-icons": "^4.6.0",
     "react-native-video": "^2.0.0",
     "react-navigation": "^1.5.11",
