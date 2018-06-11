@@ -57,7 +57,18 @@ export default class Odeme extends React.Component {
 
   static navigationOptions = {
       title: 'Kredilerin',
-      headerBackTitle:'Geri',
+      headerStyle: {
+        backgroundColor:'white',
+
+      },
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize:18,
+        textAlign: "center",
+        color: "#241466",
+  textAlign:'center',
+  fontFamily:'SourceSansPro-Bold'
+      },
       tabBarLabel: 'Krediler',
        tabBarIcon: ({ tintColor }) => (
          <Icon name="database" color={tintColor} size={20} />
@@ -303,172 +314,381 @@ export default class Odeme extends React.Component {
 
     return (
 
-      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
-      <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
-      <ScrollView>
-        <View style={{padding:Dimensions.get('window').height/50,flexDirection:'row',justifyContent:'space-between',paddingLeft:0,marginBottom:15,alignSelf:'stretch'}}>
-          <Image style={{height:40,width:40, borderRadius:20,marginRight:10,marginLeft:10}} source={require('../static/images/anneLogo3.png')}>
-          </Image>
-          <View style={{borderRadius:10,flexDirection:'row',backgroundColor:'rgba(0, 0, 0, 0.5)',padding:10,width:Dimensions.get('window').width-85}}>
+      <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
+      <ScrollView style={{flex:1,width:'100%',padding:15,paddingTop:0}}>
 
-            <Text  style={[styles.chattext]}>
-          {'Mevcut Kredin:' + ' '}
-        </Text>
-        {this.props.userStore.userCredit!==null ? (
-          <Text  style={[styles.chattext]}>
-            {this.props.userStore.userCredit}
-          </Text>
-          ) : (
-            <ActivityIndicator
-              animating={true}
-              size="small"
-            />
-          )}
+                {/* Mevcut Kredi */}
 
-            <Image source={require('../static/images/coins.png')} style={{width:15, height: 15,marginLeft:5,marginTop:5}}/>
+
+                <View style={{paddingRight:15,height: 30,borderRadius: 15,position:'absolute',top:20,flexDirection:'row',justifyContent:'flex-start'}}>
+                     <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{flexDirection:'row'}}>
+                     <View style={{width:30,height: 30,borderRadius: 15,backgroundColor: 'white',flexDirection:'row',justifyContent:'center',alignItems:'center',zIndex:3}}>
+
+
+                           <Image source={require('../static/images/profile/coinsCopy.png')} style={{height:16.2,width:18}}/>
+
+
+
+
+                     </View>
+
+                     <View style={{height:24,paddingRight:18,paddingLeft:37,paddingBottom:2,borderRadius:12,position:'relative',right:29,top:3,backgroundColor:'rgba(0,0,0,0.18)',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
+                           <Text style={{textAlign:'left',fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',fontSize:12}}>
+                           Mevcut Kredin:</Text>
+                           <Text style={{fontSize:14,fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',position:'relative',left:7}}>
+
+                           &nbsp;
+                           {this.props.userStore.userCredit}
+                           </Text>
+
+
+                     </View>
+              </TouchableOpacity>
           </View>
 
-        </View>
-        <View style={{marginBottom:20}}>
-          <View style={{backgroundColor:'teal',padding:2,borderColor:'#c0c0c0'}} >
-           <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center'}}>
-            <Image source={require('../static/images/coins.png')} style={{width:17, height: 17}}/>
-            <Text style={{color:'white',fontSize:17,fontWeight:'bold'}}> Bedava Kredi Kazan! </Text>
-            <Image source={require('../static/images/coins.png')} style={{width:17, height: 17}}/>
-           </View>
-          </View>
-          <View style={{flexDirection:'row',flex:1,height:60}}>
-            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Paylaş</Text><Icon name="facebook-official" color={'#3b5998'} size={22} /></TouchableOpacity>
-            <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Reklam İzle</Text><Icon name="video-camera" color={'#b22222'} size={22} /></TouchableOpacity>
-            {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}><Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Puan Ver</Text><Icon name="star" color={'gold'} size={22} /></TouchableOpacity> : <View/> }
+          {/* Arkadaşınla paylaş   */}
+
+
+          <View style={{position:'absolute',top:10,right:12,  height: 56,justifyContent:'space-between',
+                 borderRadius: 6,
+                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+            <TouchableOpacity onPress={() => {this.shareWithFriends()}} style={{flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
+            <Icon style={{alignSelf:'center'}}name="users" color={'#ffffff'} size={22} />
+            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
+                  fontSize: 10,
+                  fontWeight: "normal",
+                  fontStyle: "italic",
+                  letterSpacing: 0,
+                  textAlign: "center",
+                  color: "#ffffff"}}>Arkadaşınla Paylaş{'\n'}20 Kredi Kazan!</Text></TouchableOpacity>
 
           </View>
-          <View style={{flexDirection:'row',flex:1,height:80}}>
-            <TouchableOpacity onPress={() => {this.shareWithFriends()}} style={{flex:1,padding:5,borderWidth:1,borderColor:'#dcdcdc',backgroundColor:'#f8f8ff',alignItems:'center'}}>
-              <Text style={{marginBottom:5,textAlign:'center',fontSize:16}}>Uygulamayı indiren her arkadaşından 10 Kredi Kazan!</Text>
-              <View style={{padding:3,backgroundColor:'#EC7357',flex:1,borderRadius:3}}>
-                <Text style={{color:'white',textAlign:'center',fontSize:14,fontWeight:'bold'}}>Arkadaşlarınla Paylaş</Text>
-              </View>
-            </TouchableOpacity>
 
+
+
+      {/*      Bedava Kredi kazan div      */}
+
+
+
+
+        <View style={{marginBottom:0,marginTop:75}}>
+
+          <View style={{flexDirection:'row',flex:1,  height: 56,justifyContent:'space-between',
+                 borderRadius: 6,
+                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+
+
+           <View style={{flex:2,height: 56,justifyContent:'center',paddingLeft:30}}>
+
+                <Text style={{ opacity: 0.7,
+                               fontFamily: "SourceSansPro-BoldItalic",
+                               fontSize: 12,
+                               fontWeight: "bold",
+                               fontStyle: "italic",
+                               letterSpacing: 0,
+                               textAlign: "left",
+                               color: "#ffffff"}}>HEMEN BEDAVA{'\n'}KREDİ KAZAN!</Text>
+
+            </View>
+
+            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}}
+            style={{flex:1,flexDirection:"column-reverse", padding:5,backgroundColor:'transparent',alignItems:'center'}}>
+            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
+                fontWeight: "normal",
+                fontSize: 10,
+                fontStyle: "italic",
+                letterSpacing: 0,
+                textAlign: "left",
+                textDecorationLine:'underline',
+
+                color: "#ffffff"}}>Paylaş</Text>
+            <Image source={require('../static/images/krediler/facebookAppLogo.png')} style={{width:22, height: 23}}/></TouchableOpacity>
+            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginTop:20}}></View>
+            <TouchableOpacity onPress={() => {this.reklamGoster()}}
+            style={{flex:1,padding:5,backgroundColor:'transparent',alignItems:'center',flexDirection:"column-reverse"}}>
+            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
+                  fontSize: 10,
+                  fontWeight: "normal",
+                  fontStyle: "italic",
+                  letterSpacing: 0,
+                  textAlign: "left",
+                  textDecorationLine:'underline',
+
+                  color: "#ffffff"}}>Reklam izle</Text>
+            <Image source={require('../static/images/krediler/shape.png')} style={{width:23.6, height: 22}}/></TouchableOpacity>
+            {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,backgroundColor:'transparent',alignItems:'center',flexDirection:"column-reverse"}}>
+            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",position:'absolute',left:0,top:20}}></View>
+            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
+                  fontSize: 10,
+                  fontWeight: "normal",
+                  fontStyle: "italic",
+                  letterSpacing: 0,
+                  textAlign: "left",
+                  textDecorationLine:'underline',
+
+                 color: "#ffffff"}}>Puan Ver</Text><Icon name="star" color={'#ffffff'} size={22} /></TouchableOpacity> : <View/> }
           </View>
         </View>
         <View style={{flex:1}}>
-          <View style={{flex:1,backgroundColor:'teal',padding:2}}><Text style={{textAlign:'center',color:'white',fontSize:17,fontWeight:'bold'}}>Kredi Al</Text></View>
-          <ImageBackground style={styles.container2} source={require('../static/images/hazine.jpg')}>
-          <View style={{borderColor:'white',borderWidth:1}}>
-            <View style={{flexDirection:'row'}}>
-              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(100)}}>
+          <View style={styles.container2}>
+          <View style={{}}>
+            <View style={{flexDirection:'column'}}>
 
 
-                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(209,142,12, 0.8)'}}>
 
-                    <Text style={styles.faltypeyazi}>
-                      100 Kredi
-                    </Text>
-                    <Text style={styles.faltypeyazikucuk}>
-                    +10 Kredi Hediye
-                    </Text>
-                    <View style={styles.corner}>
-                      <Text style={[styles.label]}>
-                        8.99
-                      </Text>
-                      <Icon name="try" color={'#2f4f4f'} size={14} />
-                    </View>
-                  </View>
-
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(150)}}>
-
-                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(249,50,12, 0.6)'}}>
-
-                    <Text style={styles.faltypeyazi}>
-                      150 Kredi
-                    </Text>
-                    <Text style={styles.faltypeyazikucuk}>
-                    +15 Kredi Hediye
-                    </Text>
-                    <View style={styles.corner}>
-                      <Text style={[styles.label]}>
-                        12.99
-                      </Text>
-                      <Icon name="try" color={'#2f4f4f'} size={14} />
-                    </View>
-                  </View>
-
-              </TouchableOpacity>
-            </View>
-            <View style={{flexDirection:'row'}}>
-              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(250)}}>
+                  <TouchableOpacity style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} onPress={() => { this.pay(100) }}>
 
 
-                  <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(60,179,113, 0.8)'}}>
-                    <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
-                      <Icon name="star" color={'yellow'} size={30} />
-                      <Text style={{color:'white'}}> Falseverlerin {"\n"} favorisi</Text>
-                    </View>
-                    <Text style={styles.faltypeyazi}>
-                      250 Kredi
-                    </Text>
-                    <Text style={styles.faltypeyazikucuk}>
-                    +50 Kredi Hediye
-                    </Text>
-                    <View style={styles.corner}>
-                      <Text style={[styles.label]}>
-                        17.99
-                      </Text>
-                      <Icon name="try" color={'#2f4f4f'} size={14} />
-                    </View>
-                  </View>
-
-              </TouchableOpacity>
-              </View>
-            <View style={{flexDirection:'row'}}>
-              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(500)}}>
-
-                <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(114,0,218, 0.6)'}}>
-
-                  <Text style={styles.faltypeyazi}>
-                    500 Kredi
-                  </Text>
+                    <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
 
 
-                  <Text style={styles.faltypeyazikucuk}>
-                    +100 Kredi Hediye
-                  </Text>
-                  <View style={styles.corner}>
-                    <Text style={[styles.label]}>
-                      29.99
-                    </Text>
-                    <Icon name="try" color={'#2f4f4f'} size={14} />
-                  </View>
+                      <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center', width: 35, height: 32 }}>
+                        <Image source={require("../static/images/krediler/coinsCopy2.png")} />
 
-                </View>
+                           </View>
+                           <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center' }}>
 
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.pay(1000)}}>
+                             <Text style={styles.faltypeyazi}>
+                               100 Kredi
+                                         </Text>
+                             <Text style={styles.faltypeyazikucuk}>
+                               +10 Kredi Hediye
+                                         </Text>
+                           </View>
 
-                <View style={{flex:1,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgba(0,185,241, 0.8)'}}>
+                           <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'flex-start',marginLeft:15  }}>
 
-                  <Text style={styles.faltypeyazi}>
-                    1000 Kredi
+                             <View style={[styles.corner, {}]}>
+                               <Text style={[styles.label]}>
+                                 8.99 TL
+                                           </Text>
+                             </View>
 
-                  </Text>
-                  <Text style={styles.faltypeyazikucuk}>
-                    +250 Kredi Hediye
-                  </Text>
-                  <View style={styles.corner}>
-                    <Text style={[styles.label]}>
-                      54.99
-                    </Text>
-                    <Icon name="try" color={'#2f4f4f'} size={14} />
-                  </View>
-                </View>
+                           </View>
+                         </View>
 
-              </TouchableOpacity>
+
+                         <View style={{
+                           flex: 3, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "#e6d5a0"
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.faltypecontainer, { flexDirection: 'row', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} onPress={() => { this.pay(150) }}>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                      <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center', width: 35, height: 32 }}>
+                        <Image source={require("../static/images/krediler/coinsCopy3.png")} />
+
+                           </View>
+                           <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center' }}>
+
+                             <Text style={styles.faltypeyazi}>
+                               150 Kredi
+                                         </Text>
+                             <Text style={styles.faltypeyazikucuk}>
+                               +15 Kredi Hediye
+                                         </Text>
+                           </View>
+
+                           <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'flex-end',marginRight:15  }}>
+
+                             <View style={[styles.corner, {}]}>
+                               <Text style={[styles.label]}>
+                                 12.99 TL
+                                           </Text>
+                             </View>
+
+                           </View>
+                         </View>
+
+
+                         <View style={{
+                           flex: 3, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "#e4b05c"
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} onPress={() => { this.pay(250) }}>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                      <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center', width: 35, height: 32 }}>
+                        <Image source={require("../static/images/krediler/coinsCopy2.png")} />
+                        <Text style={{ fontFamily: "SourceSansPro-BoldItalic",
+                              fontSize: 10,
+                              fontWeight: "bold",
+                              fontStyle: "italic",
+                              letterSpacing: 0,
+                              textAlign: "left",
+                              color: "#ffd949"
+                              }}>Favori Kredi</Text>
+                           </View>
+                           <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center' }}>
+
+                             <Text style={styles.faltypeyazi}>
+                               250 Kredi
+                                         </Text>
+                             <Text style={styles.faltypeyazikucuk}>
+                               +50 Kredi Hediye
+                                         </Text>
+                           </View>
+
+                           <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'flex-start',marginLeft:15   }}>
+
+                             <View style={[styles.corner, {}]}>
+                               <Text style={[styles.label]}>
+                                 17.99 TL
+                                           </Text>
+                             </View>
+
+                           </View>
+                         </View>
+
+
+                         <View style={{
+                           flex: 3, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "#bc4576"
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.faltypecontainer, { flexDirection: 'row', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} onPress={() => { this.pay(500) }}>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                      <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center', width: 35, height: 32 }}>
+                        <Image source={require("../static/images/krediler/coinsCopy3.png")} />
+
+                           </View>
+                           <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center' }}>
+
+                             <Text style={styles.faltypeyazi}>
+                               500 Kredi
+                                         </Text>
+                             <Text style={styles.faltypeyazikucuk}>
+                               +100 Kredi Hediye
+                                         </Text>
+                           </View>
+
+                           <View style={{ flex: 1, height: 80, justifyContent: 'center',alignItems: 'flex-end',marginRight:15  }}>
+
+                             <View style={[styles.corner, {}]}>
+                               <Text style={[styles.label]}>
+                                 29.99 TL
+                                           </Text>
+                             </View>
+
+                           </View>
+                         </View>
+
+
+                         <View style={{
+                           flex: 3, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "#8975cd"
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+                  <TouchableOpacity style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} onPress={() => { this.pay(1000) }}>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                      <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'center', width: 35, height: 32 }}>
+                        <Image source={require("../static/images/krediler/coinsCopy2.png")} />
+
+                           </View>
+                           <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center' }}>
+
+                             <Text style={styles.faltypeyazi}>
+                               1000 Kredi
+                                         </Text>
+                             <Text style={styles.faltypeyazikucuk}>
+                               +250 Kredi Hediye
+                                         </Text>
+                           </View>
+
+                           <View style={{ flex: 1, height: 80, justifyContent: 'center', alignItems: 'flex-start',marginLeft:15   }}>
+
+                             <View style={[styles.corner, {}]}>
+                               <Text style={[styles.label]}>
+                                 54.99 TL
+                                           </Text>
+                             </View>
+
+                           </View>
+                         </View>
+
+
+                         <View style={{
+                           flex: 3, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: 'rgb(103,104,145)'
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+
+
             </View>
           </View>
-        </ImageBackground>
+          </View>
         </View>
 
 
@@ -507,9 +727,13 @@ const styles = StyleSheet.create({
    margin:5,flexDirection:'column',justifyContent:'center',paddingBottom:10,paddingTop:10, borderColor:'gray',flex:1
  },
   label: {
-    fontSize: 13,
-    color:'#2f4f4f',
-    fontWeight:'bold',
+    fontFamily: "SourceSansPro-Regular",
+    fontSize: 14,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+
+    color: "#ffffff",
     textAlign:'center'
   },
   chattext:{
@@ -553,16 +777,21 @@ const styles = StyleSheet.create({
     fontWeight:'normal'
   },
   faltypeyazi:{
-    textAlign: 'center',color:'white',fontWeight:'bold',fontSize:22
+    textAlign: 'center',color:'white',fontWeight:'bold', fontFamily: "SourceSansPro-Regular",
+    fontSize: 22,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
   },
   faltypeyazikucuk:{
     textAlign: 'center',color:'white',fontSize:14
   },
   faltypecontainer:{
     flex:1,
-    height:125,
-    borderWidth:1,
-    borderColor:'white'
+    height: 80,
+  borderRadius: 4,
+  backgroundColor: "#ffffff",
+  marginTop:15
   },
   faltypeimage:{
     alignItems:'center',
@@ -571,5 +800,11 @@ const styles = StyleSheet.create({
     height:123,
     flexDirection:'column-reverse'
   },
-  corner:{backgroundColor:'#dcdcdc',padding:5,flexDirection:'row',borderRadius:5,marginTop:5}
+  corner:{ width: 78,
+    margin:-10,
+    borderRadius: 6,
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    padding:8,alignItems:'center',
+
+    justifyContent:'center'}
 });

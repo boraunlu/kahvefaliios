@@ -17,6 +17,7 @@ import ChatAgent from './screens/ChatAgent';
 import ChatFalsever from './screens/ChatFalsever';
 import Social from './screens/Social';
 import SocialFal from './screens/SocialFal';
+import GunlukFal from './screens/GunlukFal';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
 import Greeting from './screens/Greeting';
@@ -53,7 +54,7 @@ const MainScreenNavigator = TabNavigator({
 
 },{
   tabBarOptions: {
-   activeTintColor: 'teal',
+   activeTintColor: 'rgb(36, 20, 102)',
  },
 
 });
@@ -69,6 +70,7 @@ let KahvefaliappNav = StackNavigator({
     ChatAgent: {screen:ChatAgent},
     ChatFalsever: {screen:ChatFalsever},
     SocialFal: {screen:SocialFal},
+    GunlukFal: {screen:GunlukFal},
     Swipers: {screen:Swipers},
     FalPuan: {screen:FalPuan},
     FalPaylas: {screen:FalPaylas},

@@ -17,6 +17,7 @@ export default class UserStore {
   @observable bio= '';
   @observable city= '';
   @observable dmBlocked= false;
+  @observable gunlukUsed=false;
 
 
 
@@ -67,6 +68,9 @@ export default class UserStore {
   @action changeCity(value) {
     this.city=value
     Backend.setCity(value)
+  }
+  @action setGunlukUsedTrue() {
+    this.gunlukUsed=true
   }
 
   @action changeMeslek(value) {
@@ -220,8 +224,8 @@ export default class UserStore {
     if(user.workStatus){
       this.meslekStatus = user.workStatus
     }
-    if(user.isAgent){
-      this.isAgent = user.isAgent
+    if(user.appGunlukUsed){
+      this.gunlukUsed= user.appGunlukUsed
     }
   }
 

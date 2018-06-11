@@ -73,27 +73,67 @@ export default class SocialFal extends React.Component {
 
   componentDidMount() {
     const { params } = this.props.navigation.state;
-    this.setState({fal:params.fal,comments:params.fal.comments})
     var id =Backend.getUid()
-    if(params.fal.poll1){
-      voters1=params.fal.voters1
-      voters2=params.fal.voters2
-      this.setState({voters1:voters1,voters2:voters2})
-      for (var i = 0; i < voters1.length; i++) {
-        if(id==voters1[i]){
-          this.setState({votedFor:true})
-          break;
+    if(params.fal){
+      this.setState({fal:params.fal,comments:params.fal.comments})
+
+      if(params.fal.poll1){
+        voters1=params.fal.voters1
+        voters2=params.fal.voters2
+        this.setState({voters1:voters1,voters2:voters2})
+        for (var i = 0; i < voters1.length; i++) {
+          if(id==voters1[i]){
+            this.setState({votedFor:true})
+            break;
+          }
+        }
+        for (var i = 0; i < voters2.length; i++) {
+          if(id==voters2[i]){
+            this.setState({votedFor:true})
+            break;
+          }
         }
       }
-      for (var i = 0; i < voters2.length; i++) {
-        if(id==voters2[i]){
-          this.setState({votedFor:true})
-          break;
-        }
+      if(id==params.fal.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3w'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
+        this.setState({falowner:true,votedFor:true})
       }
     }
-    if(id==params.fal.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
-      this.setState({falowner:true,votedFor:true})
+    else if (params.falId) {
+      fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          falid: params.falId,
+        })
+      })
+      .then((response) => response.json())
+       .then((responseJson) => {
+
+           this.setState({fal:responseJson,comments:responseJson.comments});
+           if(responseJson.poll1){
+             voters1=responseJson.voters1
+             voters2=responseJson.voters2
+             this.setState({voters1:voters1,voters2:voters2})
+             for (var i = 0; i < voters1.length; i++) {
+               if(id==voters1[i]){
+                 this.setState({votedFor:true})
+                 break;
+               }
+             }
+             for (var i = 0; i < voters2.length; i++) {
+               if(id==voters2[i]){
+                 this.setState({votedFor:true})
+                 break;
+               }
+             }
+           }
+           if(id==responseJson.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3w'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
+             this.setState({falowner:true,votedFor:true})
+           }
+       })
     }
   }
 
@@ -269,7 +309,7 @@ export default class SocialFal extends React.Component {
             meslek='Özel Sektör';
             break;
         case 7:
-            meslek='Kendi İşim';
+            meslek='Kendi İşi';
             break;
       }
       var iliski =''
@@ -322,7 +362,7 @@ export default class SocialFal extends React.Component {
       Alert.alert("Kısa Yorum","Lütfen daha uzun ve detaylı yorumlayın.")
     }
     else {
-      if(this.state.commentInput.length>600){
+      if(this.state.commentInput.length>800){
         Alert.alert("Çok Uzun Yorum","Lütfen yorumunuzu biraz daha kısa tutun.")
       }
       else{
@@ -404,138 +444,164 @@ export default class SocialFal extends React.Component {
   }
 
   renderComments = () => {
-    if(this.state.comments){
+    if(this.state.comments.length>0){
+      return(
+        <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
+        {
+          this.state.comments.map(function (comment,index) {
+            var liked = false;
+            var disliked = false;
+            var likecount=0;
+            var dislikecount=0;
+            var kolor='rgb(209,142,12)'
+            var id = Backend.getUid()
 
-      
-      if(this.state.comments.length>0){
-        return(
-          <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
-          {
-            this.state.comments.map(function (comment,index) {
-              var liked = false;
-              var disliked = false;
-              var likecount=0;
-              var dislikecount=0;
-              var kolor='rgb(209,142,12)'
-              switch(comment.seviye) {
-                  case 2:
-                      kolor='rgb(60,179,113)'
-                      break;
-                  case 3:
-                      kolor='rgb(114,0,218)'
-                      break;
-                  case 4:
-                      kolor='rgb(0,185,241)'
-                      break;
-                  case 5:
-                      kolor='rgb(249,50,12)'
-                      break;
-              }
-              if(comment.likes){
-                var id = Backend.getUid()
-                for (var i = 0; i < comment.likes.length; i++) {
-                  if(comment.likes[i]==id){
-                    liked=true;
+            switch(comment.seviye) {
+                case 2:
+                    kolor='rgb(60,179,113)'
                     break;
-                  }
-                }
-                likecount=comment.likes.length
-              }
-              if(comment.dislikes){
-                var id = Backend.getUid()
-                for (var i = 0; i < comment.dislikes.length; i++) {
-                  if(comment.dislikes[i]==id){
-                    disliked=true;
+                case 3:
+                    kolor='rgb(114,0,218)'
                     break;
-                  }
-                }
-                dislikecount=comment.dislikes.length
-              }
+                case 4:
+                    kolor='rgb(0,185,241)'
+                    break;
+                case 5:
+                    kolor='rgb(249,50,12)'
+                    break;
+            }
+            if(comment.likes){
 
-              if(dislikecount>4){
-                return(
-                        <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#EeFFEe',borderColor:'gray'}}>
-                          <View style={{marginLeft:comment.parentIndex?60:0}}>
-                            <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
-                              <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
-                            </TouchableOpacity>
-                            <View style={{position:'absolute',top:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
-                          </View>
-                          <View style={{padding:10,flex:2}}>
-                            <Text style={{fontWeight:'normal',textAlign:'center',padding:20,fontStyle:'italic',fontSize:12}}>
-                              Bu yorum olumsuz tepki aldığı için yayından kaldırılmıştır
-                            </Text>
-                          </View>
+              for (var i = 0; i < comment.likes.length; i++) {
+                if(comment.likes[i]==id){
+                  liked=true;
+                  break;
+                }
+              }
+              likecount=comment.likes.length
+            }
+            if(comment.dislikes){
+
+              for (var i = 0; i < comment.dislikes.length; i++) {
+                if(comment.dislikes[i]==id){
+                  disliked=true;
+                  break;
+                }
+              }
+              dislikecount=comment.dislikes.length
+            }
+
+            if(dislikecount>4){
+              return(
+                      <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#F2F1F3',borderColor:'gray'}}>
+                        <View style={{marginLeft:comment.parentIndex?47:0}}>
+                          <TouchableOpacity style={{marginTop:17}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
+                            <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                          </TouchableOpacity>
+                          <View style={{position:'absolute',top:56,left:45,elevation:2,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
                         </View>
-                        )
-              }
-              else {
-                return (
-                  <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#f8FFf8':'#EeFFEe',borderColor:'gray'}}>
-                    <View style={{marginLeft:comment.parentIndex?60:0}}>
-                      <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
-                        {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'teal',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
+                        <View style={{padding:10,flex:2}}>
+                          <Text style={{fontWeight:'normal',textAlign:'center',padding:20,fontStyle:'italic',fontSize:12}}>
+                            Bu yorum olumsuz tepki aldığı için yayından kaldırılmıştır
+                          </Text>
+                        </View>
+                      </View>
+                  )
+            }
+            else {
+              return (
+                <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
+                  <View style={{marginLeft:comment.parentIndex?47:0}}>
+                      <TouchableOpacity style={{marginTop:17}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
+                        {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
                         <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
                       </TouchableOpacity>
-                    <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?58:42,left:42,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
-                    </View>
-                    <View style={{padding:10,flex:2}}>
-                      <Text style={{fontWeight:'bold',fontSize:16,marginBottom:5}}>
-                        {comment.name} - <Text style={{color:'gray',fontWeight:'normal',fontSize:14}}>
-                         {capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+                    <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?72:56,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                   </View>
+                  <View style={{padding:10,flex:2,marginTop:7,marginRight:5}}>
+                    <Text style={{  fontFamily: "SourceSansPro-Bold",
+                                    fontSize: 15,
+                                    fontWeight: "bold",
+                                    fontStyle: "normal",
+                                    letterSpacing: 0,
+                                    textAlign: "left",
+                                    color: "#000000",marginBottom:5}}>
+                      {comment.name} <Text style={{ fontFamily: "SourceSansPro-Regular",fontSize: 14,fontWeight: "normal",fontStyle: "normal",letterSpacing: 0,textAlign: "center",color: "#948b99"}}>
+                        -{" "}{capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+                      </Text>
+                    </Text>
+                    <Text style={{ fontFamily: "SourceSansPro-Regular",
+                                    fontSize: 14,
+                                    fontWeight: "normal",
+                                    fontStyle: "normal",
+                                    letterSpacing: 0,
+                                    textAlign: "left",
+                                    color: "#000000"}}>
+                      {comment.comment}
+                    </Text>
+                    <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
+                      <TouchableOpacity onPress={()=>{this.setState({replyingTo:index+1}); this.refs.Input.focus(); }}>
+                        <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
+                                      fontSize: 15,
+                                      fontWeight: "bold",
+                                      fontStyle: "normal",
+                                      letterSpacing: 0,
+                                      textAlign: "center",
+                                      color: "#241466"}}>
+                          Cevap Ver
                         </Text>
-                      </Text>
-                      <Text style={{fontWeight:'normal',fontSize:14}}>
-                        {comment.comment}
-                      </Text>
-                      <View style={{flexDirection:'row',alignItems:'center',marginTop:5}}>
-                        <TouchableOpacity onPress={()=>{this.setState({replyingTo:index+1}); this.refs.Input.focus(); }}>
-                          <Text style={{textDecorationLine:'underline',fontWeight:'bold',color:'teal',fontSize:14}}>
-                            Cevap ver
-                          </Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
-                          {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
-                          <Text style={{marginLeft:4}}>{likecount}</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
-                          {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
-                          <Text style={{marginLeft:4}}>{dislikecount}</Text>
-                        </TouchableOpacity>
-                      </View>
+                      </TouchableOpacity>
+                      {/* <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
+                        {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
+                        <Text style={{marginLeft:4}}>{likecount}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
+                        {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
+                        <Text style={{marginLeft:4}}>{dislikecount}</Text>
+                      </TouchableOpacity> */}
                     </View>
-                    {this.renderCommentDelete(index)}
                   </View>
-                  );
-              }
+                  {this.renderCommentDelete(index)}
+                </View>
+                );
+            }
 
-            }, this)
-          }
-          {this.renderYorumYap()}
-          </ScrollView>
-        )
-      }
-      else{
-        return(
-          <View style={{flex:1}}>
-            <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
-          </View>
-        )
-      }
+          }, this)
+        }
+        {this.renderYorumYap()}
+        </ScrollView>
+      )
     }
-
-
-  }
-
-  renderYorumYap = () => {
-    if(this.state.comments.length<3){
+    else{
       return(
-        <View style={{flex:1}}>
+        <View style={{backgroundColor:'#F9F8F9',flex:1}}>
           <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
         </View>
       )
     }
   }
+
+
+  renderYorumYap = () => {
+      if(this.state.comments.length<3){
+        return(
+          <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+            <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+          </View>
+        )
+      }
+      else {
+        if(this.state.fal.super){
+          return(
+            <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+              <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Bu bir <Text style={{fontWeight:'bold'}}>Süper Fal!</Text> Güzel bir yorum yap ve <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+            </View>
+          )
+        }
+      }
+    }
+
+
 
     renderProfInfo = () => {
       if(this.state.profinfo){
@@ -548,7 +614,7 @@ export default class SocialFal extends React.Component {
         var limit =20
         var gosterilenpuan=falPuan
         var unvan = "Yeni Falsever"
-        var kolor='rgb(209,142,12)'
+        var kolor="#ffd967"
         if (falPuan>20&&falPuan<51){
           seviye = 2
           limit = 30
@@ -576,35 +642,143 @@ export default class SocialFal extends React.Component {
           kolor='rgb(249,50,12)'
         }
         return(
-        <View>
-          <ImageBackground style={{backgroundColor:'transparent',alignSelf:'center',height:94,width:94,paddingTop:7}} source={require('../static/images/cerceve.png')}>
-            <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
-          </ImageBackground>
-          <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
-          <Text style={{alignSelf:'center'}}>{infoText}</Text>
-          {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
-          {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
-          <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
+          <View style={{flexDirection:"column",justifyContent:"space-between"}}>
+
+            <View style={{backgroundColor:'transparent',height:80,width:80,alignSelf:'center',borderRadius:40,elevation:4}} >
+            <Image style={{backgroundColor:'transparent',height:80,width:80,alignSelf:'center',borderRadius:40}} source={this.state.profinfo.profile_pic}/>
+            </View>
+
+
+          <Text style={{alignSelf:'center',marginBottom:4,marginTop:4,fontFamily: "SourceSansPro-Bold",
+        fontSize: 18,
+        fontWeight: "bold",
+        fontStyle: "normal",
+        letterSpacing: 0,
+        textAlign: "center",
+        color: "#241466"}}>{this.state.profinfo.name}</Text>
+      {this.state.profinfo.bio? <Text style={{marginTop:10, fontFamily: "SourceSansPro-Italic",
+    fontSize: 14,
+    fontWeight: "normal",
+    fontStyle: "italic",
+    letterSpacing: 0,
+    textAlign: "center",
+    color: "#241466",marginBottom:10}}>{this.state.profinfo.bio}</Text>:null}
+
+          <Text style={{fontFamily: "SourceSansPro-Italic",
+    fontSize: 14,
+    fontWeight: "normal",
+    fontStyle: "italic",
+    letterSpacing: 0,
+    textAlign: "center",
+    color: "#241466"}}>{infoText}</Text>
+  {this.state.profinfo.city? <Text style={{position:'relative',right:10,  fontFamily: "SourceSansPro-Italic",
+    fontSize: 14,
+    fontWeight: "normal",
+    fontStyle: "italic",
+    letterSpacing: 0,
+    textAlign: "center",
+    color: "#241466"}}>{"📍 "+this.state.profinfo.city}</Text>:null}
+
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
             <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
           </View>
-          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+          <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15,flexDirection:'row'}}>
             <View style={{justifyContent:'center'}}>
-              <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-              <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
-                <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+              <View style={{position:'absolute',zIndex: 3,left:-12,elevation:3,justifyContent:'center',height:26,width:26,borderRadius:13,backgroundColor:kolor}}><Text style={{fontSize:14,backgroundColor:'transparent',color:'rgb(227,159,47)',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+              <View style={{height:16,width:200,borderRadius:8,elevation:1}}>
+                <View style={{height:16,width:200*(gosterilenpuan/limit),backgroundColor:kolor,borderRadius:8}}>
                 </View>
+                <Text style={{position:'absolute',bottom:0,elevation:2,backgroundColor:'rgba(0,0,0,0)',fontSize:12,alignSelf:'center',fontWeight:'bold',color:'rgb(55,32,142)'}}>{gosterilenpuan+"/"+limit}</Text>
               </View>
-            </View>
-            <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
-          </View>
-          {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
-          <TouchableOpacity style={{height:30,borderRadius:4,width:'60%',backgroundColor:'teal',flexDirection:'row',alignSelf:'center',marginTop:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
-              <Icon name="paper-plane" color={'white'} size={18} />
-            <Text style={{color:'white',fontSize:16,fontWeight:'bold'}}> Özel Mesaj</Text>
 
-            <Text style={{color:'white',fontSize:12}}>{"     "+seviye*10}</Text>
-            <Image source={require('../static/images/coins.png')} style={{width:12, height: 12,marginLeft:3}}/>
-          </TouchableOpacity>
+            </View>
+
+       </View>
+       <View style={{width:"100%",marginTop:15,height:1,
+          backgroundColor: "#cecece"}}>
+          </View>
+       {/**/}
+
+       {/**/}
+
+
+          {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,marginBottom: 30, fontFamily: "SourceSansPro-Regular",
+    fontSize: 16,
+    fontWeight: "normal",
+    fontStyle: "normal",
+    letterSpacing: 0,
+
+    color: "#37208e"}}>Yorum bekleyen fal bulunmamaktadır.</Text>}
+
+
+
+
+          <TouchableOpacity style={ { width:'60%',
+  flexDirection:'row',alignSelf:'center',
+      height: 40,
+    borderRadius: 4,
+    backgroundColor: "#37208e",
+    marginTop:15,  alignItems: 'center', justifyContent: 'center',marginTop:15}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+
+
+                      <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                        <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center', }}>
+                          <View style={ {
+
+                                  padding:8,alignItems:'center',
+
+                                  justifyContent:'center'}}>
+                                   <Text style={{  fontFamily: "SourceSansPro-Bold",
+                                fontSize: 12,
+                                fontWeight: "bold",
+                                fontStyle: "normal",
+                                letterSpacing: 0,
+                                textAlign: "center",
+                                color: "#ffffff"}}>
+                                 {seviye*10}
+                                             </Text>
+                               </View>
+                          <Image source={require("../static/images/sosyal/coins-copy.png")} />
+                             </View>
+                             <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
+
+                               <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
+                              textAlign: "center",
+                              color: "#ffffff"}}>
+                               Özel Mesaj
+                               </Text>
+
+                             </View>
+
+
+                           </View>
+
+
+                           <View style={{
+                             flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
+                             height: 40,
+                             borderRadius: 4,
+                             backgroundColor: "#5033c0"
+                           }}>
+                           </View>
+                           <View style={{
+                             flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                             borderRadius: 4,
+                             backgroundColor: "transparent"
+                           }}>
+                           </View>
+
+
+
+                    </TouchableOpacity>
+
+        {/* part */}
+
+
+
+
         </View>
 
       )
@@ -612,93 +786,210 @@ export default class SocialFal extends React.Component {
       else {
         return(<ActivityIndicator/>)
       }
-
     }
 
 
-  renderKendiFali = (kendiFali) =>{
-    var sosyal=kendiFali
-    return(
-    <View>
-      <Text style={{fontWeight:'bold',textAlign:'center',marginBottom:10,fontSize:16}}>Yorum Bekleyen Falı</Text>
-      <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,1)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
-       <View style={{flexDirection:'row',height:60,}}>
-         <View style={{padding:10,flex:1}}>
 
-           <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
-             {sosyal.question}
-            </Text>
-            <Text style={{fontWeight:'normal',fontSize:14}}>
-               {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+    renderKendiFali = (kendiFali) =>{
+     var sosyal=kendiFali
+     return(
+     <View style={{flex:1}}>
 
-             </Text>
+       <View style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,width:"100%",paddingTop:12,paddingBottom:15,backgroundColor:	"#F9F8F9",borderColor:"#979797"}}>
+                   <View style={{marginLeft:17}}>
+                       <TouchableOpacity style={{marginTop:3}}onPress={() => {this.navigateToFal(sosyal)}}>
 
-         </View>
-         <View style={{padding:15,justifyContent:'center',width:70,borderColor:'teal'}}>
 
-           <Text style={{textAlign:'center',color:'black'}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
-         </View>
+
+                     {/* <View style={{position:'absolute',top:56,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View> */}
+                   <View style={{padding:0,flex:2,marginTop:0,marginRight:0}}>
+                     <Text style={{  fontFamily: "SourceSansPro-Bold",
+                                     fontSize: 15,
+                                     fontWeight: "bold",
+                                     fontStyle: "normal",
+                                     letterSpacing: 0,
+                                     textAlign: "left",
+                                     color: "#000000",marginBottom:5}}>
+                       {this.state.profinfo.name} <Text style={{ fontFamily: "SourceSansPro-Regular",fontSize: 14,fontWeight: "normal",fontStyle: "normal",letterSpacing: 0,textAlign: "center",color: "#948b99"}}>
+                         -{" "}{capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
+                       </Text>
+                     </Text>
+                     <View style={{flexDirection:"row",justifyContent:"space-between"}}>
+                     <Text numberOfLines={2} ellipsizeMode={'tail'} style={{ fontFamily: "SourceSansPro-Regular",
+                                     fontSize: 14,
+                                     fontWeight: "normal",
+                                     fontStyle: "normal",
+                                     letterSpacing: 0,
+                                     textAlign: "left",
+                                     color: "#000000",width:"80%"}}>
+                       {sosyal.question}
+                     </Text>
+
+                      <Text style={{textAlign:'right',color:'black',width:"15%"}}>{sosyal.comments?sosyal.comments.length>5?<Text><Text style={{fontSize:16}}>🔥</Text> ({sosyal.comments.length})</Text>:"("+sosyal.comments.length+")":0}</Text>
+                                     </View>
+                       </View>
+                       </TouchableOpacity>
+
+                     </View>
+
        </View>
 
-      </TouchableOpacity>
-    </View>
-    )
+        {/**/}
 
-  }
 
-  renderPoll = () => {
-    if(this.state.fal.poll1){
+       {/**/}
+     </View>
+     )
 
-      if(this.state.fal.poll1.length>1){
-        return(
-          <View>
-          <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5,justifyContent:'space-between'}}>
-            <TouchableOpacity style={{justifyContent:'center',height:40,width:'45%',borderColor: 'blue', marginRight:5,borderTopLeftRadius: 10,borderBottomLeftRadius: 10,borderRadius:10,paddingLeft:8,paddingRight:8,backgroundColor:'#6AAFE6'}} onPress={()=>{this.voteFor(1)}}>
-             <Text style={{color:'white',fontWeight:'bold',textAlign:'center'}}>
-              {this.state.fal.poll1}
-             </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{justifyContent:'center',height:40,width:'45%',borderColor: 'red',marginLeft:5,borderTopRightRadius: 10,borderRadius:10,borderBottomRightRadius: 10,paddingLeft:8,paddingRight:8,backgroundColor:'#E72564'}} onPress={()=>{this.voteFor(2)}}>
-              <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>
-               {this.state.fal.poll2}
-              </Text>
-            </TouchableOpacity>
-          </View>
-              {this.renderPollResults()}
-              </View>
-        )
-      }
-      else{return null}
-    }
-  }
+   }
 
-  renderPollResults = () => {
-    if(this.state.votedFor){
-      var v1count=this.state.voters1.length
-      var v2count=this.state.voters2.length
+   renderPoll = () => {
+       if(this.state.fal.poll1){
 
-      var v1percentage=parseInt(v1count*100/(v1count+v2count))
-      var v2percentage =100-v1percentage
-      if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
-      return(
-        <View style={{flexDirection:'row',paddingBottom:5,justifyContent:'center'}}>
-          <View style={{flex:1,justifyContent:'center'}} >
-           <Text style={{color:'#6AAFE6',fontWeight:'bold',fontSize:18,textAlign:'center'}}>
-            {"%"+v1percentage}
-           </Text>
-          </View>
-          <View style={{flex:1,justifyContent:'center'}} >
-            <Text style={{textAlign:'center',color:'#E72564',fontSize:18,fontWeight:'bold'}}>
-                 {"%"+v2percentage}
-            </Text>
-          </View>
-        </View>
-      )
-    }
-    else {
-      return null
-    }
-  }
+         if(this.state.fal.poll1.length>1){
+           return(
+             <View>
+
+             {this.state.votedFor
+
+               ?
+               this.renderPollResults()
+               :
+               <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5,marginBottom:17,justifyContent:'space-between'}}>
+               <TouchableOpacity style={{justifyContent:'center',height:50,width:'45%',  backgroundColor: "#5033c0",
+     shadowColor: "rgba(0, 0, 0, 0.2)",
+     shadowOffset: {
+       width: 0,
+       height: 2
+     },
+     shadowRadius: 2,
+     shadowOpacity: 1, marginLeft:5,borderRadius:5,paddingLeft:8,paddingRight:8}} onPress={()=>{this.voteFor(1)}}>
+                <Text style={{  fontFamily: "SourceSansPro-Bold",
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+
+     color: "#ffffff",textAlign:'center'}}>
+                 {this.state.fal.poll1}
+                </Text>
+               </TouchableOpacity>
+               <TouchableOpacity style={{justifyContent:'center',height:50,width:'45%',  backgroundColor: "#b81e5e",
+     shadowColor: "rgba(0, 0, 0, 0.2)",
+     shadowOffset: {
+       width: 0,
+       height: 2
+     },
+     shadowRadius: 2,
+     shadowOpacity: 1, marginRight:5,borderRadius:5,paddingLeft:8,paddingRight:8}} onPress={()=>{this.voteFor(2)}}>
+                 <Text style={{ fontFamily: "SourceSansPro-Bold",
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+
+     color: "#ffffff",textAlign:'center'}}>
+                  {this.state.fal.poll2}
+                 </Text>
+               </TouchableOpacity>
+             </View>
+               }
+
+
+
+                 </View>
+           )
+         }
+         else{return null}
+       }
+     }
+
+     renderPollResults = () => {
+       if(this.state.votedFor){
+         var v1count=this.state.voters1.length
+         var v2count=this.state.voters2.length
+
+         var v1percentage=parseInt(v1count*100/(v1count+v2count))
+         var v2percentage =100-v1percentage
+         if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
+         return(
+           <View style={{flexDirection:'row',paddingBottom:5,justifyContent:'space-between',height:77,marginLeft:"8%",marginRight:"8%"}}>
+
+             <View style={{flex:1,alignItems:'flex-start',flexDirection:"column"}} >
+
+               <Text style={{  fontFamily: "SourceSansPro-Bold",position:"relative",top:12,
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+     textAlign: "left",
+     color: "#5033c0"}}>
+                    {this.state.fal.poll1}
+               </Text>
+             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
+             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
+
+                   <View style={{height:14,width:135*(v1percentage/100),borderRadius:8,backgroundColor: "#5033c0"}}>
+
+                   </View>
+
+                  </View>
+               <Text style={{  fontFamily: "SourceSansPro-Bold",paddingLeft:3,
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+     textAlign: "left",
+     color: "#5033c0"}}>
+                    {"%"+v1percentage}
+               </Text>
+             </View>
+            </View>
+
+             <View style={{flex:1,alignItems:'flex-start',flexDirection:"column"}} >
+
+               <Text style={{  fontFamily: "SourceSansPro-Bold",position:"relative",top:12,
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+     textAlign: "left",
+     color: "#b81e5e"}}>
+                    {this.state.fal.poll2}
+               </Text>
+             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
+             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
+
+                   <View style={{height:14,
+                  // position:"absolute",
+
+                   width:135*(v2percentage/100),
+
+
+                     borderRadius:8,backgroundColor: "#b81e5e"}}>
+
+                   </View>
+
+                  </View>
+               <Text style={{  fontFamily: "SourceSansPro-Bold",paddingLeft:3,
+     fontSize: 14,
+     fontWeight: "bold",
+     fontStyle: "normal",
+     letterSpacing: 0,
+     textAlign: "left",
+     color: "#b81e5e"}}>
+                    {"%"+v2percentage}
+               </Text>
+             </View>
+            </View>
+           </View>
+         )
+       }
+       else {
+         return null
+       }
+     }
+
 
   voteFor = (vote) => {
     if(!this.state.votedFor){
@@ -719,121 +1010,176 @@ export default class SocialFal extends React.Component {
   }
 
   renderBody = () => {
-    var fal = this.state.fal
-    if(fal){
-      var profile_pic=null
-      fal.profile_pic?profile_pic={uri:fal.profile_pic}:fal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
-      var meslek =''
-      switch(fal.workStatus) {
-        case 1:
-            meslek='Çalışıyor';
-            break;
-        case 2:
-            meslek='İş arıyor';
-            break;
-        case 3:
-            meslek='Öğrenci';
-            break;
-        case 4:
-            meslek='Çalışmıyor';
-            break;
-        case 5:
-            meslek='Kamuda Çalışıyorum';
-            break;
-        case 6:
-            meslek='Özel Sektör';
-            break;
-        case 7:
-            meslek='Kendi İşim';
-            break;
+      var fal = this.state.fal
+      if(fal){
+        var profile_pic=null
+        fal.profile_pic?profile_pic={uri:fal.profile_pic}:fal.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+        var meslek =''
+        switch(fal.workStatus) {
+          case 1:
+              meslek='Çalışıyor';
+              break;
+          case 2:
+              meslek='İş arıyor';
+              break;
+          case 3:
+              meslek='Öğrenci';
+              break;
+          case 4:
+              meslek='Çalışmıyor';
+              break;
+          case 5:
+              meslek='Kamuda Çalışıyorum';
+              break;
+          case 6:
+              meslek='Özel Sektör';
+              break;
+          case 7:
+              meslek='Kendi İşi';
+              break;
+        }
+        var iliski =''
+        switch(fal.relStatus) {
+            case "0":
+                iliski='İlişkisi Yok';
+                break;
+            case "1":
+                iliski='Sevgilisi Var';
+                break;
+            case "2":
+                iliski='Evli';
+                break;
+            case "3":
+                iliski='Nişanlı';
+                break;
+            case "4":
+                iliski='Platonik';
+                break;
+            case "5":
+                iliski='Ayrı Yaşıyor';
+                break;
+            case "6":
+                iliski='Yeni Ayrılmış';
+                break;
+            case "7":
+                iliski='Boşanmış';
+                break;
 
-      }
-      var iliski =''
-      switch(fal.relStatus) {
-          case "0":
-              iliski='İlişkisi Yok';
-              break;
-          case "1":
-              iliski='Sevgilisi Var';
-              break;
-          case "2":
-              iliski='Evli';
-              break;
-          case "3":
-              iliski='Nişanlı';
-              break;
-          case "4":
-              iliski='Platonik';
-              break;
-          case "5":
-              iliski='Ayrı Yaşıyor';
-              break;
-          case "6":
-              iliski='Yeni Ayrılmış';
-              break;
-          case "7":
-              iliski='Boşanmış';
-              break;
+        }
+        return(
+            <View style={{flex:1}}>
 
-      }
-      return(
-          <View style={{flex:1}}>
-            <View style={{alignItems:'center',flexDirection:'row',backgroundColor:'white',justifyContent:'center',borderColor:'gray',borderBottomWidth:0,paddingTop:10}}>
-              <TouchableOpacity style={{marginTop:10}} onPress={()=>{this.showProfPopup(this.state.fal.fireID,this.state.fal.profile_pic)}}>
-                <Image source={profile_pic} style={styles.falciAvatar}></Image>
-              </TouchableOpacity>
-              <View style={{}}>
-                <Text style={{fontWeight:'bold',fontSize:17}}>
-                  {fal.name}
-                 </Text>
-                 <Text style={{fontWeight:'normal',marginTop:5}}>
-                   {fal.age+" yaşında, "+iliski+", "+meslek}<Text style={{color:'teal'}}>
 
+              <View style={{alignItems:'flex-start',flexDirection:'row',backgroundColor:'#f7f7f7',justifyContent:'flex-start',borderColor:'gray',borderBottomWidth:0,paddingTop:8, height: 78}}>
+                <TouchableOpacity style={{}} onPress={()=>{this.showProfPopup(this.state.fal.fireID,this.state.fal.profile_pic)}}>
+                  <Image source={profile_pic} style={styles.falciAvatar}></Image>
+                </TouchableOpacity>
+                <View style={{paddingTop:10,paddingLeft:2}}>
+                  <Text style={{  fontFamily: "SourceSansPro-Bold",
+                                  fontSize: 15,
+                                  fontWeight: "bold",
+                                  fontStyle: "normal",
+                                  letterSpacing: 0,
+                                  textAlign: "left",
+                                  color: "#000000"}}>
+                    {fal.name}
                    </Text>
+                   <Text style={{fontFamily: "SourceSansPro-Bold",
+                                  fontSize: 14,
+                                  fontWeight: "bold",
+                                  fontStyle: "normal",
+                                  letterSpacing: 0,
+                                  textAlign: "left",
+                                  color: "#948b99"}}>
+                     {fal.age+" yaşında, "+iliski+", "+meslek}<Text style={{color:'teal'}}>
+
+                     </Text>
+                  </Text>
+                </View>
+              </View>
+              <View style={{alignItems:'flex-start',borderColor:'gray',backgroundColor:'white',borderBottomWidth:0,padding:5,paddingRight:15,marginLeft:"4%",marginRight:"4%",marginBottom:15,marginTop:10,flexDirection:"row",justifyContent:"flex-start"}}>
+              <Image source={require('../static/images/newImages/noun548595Cc.png')} style={{  width: 40,
+                                height: 40,
+                                borderRadius: 4,
+                                shadowColor: "rgba(0, 0, 0, 0.2)",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2
+                                },
+                                shadowRadius: 2,
+                                shadowOpacity: 1,alignSelf:'center',marginLeft:18,marginRight:10}}></Image>
+                              <Text style={{  fontFamily: "SourceSansPro-BoldItalic",flex:1,
+                                fontSize: 14,
+                                fontWeight: "bold",
+                                fontStyle: "italic",
+                                letterSpacing: 0,
+                                textAlign: "left",
+                                color: "#000000",marginTop:2}}>
+                  {fal.question}
+
                 </Text>
               </View>
+              <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:115,paddingBottom:10}}>
+
+              {
+                fal.photos.map(function (foto,index) {
+
+                  return (
+                    <View style={{flex:1,height:85,margin:10,elevation:3}} key={index}>
+                     <Lightbox navigator={null} renderContent={() => { return(<Image source={{uri:foto}} style={{flex:1,resizeMode:'contain' ,  shadowColor: "rgba(0, 0, 0, 0.2)",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2
+                                },
+                                shadowRadius: 2,
+                                shadowOpacity: 1,}}></Image>)}} style={{height:85}}>
+
+                      <Image source={{uri:foto}} style={{  width: 85,
+                                height: 85,
+                                borderRadius: 4,
+                                shadowColor: "rgba(0, 0, 0, 0.2)",
+                                shadowOffset: {
+                                  width: 0,
+                                  height: 2
+                                },
+                                shadowRadius: 2,
+                                shadowOpacity: 1,alignSelf:'center'}}></Image>
+                     </Lightbox>
+                     </View>
+                    );
+                }, this)}
+              </View>
+              {this.renderPoll()}
+              <View style={{flex:1}}>
+                <View style={{height: 40,backgroundColor:'#241466',alignItems:"center",justifyContent:"center",flexDirection:"row"}}><Text style={{  fontFamily: "SourceSansPro-Bold",
+    fontSize: 14,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign: "center",
+    color: "#faf9ff",margin:3}}>YORUMLAR ({this.state.comments.length})</Text></View>
+                {this.renderComments()}
+              </View>
+
             </View>
-            <View style={{alignItems:'center',borderColor:'gray',backgroundColor:'white',borderBottomWidth:0,padding:5}}>
-
-              <Text style={{fontWeight:'bold',fontStyle:'italic',fontSize:18,marginTop:5}}>
-                {"''"+fal.question+"''"}
-
-              </Text>
-            </View>
-            <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:90,paddingBottom:10}}>
-            {
-              fal.photos.map(function (foto,index) {
-
-                return (
-                  <View style={{flex:1,height:60,margin:10}} key={index}>
-                   <Lightbox navigator={null} renderContent={() => { return(<Image source={{uri:foto}} style={{flex:1,resizeMode:'contain'}}></Image>)}} style={{height:60}}>
-
-                    <Image source={{uri:foto}} style={{ height: 60,borderRadius:5,width:60,alignSelf:'center'}}></Image>
-                   </Lightbox>
-                   </View>
-                  );
-              }, this)}
-
-            </View>
-            {this.renderPoll()}
-
-            <View style={{flex:1,marginTop:10}}>
-              <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:18,margin:3}}>Yorumlar ({this.state.comments.length})</Text></View>
-              {this.renderComments()}
-            </View>
-
-          </View>
-          )
-    }else {
-      return null
+            )
+      }else {
+        return null
+      }
     }
-  }
+
 
   render() {
 
+
+    const {keyboardHeight} = this.state;
+
+    let newStyle = {
+      height:keyboardHeight
+    }
     return (
 
-      <SafeAreaView style={styles.containerrr}>
+      <View style={styles.containerrr}>
         <ScrollView>
           {this.renderAktifStripe()}
           {this.renderBody()}
@@ -842,39 +1188,45 @@ export default class SocialFal extends React.Component {
         </ScrollView>
         <PopupDialog
 
-         dialogStyle={{marginTop:-230}}
+         dialogStyle={{marginTop:-140}}
          width={0.9}
-         height={430}
+         height={0.68}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
          >
            <View style={{flex:1}}>
-             <ScrollView style={{padding:10,paddingTop:15}}>
+             <ScrollView style={{padding:0,paddingTop:25}}>
               {this.renderProfInfo()}
 
 
              </ScrollView>
            </View>
          </PopupDialog>
-        <View style={{bottom:this.state.writing?this.state.keyboardHeight:0,flexDirection:'row',padding:3,backgroundColor:'lightgray',position:'absolute',width:'100%'}} >
+        <View style={{bottom:this.state.writing?this.state.keyboardHeight:0,flexDirection:'row',padding:10,backgroundColor:"#37208e",position:'absolute',width:'100%'}} >
           <TextInput
             editable={true}
             multiline={true}
             onBlur={() => {this.setState({replyingTo:false,writing:false})} }
             onFocus={() => {this.setState({writing:true})} }
             ref='Input'
-            underlineColorAndroid='rgba(0,0,0,0)'
+            blurOnSubmit={true}
             value={this.state.commentInput}
             onChangeText={(text) => this.setState({commentInput:text})}
             placeholder={this.state.replyingTo?"Cevabını yaz":"Yorumunu yaz"}
             onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
-            style={{height:this.state.keyboardHeight>0?80:30,borderRadius:5,borderColor: 'gray', borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
+            style={{height:this.state.keyboardHeight>0?80:38,borderRadius:4,borderColor: "#37208e", borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
           />
-          <TouchableOpacity style={{padding:5,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
-            {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/500"}</Text>:null}
-            <Text style={{color:'teal'}}>Gönder</Text>
+          <TouchableOpacity style={{padding:5,paddingLeft:15,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
+            {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/800"}</Text>:null}
+            <Text style={{  fontFamily: "SourceSansPro-Regular",
+              fontSize: 16,
+              fontWeight: "600",
+              fontStyle: "normal",
+              letterSpacing: 0,
+              textAlign: "center",
+              color: "#ffffff"}}>Gönder</Text>
           </TouchableOpacity>
         </View>
-      </SafeAreaView>
+      </View>
 
     );
   }
@@ -896,10 +1248,12 @@ const styles = StyleSheet.create({
     height: 150,
   },
   falciAvatar:{
-    height:50,
-    width:50,
+    height:48,
+    width:48,
     margin:7,
-    borderRadius:25,
+    marginLeft:15,
+    borderRadius:24,
   }
+
 
 });

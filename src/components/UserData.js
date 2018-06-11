@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {ActivityIndicator,Switch, Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
+import {ActivityIndicator,Dimensions, Image,Text,TouchableHighlight,Button, TouchableOpacity, View , StyleSheet} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Picker from 'react-native-picker';
 import PropTypes from 'prop-types';
@@ -26,9 +26,6 @@ export default class UserData extends Component {
 
   }
 
-  changeDmStatus(){
-    this.props.userStore.changeDmStatus()
-  }
 
   renderUserData(){
     if (this.props.userStore.user) {
@@ -37,7 +34,7 @@ export default class UserData extends Component {
       var limit =20
       var gosterilenpuan=falPuan
       var unvan = "Yeni Falsever"
-      var kolor='rgb(209,142,12)'
+      var kolor='rgb(255,217,103)'
       if (falPuan>20&&falPuan<51){
         seviye = 2
         limit = 30
@@ -65,29 +62,49 @@ export default class UserData extends Component {
         kolor='rgb(249,50,12)'
       }
 
+
       return (
         <View >
           <TouchableOpacity  onPress={() => {this.props.setDestination('FalPuan')}}>
             <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
-              <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
-              <Icon style={{position:'absolute',right:-30}} name="question-circle" color={'lightgray'} size={20} />
+              <Text style={{fontSize:14,color:kolor,fontFamily:'SourceSansPro-Bold',fontWeight:'bold'}}>{unvan}</Text>
+
             </View>
-            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+
+            <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15,flexDirection:'row'}}>
               <View style={{justifyContent:'center'}}>
-                <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
-                  <View style={{height:18,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+                <View style={{shadowColor: "rgba(0, 0, 0, 0.2)",
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowRadius: 1,
+                shadowOpacity: 1,position:'absolute',zIndex: 3,left:-12,elevation:3,justifyContent:'center',height:26,width:26,borderRadius:13,backgroundColor:kolor}}><Text style={{fontSize:14,backgroundColor:'transparent',color:'rgb(227,159,47)',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+                <View   style={{shadowColor: "rgba(0, 0, 0, 0.2)",
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowRadius: 1,
+                shadowOpacity: 1,height:16,width:200,borderRadius:8,elevation:1}}>
+
+                  <View style={{height:16,width:200*(gosterilenpuan/limit),backgroundColor:kolor,borderRadius:8}}>
+
                   </View>
+                  <Text style={{position:'absolute',bottom:0,elevation:2,backgroundColor:'rgba(0,0,0,0)',fontSize:12,alignSelf:'center',fontWeight:'bold',color:'rgb(55,32,142)'}}>{gosterilenpuan+"/"+limit}</Text>
+                </View>
+                <View  style={{width:20,height:20,position:'absolute',right:-30}}>
+
+                  <Image source={require('../static/images/newImages/noun620918Cc.png')} style={{width:20,height:20}}/>
+
                 </View>
 
               </View>
-              <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
+
             </View>
+
           </TouchableOpacity>
-          <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center'}}>
-           <Text style={{fontSize:14}}>Özel mesaj almak istemiyorum</Text>
-           <Switch value={this.props.userStore.dmBlocked} onValueChange={()=>{this.changeDmStatus()}}/>
-          </View>
+
         </View>
       );
     } else {
@@ -134,6 +151,7 @@ var styles = StyleSheet.create({
   secondrow: {
     flexDirection: 'column',
     justifyContent:'space-around',
+    borderBottomWidth:1,
     borderColor:'gainsboro',
     paddingBottom:15,
     paddingTop:5,

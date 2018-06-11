@@ -12,17 +12,20 @@ import {
   ActivityIndicator,
   TextInput,
   Alert,
+  FlatList,
   Switch
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
 import Backend from '../Backend';
+import axios from 'axios';
 import NotificationIcon from '../components/NotificationIcon';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import { NativeModules } from 'react-native'
+import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
 import moment from 'moment';
@@ -47,14 +50,26 @@ export default class Mesajlar extends React.Component {
       falsevers:null,
       aktifChat:null,
       lastBizden:null,
-      tickets:null,
-      agentCheck:false,
-      activeTicket:null
+      sosyals:null,
+      gunluks:null,
+      notifications:null
   };
 }
 
   static navigationOptions = {
       title: 'Mesajların',
+      headerStyle: {
+        backgroundColor:'white',
+
+      },
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize:18,
+        textAlign: "center",
+        color: "#241466",
+  textAlign:'center',
+  fontFamily:'SourceSansPro-Bold'
+      },
       tabBarLabel: 'Mesajlar',
        tabBarIcon: ({ tintColor }) => (
 
@@ -66,9 +81,13 @@ export default class Mesajlar extends React.Component {
       const { navigate } = this.props.navigation;
       navigate( destination,{falciNo:falciNo} )
     }
-    navigateToAgent = (destination,ticket) => {
+    navigateToSosyalFal = (sosyal) => {
       const { navigate } = this.props.navigation;
-      navigate( destination,{ticket:ticket} )
+      navigate( 'SocialFal',{fal:sosyal} )
+    }
+    navigateToGunlukFal = (sosyal) => {
+      const { navigate } = this.props.navigation;
+      navigate( 'GunlukFal',{fal:sosyal} )
     }
     navigateToAktif = (falciNo) => {
       const { navigate } = this.props.navigation;
@@ -153,6 +172,23 @@ export default class Mesajlar extends React.Component {
     }
 
   componentDidMount() {
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getAllFals', {
+      uid: Backend.getUid(),
+    })
+    .then( (response) => {
+
+      var responseJson=response.data
+      //this.props.socialStore.setTek(responseJson.tek)
+      var sosyals=Array.from(responseJson.sosyals)
+      var gunluks=Array.from(responseJson.gunluks)
+      console.log("sosyals "+sosyals)
+      this.setState({gunluks:gunluks,sosyals:sosyals})
+
+    })
+    .catch(function (error) {
+      console.log(error)
+    });
+    /*
     Backend.getLastMessages().then((snapshot) => {
         if(snapshot.output.length==0){
           this.setState({messages:[]})
@@ -168,7 +204,7 @@ export default class Mesajlar extends React.Component {
           this.setState({aktifChat:snapshot.aktif})
         }
 
-    })
+    })*/
     Backend.getBizden().then((snapshot) => {
       if(snapshot){
         var data = snapshot
@@ -177,12 +213,21 @@ export default class Mesajlar extends React.Component {
             data[key].key = key;   // save key so you can access it from the array (will modify original data)
             output.push(data[key]);
         }
+        output.sort(function(b, a){
+            var keyA = new Date(a.createdAt),
+                keyB = new Date(b.createdAt);
+            // Compare the 2 dates
+            if(keyA < keyB) return -1;
+            if(keyA > keyB) return 1;
+            return 0;
+        })
+
         var lastBizden = output[output.length-1]
         if(lastBizden.read==false){
               this.props.userStore.setBizdenUnread(1)
         }
 
-        this.setState({lastBizden:lastBizden.text})
+        this.setState({lastBizden:lastBizden.text,notifications:output})
       }
 
     })
@@ -231,43 +276,6 @@ export default class Mesajlar extends React.Component {
 
   componentWillMount() {
 
-  }
-
-
-  trackTickets = () => {
-    var ticketref= firebase.database().ref('tickets');
-    ticketref.orderByChild("status").equalTo(0).on('value',function(snapshot){
-
-      var obj = snapshot.val()
-
-      var res =[]
-      for (var key in obj) {
-
-          obj[key].key = key;   // save key so you can access it from the array (will modify original data)
-          res.push(obj[key]);
-      }
-      this.setState({tickets:res})
-    }.bind(this))
-
-    ticketref.orderByChild("status").equalTo(1).on('value',function(snapshot){
-
-      var obj = snapshot.val()
-      var agentID = Backend.getUid()
-      var res =[]
-      var ticketvar=false
-      for (var key in obj) {
-          if(obj[key].agentID==agentID){
-            obj[key].key = key;
-            this.setState({activeTicket:obj[key]})
-            ticketvar=true
-          }
-
-      }
-      if(!ticketvar){
-        this.setState({activeTicket:null})
-      }
-
-    }.bind(this))
   }
 
   goToFalsever = (message) => {
@@ -335,6 +343,7 @@ export default class Mesajlar extends React.Component {
       )
     }
   }
+
   renderBody = (props) => {
     if(this.state.messages==null){
       return(
@@ -356,7 +365,7 @@ export default class Mesajlar extends React.Component {
 
          messages.map(function (message,index) {
            return (
-             <TouchableOpacity key={message.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateto('ChatOld',message.key)}}>
+             <TouchableOpacity key={message.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'rgb(215,215,215)'}} onPress={() => {this.navigateto('ChatOld',message.key)}}>
               <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
                 <Image source={{uri:falcilar[message.key].url}} style={styles.falciAvatar}></Image>
 
@@ -371,7 +380,7 @@ export default class Mesajlar extends React.Component {
 
 
 
-                <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
+                <TouchableOpacity onPress={() => {this.delete(message.key,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'rgb(215,215,215)'}}>
                   <Icon name="trash-o" color={'gray'} size={20} />
                 </TouchableOpacity>
               </View>
@@ -402,28 +411,31 @@ export default class Mesajlar extends React.Component {
       var messages = this.state.falsevers
       return (
         <View>
+          <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',backgroundColor:'white',borderTopWidth:1,borderColor:'rgb(215,215,215)',padding:10}}>
+           <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14}}>Özel mesaj almak istemiyorum</Text>
+           <Switch  onTintColor={'rgb( 236, 196, 75)'} value={this.props.userStore.dmBlocked} onValueChange={()=>{this.props.userStore.changeDmStatus()}}/>
+          </View>
 
         {
          messages.map(function (message,index) {
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.goToFalsever(message)}}>
-              <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'rgb(215,215,215)'}} onPress={() => {this.goToFalsever(message)}}>
+              <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center',height:80,paddingLeft:15}}>
                 <Image source={{uri:message.avatar}} style={styles.falciAvatar}></Image>
 
-                <View style={{padding:10,flex:2}}>
-                  <Text style={{fontWeight:'bold',fontSize:16}}>
+                <View style={{paddingLeft:10,flex:2}}>
+                  <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
                     {message.name}
                    </Text>
-                   <Text>
+                   <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14}}>
                    {capitalizeFirstLetter(replaceGecenHafta(moment(message.createdAt).calendar()))}
                   </Text>
 
                 </View>
-                {message.timePassed?       <View style={{alignSelf:'center',marginRight:10}}><Icon name="exclamation-circle" color={'red'} size={26} /></View>:null}
-
-                  {message.read ? null:   <View style={{marginTop:17,marginRight:15,height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
-                <TouchableOpacity onPress={() => {this.deleteFalsever(message.fireID,index)}} style={{padding:20,borderLeftWidth:1,borderColor:'gray'}}>
-                  <Icon name="trash-o" color={'gray'} size={20} />
+                {message.timePassed?       <View style={{alignSelf:'center',marginRight:15}}><Icon name="exclamation-circle" color={'red'} size={26} /></View>:null}
+                {message.read ? null:   <View style={{marginTop:17,marginRight:15,height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
+                <TouchableOpacity onPress={() => {this.deleteFalsever(message.fireID,index)}} style={{padding:25,borderLeftWidth:1,borderColor:'rgb(215,215,215)'}}>
+                  <Icon name="trash-o" color={'rgb(36, 20, 102)'} size={25} />
                 </TouchableOpacity>
               </View>
 
@@ -431,111 +443,178 @@ export default class Mesajlar extends React.Component {
              );
          }, this)
        }
-       <View style={{flexDirection:'row',justifyContent:'space-around',alignItems:'center',backgroundColor:'white',borderTopWidth:1,borderColor:'gray',padding:10}}>
-        <Text style={{fontSize:14}}>Özel mesaj almak istemiyorum</Text>
-        <Switch value={this.props.userStore.dmBlocked} onValueChange={()=>{this.props.userStore.changeDmStatus()}}/>
-       </View>
+
        </View>
       )
     }
   }
 
-  renderAgent = () => {
+  renderAllSosyals = (props) => {
 
 
-    if(this.props.userStore.isAgent){
-
-        if(this.state.activeTicket){
-          return(
-            <View>
-              <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
-              <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',this.state.activeTicket)}}>
-               <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
-
-
-                 <View style={{padding:10,flex:2}}>
-                   <Text style={{fontWeight:'bold',fontSize:16}}>
-                    Bu senin
-                    </Text>
-
-                 </View>
-
-               </View>
-
-              </TouchableOpacity>
-            </View>
-          )
-        }
-        else{
-
-
-
-       var tickets = this.state.tickets
-       if(tickets){
-
-
+      var sosyaller = this.state.sosyals
+      if(sosyaller){
+      if(sosyaller.length>0){
         return (
-          <View>
-          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bekleyen Fallar</Text></View>
-          {
-           tickets.map(function (ticket,index) {
-             if(index==0){
-               return (
-                 <TouchableOpacity key={ticket.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {this.navigateToAgent('ChatAgent',ticket)}}>
-                  <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+          <View style={{flex:1}}>
+          <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
+            <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>SOSYAL FALLARIN</Text>
+          </View>
+          <FlatList
+            data={sosyaller}
+            keyExtractor={this._keyExtractor}
+            renderItem={({item,index}) => this.renderSosyalItem(item,index)}
+          />
+        </View>
 
-
-                    <View style={{padding:10,flex:2}}>
-                      <Text style={{fontWeight:'bold',fontSize:16}}>
-                        Cevapla
-                       </Text>
-                       <Text>
-                       {replaceGecenHafta(moment(ticket.createdAt).calendar())}
-                      </Text>
-                    </View>
-
-                  </View>
-
-                 </TouchableOpacity>
-                 );
-             }else{
-               return (
-                 <TouchableOpacity key={ticket.key} style={{backgroundColor:'white',borderTopWidth:1,borderColor:'gray'}} onPress={() => {}}>
-                  <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
-
-
-                    <View style={{padding:10,flex:2}}>
-                      <Text style={{fontWeight:'bold',fontSize:16}}>
-                        Bekleyenler
-                       </Text>
-                       <Text>
-                       {replaceGecenHafta(moment(ticket.createdAt).calendar())}
-                      </Text>
-                    </View>
-
-                  </View>
-
-                 </TouchableOpacity>
-                 );
-             }
-
-           }, this)
-         }
-         </View>
         )
-
         }
         else{
           return(
-          <Text>Bekleyen Fal bulunmuyor</Text>)
+          <ActivityIndicator
+            animating={true}
+            style={[styles.centering, {height: 80}]}
+            size="large"
+          />)
         }
       }
-    }
-    else {
-      return (null)
-    }
+  }
+
+  renderSosyalItem = (item,index) => {
 
 
+    var profile_pic=null
+    item.profile_pic?profile_pic={uri:item.profile_pic}:item.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
+    return (
+      <TouchableOpacity key={index}  style={{backgroundColor: "#ffffff",width:'100%',borderColor:'rgb(215,215,215)',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToSosyalFal(item,index)}}>
+       <View style={{flexDirection:'row',height:80,paddingTop:10}}>
+
+       <Image source={{uri:item.photos[0]}} style={styles.kahveAvatar}></Image>
+
+         <View style={{padding:10,flex:1}}>
+
+           <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5 , fontFamily: "SourceSansPro-Bold",
+  fontSize: 15,
+  fontWeight: "600",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "left",
+  color: "#241466"}}>
+             {item.question}
+            </Text>
+          <Text style={{fontFamily: "SourceSansPro-Regular",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "left",
+  color: "#948b99"}}>
+               {capitalizeFirstLetter(replaceGecenHafta(moment(item.time).calendar()))}
+              </Text>
+
+
+         </View>
+         <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
+            {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+            <Text style={{fontFamily: "SourceSansPro-Bold",
+  fontSize: 15,
+  fontWeight: "bold",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "center",flexDirection:"row",
+  color: "#241466"}}>{item.comments?item.comments.length>5?<Text> ({item.comments.length}) <Text style={{fontSize:16}}>🔥</Text></Text>:"("+item.comments.length+")":0}</Text>
+         </View>
+       </View>
+
+      </TouchableOpacity>
+      );
+  }
+  _keyExtractor = (item, index) => index.toString();
+
+
+  renderAllGunluks = (props) => {
+
+
+      var sosyaller = this.state.gunluks
+      if(sosyaller){
+      if(sosyaller.length>0){
+        return (
+          <View style={{flex:1}}>
+          <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
+            <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>GÜNLÜK FALLARIN</Text>
+          </View>
+          <FlatList
+            data={sosyaller}
+            keyExtractor={this._keyExtractor}
+            renderItem={({item,index}) => this.renderGunlukItem(item,index)}
+          />
+        </View>
+
+        )
+        }
+        else{
+          return(
+          <ActivityIndicator
+            animating={true}
+            style={[styles.centering, {height: 80}]}
+            size="large"
+          />)
+        }
+      }
+  }
+
+  renderGunlukItem = (item,index) => {
+
+    return (
+      <TouchableOpacity key={index}  style={{backgroundColor: "#ffffff",width:'100%',borderColor:'rgb(215,215,215)',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToGunlukFal(item,index)}}>
+       <View style={{flexDirection:'row',height:80,paddingTop:10}}>
+
+       <Image source={{uri:item.photos[0]}} style={styles.kahveAvatar}></Image>
+
+         <View style={{padding:10,flex:1}}>
+
+           <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5 , fontFamily: "SourceSansPro-Bold",
+            fontSize: 15,
+            fontWeight: "600",
+            fontStyle: "normal",
+            letterSpacing: 0,
+            textAlign: "left",
+            color: "#241466"}}>
+             {item.question}
+            </Text>
+            <Text style={{  fontFamily: "SourceSansPro-Regular",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "left",
+  color: "#241466"}}>
+              {item.name} - <Text style={{fontFamily: "SourceSansPro-Regular",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#948b99"}}>
+               {capitalizeFirstLetter(replaceGecenHafta(moment(item.time).calendar()))}
+              </Text>
+             </Text>
+
+         </View>
+         <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:80,borderColor:'teal',flexDirection:'row'}}>
+            {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+            <Text style={{fontFamily: "SourceSansPro-Bold",
+  fontSize: 15,
+  fontWeight: "bold",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "center",flexDirection:"row",
+  color: "#241466"}}>{item.comments?item.comments.length>5?<Text> ({item.comments.length}) <Text style={{fontSize:16}}>🔥</Text></Text>:"("+item.comments.length+")":0}</Text>
+         </View>
+       </View>
+
+      </TouchableOpacity>
+      );
   }
 
   renderBizden = () => {
@@ -546,7 +625,51 @@ export default class Mesajlar extends React.Component {
 
       return(
         <View>
-        <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Bizden Gelenler</Text></View>
+          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden'); this.props.userStore.setBizdenUnread(0)}}>
+           <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+              <View>
+              <Image source={require('../static/images/anneLogo3.png')} style={styles.falciAvatar}></Image>
+
+             </View>
+             <View style={{padding:10,flex:2}}>
+               <Text style={{fontWeight:'bold',fontSize:16}}>
+                 Nevin
+                </Text>
+                <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                  {capitalizeFirstLetter(this.state.lastBizden)}
+               </Text>
+             </View>
+             <View style={{padding:20}}>
+             {this.props.userStore.bizdenUnread==1 ?    <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> :    <Icon name="angle-right" color={'gray'} size={20} />}
+
+            </View>
+           </View>
+          </TouchableOpacity>
+        </View>
+
+      )
+    }
+  }
+  renderNotification = () => {
+    if(this.state.notifications==null){
+      return null
+    }
+    else{
+
+      return(
+        <FlatList
+          data={sosyaller}
+          keyExtractor={this._keyExtractor}
+          renderItem={({item,index}) => this.renderSosyalItem(item,index)}
+        />
+
+      )
+    }
+  }
+
+  renderNotificationItem(){
+    return(
+      <View>
         <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden'); this.props.userStore.setBizdenUnread(0)}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
@@ -564,28 +687,38 @@ export default class Mesajlar extends React.Component {
            <View style={{padding:20}}>
            {this.props.userStore.bizdenUnread==1 ?    <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> :    <Icon name="angle-right" color={'gray'} size={20} />}
 
-             </View>
+          </View>
          </View>
-
         </TouchableOpacity>
-        </View>
-      )
-    }
+      </View>
+    )
   }
 
   render() {
 
 
     return (
-      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
-        <ScrollView style={{flex:1}}>
+      <ImageBackground source={require('../static/images/background.png')} style={styles.container}>
 
+        <ScrollableTabView
+          style={{flex:1,alignItems:'center',borderWidth:0,borderColor: 'rgb( 236, 196, 75)',justifyContent:'center'}}
+          tabBarActiveTextColor='rgb(250, 249, 255)'
+          tabBarBackgroundColor='#241466'
+          tabBarInactiveTextColor='rgb( 118, 109, 151)'
+          tabBarUnderlineStyle={{backgroundColor:'rgb( 236, 196, 75)', borderColor: 'rgb( 236, 196, 75)'}}
+          tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
+         >
+         <ScrollView tabLabel='FALSEVER SOHBETLERİN' style={{flex:1,width:'100%'}}>
           {this.renderFalsevers()}
-          {this.renderAktif()}
+         </ScrollView>
+         <ScrollView tabLabel='FALLARIN' style={{flex:1,width:'100%'}}>
+          {this.renderAllSosyals()}
+          {this.renderAllGunluks()}
+         </ScrollView>
+         <ScrollView tabLabel='BİLDİRİMLERİN' style={{flex:1,width:'100%'}}>
           {this.renderBizden()}
-          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Eski Falların</Text></View>
-          {this.renderBody()}
-        </ScrollView>
+         </ScrollView>
+       </ScrollableTabView>
       </ImageBackground>
     );
   }
@@ -601,9 +734,17 @@ const styles = StyleSheet.create({
     width: null,
   },
   falciAvatar:{
-    height:40,
-    width:40,
-    margin:10,
-    borderRadius:20,
-  }
+    height:50,
+    width:50,
+
+    borderRadius:25,
+  },
+  kahveAvatar:{
+    height:50,
+    width:50,
+    margin:7,
+    marginLeft:15,
+    borderRadius:5,
+  },
+
 });

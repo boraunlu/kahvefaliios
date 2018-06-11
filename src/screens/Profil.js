@@ -14,6 +14,7 @@ import {
   Keyboard,
   Modal,
   Alert,
+  Switch
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -64,13 +65,27 @@ export default class Profil extends React.Component {
   };
 }
 
+
   static navigationOptions = {
       title: 'Profilin',
+      headerStyle: {
+        backgroundColor:'white',
+
+      },
+      headerTitleStyle: {
+        fontWeight: 'bold',
+        fontSize:18,
+        textAlign: "center",
+        color: "#241466",
+  textAlign:'center',
+  fontFamily:'SourceSansPro-Bold'
+      },
       tabBarLabel: 'Profil',
        tabBarIcon: ({ tintColor }) => (
          <Icon name="user" color={tintColor} size={25} />
        ),
     };
+
 
 
 
@@ -360,15 +375,16 @@ export default class Profil extends React.Component {
     if(this.props.userStore){
 
       return(
-      <TextInput
-        style={{height: 35,margin:10,fontSize:12,borderColor:'black',borderWidth:1,textAlign:'center',justifyContent:'center',fontStyle:'italic'}}
-        onChangeText={(nametext) => this.props.userStore.setBio({nametext})}
-        onSubmitEditing={()=>{this.setBio()}}
-        placeholder={'"Profil Cümleniz"'}
-        placeholderTextColor={'darkgray'}
-        maxLength={70}
-        value={this.props.userStore.bio}
-      />)
+        <TextInput
+         style={{height: 40,marginTop:6,marginBottom:16,marginRight:25,marginLeft:25,fontSize:12,borderRadius:4,borderColor:'rgb(215,214,214)',borderWidth:1,textAlign:'center',justifyContent:'center',fontStyle:'italic'}}
+         onChangeText={(nametext) => this.props.userStore.setBio({nametext})}
+         onSubmitEditing={()=>{this.setBio()}}
+         placeholder={'Profil cümlenizi yazınız'}
+         placeholderTextColor={'rgb(215,214,214)'}
+         maxLength={300}
+         value={this.props.userStore.bio}
+       />)
+
     }
   }
 
@@ -378,48 +394,123 @@ export default class Profil extends React.Component {
 
     return (
 
-      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
-        <ScrollView style={{flex:1,width:'100%'}}>
-          <View style={{elevation:3,paddingTop:15,marginTop:20,width:'100%',backgroundColor:'white',flexDirection:'column'}}>
-            <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{position:'absolute',top:10,left:10,marginRight:10,flexDirection:'row',alignItems:'center'}}><Image source={require('../static/images/coins.png')} style={{height:15,width:15,marginRight:5,}}/><Text style={{textAlign:'center',fontWeight:'bold'}}>{this.props.userStore.userCredit}</Text></TouchableOpacity>
-            <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{alignSelf:'center',marginBottom:3,width:64,height:64,borderRadius:32,borderColor:'teal',borderWidth:1,paddingTop:1,alignItems:'center'}}>
-              <Image style={{height:60,width:60, borderRadius:30}} source={{uri:this.state.profPhoto}}></Image>
-              <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{position:'absolute',top:20,left:60,width:40,height:30,borderColor:'teal',alignItems:'center',backgroundColor:'transparent'}}>
-                <Icon name="pencil" color={'gray'} size={20} />
-              </TouchableOpacity>
-            </TouchableOpacity>
-            <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.userName}</Text>
-            {this.renderBio()}
-            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
+      <ImageBackground  source={require('../static/images/newImages/BG.png')} style={styles.container}>
 
-            <View style={styles.pickerContainer}>
-              <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
-              <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
-              <View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
-              <View ref={agePicker => this.cityPicker = agePicker}><TouchableOpacity onPress={() => {this.initCityPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.city!=='' ? this.props.userStore.city : "Şehir"}</Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></View>
-            </View>
+        <ScrollView style={{flex:1,width:'100%',padding:15,paddingTop:0}}>
+
+
+          {/* Mevcut Kredi */}
+
+
+          <View style={{paddingRight:15,height: 30,borderRadius: 15,position:'absolute',top:20,flexDirection:'row',justifyContent:'flex-start'}}>
+          <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{flexDirection:'row'}}>
+              <View style={{width:30,height: 30,borderRadius: 15,backgroundColor: 'white',flexDirection:'row',justifyContent:'center',alignItems:'center',zIndex:3}}>
+
+
+                    <Image source={require('../static/images/profile/coinsCopy.png')} style={{height:16.2,width:18}}/>
+
+
+
+
+              </View>
+
+              <View style={{height:24,paddingRight:18,paddingLeft:37,paddingBottom:2,borderRadius:12,position:'relative',right:29,top:3,backgroundColor:'rgba(0,0,0,0.18)',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+
+                    <Text style={{textAlign:'left',fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',fontSize:12}}>
+                    Mevcut Kredin:</Text>
+                    <Text style={{fontSize:14,fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',position:'relative',left:7}}>
+
+                    &nbsp;
+                    {this.props.userStore.userCredit}
+                    </Text>
+
+
+              </View>
+              </TouchableOpacity>
+          </View>
+
+      {/*      Profil fotoğrafı      */}
+
+    <View style={{height:100,width:'100%',zIndex: 4,top:55,position:'absolute',flexDirection:'row',justifyContent:'center',}}>
+       <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{shadowColor: "rgba(0, 0, 0, 0.2)",
+       shadowOffset: {
+         width: 0,
+         height: 2
+       },
+       shadowRadius: 1,
+       shadowOpacity: 1,elevation:2, backgroundColor:'transparent',alignSelf:'center',left:12,position:'relative',width:80,height:80,borderRadius:40,alignItems:'center'}}>
+              <Image style={{backgroundColor:'transparent',height:80,width:80, borderRadius:40}} source={{uri:this.state.profPhoto}}></Image>
+
+            </TouchableOpacity>
+            <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{shadowColor: "rgba(0, 0, 0, 0.2)",
+            shadowOffset: {
+              width: 0,
+              height: 2
+            },
+            shadowRadius: 1,
+            shadowOpacity: 1,elevation:3,width:24,height:24,borderRadius:12,alignItems:'center',top:34,right:7,position:'relative',alignSelf:'center',zIndex:3,backgroundColor:'white'}}>
+            <Image style={{backgroundColor:'transparent',height:12,width:12, borderRadius:6,position:'absolute',top:6}} source={require('../static/images/profile/group.png')}></Image>
+            </TouchableOpacity>
+       </View>
+          {/* Profil sayfası upper div */}
+          <View style={{flex:1,marginTop:55,paddingTop:50,position:'relative',top:50,width:'100%',backgroundColor:'white',flexDirection:'column',borderRadius:5}}>
+
+
+
+            <Text style={{alignSelf:'center',marginBottom:-13,fontWeight:'bold',color:'rgb(36,20,102)',fontFamily:'SourceSansPro-Bold',fontSize:18}}>{this.state.userName}</Text>
+
+
+            <View style={{alignItems:'center'}}>
+            <UserData userData={this.props.userStore.user} setDestination={(destination) =>{this.props.navigation.navigate(destination)}}/>
 
 
           </View>
-          <View style={{paddingTop:5,marginBottom:10,flex:1}}>
-            <View style={{marginBottom:5,backgroundColor:'white'}}>
-              <Button title={"Biz Kimiz"} color={'rgb(60,179,113)'} onPress={() => {this.props.navigation.navigate('Kimiz')}}/>
-            </View>
-            <View style={{marginBottom:5,backgroundColor:'white'}}>
+          {this.renderBio()}
+          </View>
 
-                <Button title={"Öneri & Şikayet"} color={'rgb(209,142,12)'} onPress={() => {this.popupDialog2.show()}}/>
+          {/* Profil sayfası lower div        */}
+
+           <View style={{flex:1,paddingTop:15,position:'relative',paddingBottom:15,top:50,marginTop:15,marginBottom:50,width:'100%',backgroundColor:'white',flexDirection:'column',justifyContent:'center',borderRadius:5}}>
 
 
+            <View style={styles.pickerContainer}>
+
+                <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+              <Text style={{fontSize:14,fontFamily:'SourceSansPro-Bold',fontWeight:'900',color:'rgb(166,158,171)',height:40}}>Özel Mesaj Almak İstemiyorum</Text>
+              <Switch style={{marginBottom:13}} value={this.props.userStore.dmBlocked} onValueChange={()=>{this.props.userStore.changeDmStatus()}}/>
+
+
+             </View>
+
+              <View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Text><Image source={require('../static/images/profile/shape.png')}/></TouchableOpacity></View>
+              <View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Text><Image source={require('../static/images/profile/shape.png')}/></TouchableOpacity></View>
+              <View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Text><Image source={require('../static/images/profile/shape.png')}/></TouchableOpacity></View>
+              <View ref={agePicker => this.cityPicker = agePicker}><TouchableOpacity onPress={() => {this.initCityPicker()}} style={styles.picker}><Text  style={styles.pickerText}>{this.props.userStore.city!=='' ? this.props.userStore.city : "Şehir"}</Text><Image source={require('../static/images/profile/shape.png')}/></TouchableOpacity></View>
             </View>
-            <View style={{marginBottom:5,backgroundColor:'white'}}>
-              <Button title={"Ekibimize Katıl"} color={'rgb(114,0,218)'} onPress={() => {this.popupDialog3.show()}}/>
-            </View>
-            <View style={{marginBottom:5,backgroundColor:'white'}}>
-              <Button title={"Kullanım Koşulları"} color={'rgb(0,185,241)'} onPress={() => {this.popupDialog.show()}}/>
-            </View>
-            <View style={{marginBottom:5,backgroundColor:'white'}}>
-              <Button title={"Çıkış Yap"} color={'rgb(249,50,12)'} onPress={() => {this.logout()}}/>
-            </View>
+
+          </View>
+
+          {/* Profile Page Buttons */}
+
+          <View style={{flex:1,marginBottom:10,marginTop:35,paddingRight:23,paddingLeft:23}}>
+
+            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}   onPress={() => {this.props.navigation.navigate('Kimiz')}}>
+              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"BİZ KİMİZ?"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog2.show()}}>
+              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÖNERİ & ŞİKAYET"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog3.show()}}>
+              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"EKİBİMİZE KATIL"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog.show()}}>
+              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"KULLANIM KOŞULLARI"}</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30,marginBottom:14}}  onPress={() => {this.logout()}}>
+              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÇIKIŞ YAP"}</Text>
+            </TouchableOpacity>
+
+
           </View>
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <Modal
@@ -459,7 +550,7 @@ export default class Profil extends React.Component {
          width={0.9}
          height={0.6}
          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
-       >
+         >
            <View style={{flex:1}}>
            <ScrollView style={{padding:10}}>
              <Text style={{textAlign:'justify'}}>
@@ -489,68 +580,38 @@ export default class Profil extends React.Component {
 
                ·  Kahve Falı Sohbeti uygulaması bu metindeki içeriği istediği zaman değiştirebileceğini beyan eder.{"\n"}
              </Text>
-
            </ScrollView>
            </View>
          </PopupDialog>
          <PopupDialog
-          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
+          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri & Şikayet" />}
           dialogStyle={{marginTop:-250}}
           width={0.9}
           height={0.3}
           ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}
-        >
-        <View style={{flex:1}}>
-          <TextInput
+          >
+          <View style={{flex:1}}>
+            <TextInput
 
-            multiline = {true}
+              multiline = {true}
 
-            style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-            onChangeText={(text) => this.setState({text})}
+              style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+              onChangeText={(text) => this.setState({text})}
 
-            placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
-            editable = {true}
-          />
+              placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
+              editable = {true}
+            />
 
-          <View style={{marginBottom:10}}>
-            <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
-          </View>
+            <View style={{marginBottom:10}}>
+              <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
+            </View>
           </View>
         </PopupDialog>
         <PopupDialog
-         dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri" />}
-         dialogStyle={{marginTop:-250}}
-         width={0.9}
-         height={0.5}
-         ref={(popupDialog) => { this.popupSikayet = popupDialog; }}
-       >
-       <View style={{flex:1}}>
-         <RadioForm
-           radio_props={radio_props}
-           initial={0}
-           onPress={(value) => {this.setState({radioValue:value})}}
-         />
-         <TextInput
-
-           multiline = {true}
-
-           style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-           onChangeText={(text) => this.setState({text})}
-
-           placeholder={'Buraya uygulamamızda görmek isteyeceğiniz yenilikleri yazabilirsiniz. Teşekkür ederiz!'}
-           editable = {true}
-         />
-
-         <View style={{marginBottom:10}}>
-           <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
-         </View>
-       </View>
-       </PopupDialog>
-      <PopupDialog
            dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
-           dialogStyle={{marginTop:-300}}
+           dialogStyle={{marginTop:-250}}
            width={0.9}
-           height={0.4}
+           height={0.6}
            ref={(popupDialog) => { this.popupDialog3 = popupDialog; }}
          >
          <View style={{flex:1,padding:5}}>
@@ -598,32 +659,41 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: null,
     alignItems:'center',
-    paddingRight:10,
-    paddingLeft:10,
+    padding:0,
+    paddingTop:0,
+    paddingBottom:0,
 
+    backgroundColor:'rgba(48,35,174,1)'
 
   },
   pickerContainer: {
     borderColor:'white',
+
     borderTopWidth:2,
     backgroundColor:'transparent',
-    padding:10,
+    paddingLeft:25,
+    paddingRight:25,
+
     backgroundColor:'white',
     flex:1,
     width:'100%',
 
   },
   picker:{
-    borderWidth:2,borderColor:'teal',flexDirection:'row',justifyContent:'space-between',padding:5,marginBottom:10,alignItems:'center',backgroundColor:'#f1f1f1',width:'100%',height:30,borderRadius:5
+    flexDirection:'row',justifyContent:'space-between',padding:10,marginBottom:10,alignItems:'center',backgroundColor:'#676891',width:'100%',height:40,borderRadius:4
   },
   nameinput:{
     fontSize:14,fontWeight:'bold',backgroundColor:'transparent',color:'dimgray',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30
   },
   pickerText:{
-    fontWeight:'bold',backgroundColor:'transparent',color:'dimgray'
+    backgroundColor:'transparent',color:'white',fontFamily:'SourceSansPro-Semibold',fontSize:12,paddingLeft:10,paddingRight:10
   },
   inputwrap:{
     flexDirection:'row',justifyContent:'space-between',paddingLeft:10,paddingRight:10,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
   },
 
+  profileButton:{
+    borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30
+
+  }
 });

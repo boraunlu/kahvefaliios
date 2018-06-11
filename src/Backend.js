@@ -4,6 +4,7 @@ import {
 
 import firebase from 'react-native-firebase'
 import moment from 'moment';
+import axios from 'axios';
 import ImageResizer from 'react-native-image-resizer';
 
 
@@ -1105,6 +1106,21 @@ loadMessages = (callback) => {
       body: JSON.stringify({
         uid: this.getUid(),
       })
+    })
+  }
+
+  getGunluk = (falId) => {
+    return new Promise((resolve, reject) => {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getGunluk', {
+        falId: falId,
+      })
+      .then( (response) => {
+        var responseJson=response.data
+        resolve(responseJson)
+      })
+      .catch(function (error) {
+
+      });
     })
   }
 }

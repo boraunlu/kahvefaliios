@@ -122,11 +122,10 @@ export default class ProfilePicker extends Component {
 
     return (
       <View style={styles.pickerContainer}>
-        <Text style={{textAlign:'center',marginBottom:10,color:'white',fontWeight:'bold'}}>Kimin Falına Bakıyoruz?</Text>
-        <Animatable.View ref={agePicker => this.namePicker = agePicker} style={styles.inputwrap}><TextInput ref={agePicker => this.namePicker = agePicker} style={styles.nameinput} maxLength = {20} onChangeText={(nametext) => this.props.userStore.setUserName({nametext})} placeholder={"İsminiz"}  value={this.props.userStore.userName}></TextInput><Icon name="pencil" color='dimgray' size={14} /></Animatable.View>
-        <Animatable.View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Animatable.Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Animatable.Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></Animatable.View>
-        <Animatable.View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Animatable.Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Animatable.Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></Animatable.View>
-        <Animatable.View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Animatable.Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Animatable.Text><Icon name="chevron-down" color='dimgray' size={14} /></TouchableOpacity></Animatable.View>
+        <Animatable.View ref={agePicker => this.namePicker = agePicker} style={styles.inputwrap}><TextInput ref={agePicker => this.namePicker = agePicker} style={styles.nameinput} maxLength = {20} onChangeText={(nametext) => this.props.userStore.setUserName({nametext})} placeholder={"İsminiz"}  value={this.props.userStore.userName}></TextInput><Icon name="pencil" color='rgb( 55, 32, 142)' size={14} /></Animatable.View>
+        <Animatable.View ref={agePicker => this.agePicker = agePicker}><TouchableOpacity onPress={() => {this.initAgePicker()}} style={styles.picker}><Animatable.Text style={styles.pickerText}>{this.props.userStore.age>10 ? this.props.userStore.age+" yaşındayım" : "Yaşınızı Seçin"}</Animatable.Text><Icon name="chevron-down" color='rgb( 55, 32, 142)' size={14} /></TouchableOpacity></Animatable.View>
+        <Animatable.View ref={agePicker => this.iliskiPicker = agePicker}><TouchableOpacity onPress={() => {this.initiliskiPicker()}} style={styles.picker}><Animatable.Text  style={styles.pickerText}>{this.props.userStore.iliski!=='' ? this.props.userStore.iliski : "İlişki Durumu"}</Animatable.Text><Icon name="chevron-down" color='rgb( 55, 32, 142)' size={14} /></TouchableOpacity></Animatable.View>
+        <Animatable.View ref={agePicker => this.meslekPicker = agePicker}><TouchableOpacity onPress={() => {this.initMeslekPicker()}} style={styles.picker}><Animatable.Text  style={styles.pickerText}>{this.props.userStore.meslek!=='' ? this.props.userStore.meslek : "Çalışma Durumu"}</Animatable.Text><Icon name="chevron-down" color='rgb( 55, 32, 142)' size={14} /></TouchableOpacity></Animatable.View>
       </View>
     );
   }
@@ -136,20 +135,20 @@ var styles = StyleSheet.create({
 
   pickerContainer: {
     borderColor:'white',
-    borderTopWidth:2,
+
     backgroundColor:'transparent',
-    padding:10,
-    backgroundColor:'rgba(0, 0, 0, 0.3)'
+
+    backgroundColor:'rgba(0, 0, 0, 0)'
 
   },
   picker:{
-    flexDirection:'row',justifyContent:'space-between',padding:5,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
+    flexDirection:'row',justifyContent:'space-between',padding:5,paddingLeft:10,paddingRight:10,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5
   },
   nameinput:{
-    fontSize:14,fontWeight:'bold',backgroundColor:'transparent',color:'dimgray',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30
+    fontSize:14,backgroundColor:'transparent',color:'rgb( 55, 32, 142)',justifyContent:'space-between',alignItems:'center',backgroundColor:'#f9f9fb',width:'70%',height:30,fontFamily:'SourceSansPro-Bold'
   },
   pickerText:{
-    fontWeight:'bold',backgroundColor:'transparent',color:'dimgray'
+    backgroundColor:'transparent',color:'rgb( 55, 32, 142)',fontFamily:'SourceSansPro-Bold'
   },
   inputwrap:{
     flexDirection:'row',justifyContent:'space-between',paddingLeft:10,paddingRight:10,marginBottom:10,alignItems:'center',backgroundColor:'#f9f9fb',width:'100%',height:30,borderRadius:5

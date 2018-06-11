@@ -30,6 +30,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import ProfilePicker from '../components/ProfilePicker';
 import Spinner from 'react-native-loading-spinner-overlay';
 import CameraRollPicker from 'react-native-camera-roll-picker';
 import CameraPick from '../components/CameraPick';
@@ -59,6 +60,10 @@ const options = [
     { label: 'Sosyal', value: 1 },
     { label: 'Süper 🌟', value: 2 }
 ];
+const options2 = [
+    { label: 'Sosyal', value: 1 },
+    { label: 'Süper 🌟', value: 2 }
+];
 
 @inject("socialStore")
 @inject("userStore")
@@ -77,7 +82,8 @@ export default class FalPaylas extends React.Component {
       spinnerVisible:false,
       pollInput1:'',
       pollInput2:'',
-      super:0
+      super:this.props.navigation.state.params.type,
+      profileIsValid:false
   };
 }
 
@@ -153,101 +159,115 @@ export default class FalPaylas extends React.Component {
 
     }
 
-    sendSosyal = () => {
-      var valid=false
-      if(this.state.super===0){
-        if(this.state.falPhotos.length>1){
-          valid=true
-        }
-        else {
-            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
-        }
-      }
-      else {
+    changeValidation = () => {
+      this.setState({checkValidation:false})
+    }
 
-        if(this.state.falPhotos.length>1){
-          if(this.state.sosyalInput.length<20){
-
-            Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
+    sendSosyal = (supertype) => {
+      if(this.props.userStore.profileIsValid){
+        var valid=false
+        if(supertype===0){
+          if(this.state.falPhotos.length>1){
+            valid=true
           }
-          else{
-            if((this.state.pollInput1.length>0&&this.state.pollInput2.length==0)||(this.state.pollInput2.length>0&&this.state.pollInput1.length==0)){
-                  Alert.alert("Şıkları Giriniz","Lütfen her iki şıkkı da giriniz ya da ikisini de boş bırakınız")
-            }
-            else {
-              valid=true
-            }
+          else {
+              Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
           }
         }
         else {
-            Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
-        }
 
-      }
+          if(this.state.falPhotos.length>1){
+            if(this.state.sosyalInput.length<20){
 
-      if(valid){
-        this.setState({spinnerVisible:true})
-
-        Backend.uploadImages(this.state.falPhotos).then((urls) => {
-
-          this.setState({spinnerVisible:false})
-          if(this.state.falType==2||this.state.falType==3){
-            this.postSosyal(urls)
-          }
-          else if(this.state.falType==1){
-
-            if(this.props.userStore.userCredit<50){
-              this.paySosyal(urls,50)
+              Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
             }
             else{
-              Backend.addCredits(-50)
-              this.props.userStore.increment(-50)
-              this.postSosyal(urls)
+              if((this.state.pollInput1.length>0&&this.state.pollInput2.length==0)||(this.state.pollInput2.length>0&&this.state.pollInput1.length==0)){
+                    Alert.alert("Şıkları Giriniz","Lütfen her iki şıkkı da giriniz ya da ikisini de boş bırakınız")
+              }
+              else {
+                valid=true
+              }
             }
           }
           else {
-            if(this.props.userStore.userCredit<100){
-              this.paySosyal(urls,100)
-            }
-            else{
-              Backend.addCredits(-100)
-              this.props.userStore.increment(-100)
+              Alert.alert("En az 2 adet fotoğraf yüklemeniz gerekiyor ")
+          }
+
+        }
+
+        if(valid){
+          this.setState({spinnerVisible:true})
+
+          Backend.uploadImages(this.state.falPhotos).then((urls) => {
+
+            this.setState({spinnerVisible:false})
+            if(supertype==0){
               this.postSosyal(urls)
             }
-          }
-        })
-        .catch(error => {
-          console.log(error)
-          this.setState({spinnerVisible:false})
-          Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
-        })
+            else if(supertype==1){
+
+              if(this.props.userStore.userCredit<100){
+                this.paySosyal(urls,100)
+              }
+              else{
+                Backend.addCredits(-100)
+                this.props.userStore.increment(-100)
+                this.postSosyal(urls)
+              }
+            }
+            else {
+              if(this.props.userStore.userCredit<150){
+                this.paySosyal(urls,150)
+              }
+              else{
+                Backend.addCredits(-150)
+                this.props.userStore.increment(-150)
+                this.postSosyal(urls)
+              }
+            }
+          })
+          .catch(error => {
+            console.log(error)
+            this.setState({spinnerVisible:false})
+            Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
+          })
+        }
+      }
+      else{
+        this.setState({checkValidation:true})
       }
     }
 
 
     postSosyal = (urls) => {
       Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2,this.state.super)
-
+      if(this.state.super===0){this.props.userStore.setGunlukUsedTrue()}
       Keyboard.dismiss()
       this.setState({sosyalInput:'',falPhotos:[]})
-     setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
-     setTimeout(()=>{
+       setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");},550)
+       setTimeout(()=>{
 
-       axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-         uid: Backend.getUid(),
-       })
-       .then( (response) => {
-         var responseJson=response.data
+         const resetAction = NavigationActions.reset({
+            index: 0,
+            actions: [
+              NavigationActions.navigate({ routeName: 'Greeting', action: NavigationActions.navigate({ routeName: 'Social' })})
 
-         this.props.socialStore.setSocials(responseJson.sosyals)
-        this.props.socialStore.setTek(responseJson.tek)
-       })
-       .catch(function (error) {
+            ]
+          })
+          this.props.navigation.dispatch(resetAction)
+          /*
+         axios.post('https://eventfluxbot.herokuapp.com/appapi/getTek', {
+           uid: Backend.getUid(),
+         })
+         .then((response) => {
+           var responseJson=response.data
+           this.props.socialStore.setTek(responseJson)
+         })
+         .catch(function (error) {
 
-       });
-
-
-      },1050)
+         });*/
+      },850)
     }
 
       paySosyal = (urls,para) => {
@@ -255,15 +275,15 @@ export default class FalPaylas extends React.Component {
         var products = [
            'com.grepsi.kahvefaliios.sosyal',
         ];
-        if(para==50){products = [
-           'com.grepsi.kahvefaliios.50',
+        if(para==150){products = [
+           'com.grepsi.kahvefaliios.150',
         ];}
         InAppUtils.loadProducts(products, (error, products) => {
           if(error){this.setState({spinnerVisible:false})}
           else{
 
             var identifier = 'com.grepsi.kahvefaliios.sosyal'
-            if(para==50){identifier = 'com.grepsi.kahvefaliios.50'}
+            if(para==150){identifier = 'com.grepsi.kahvefaliios.150'}
             InAppUtils.purchaseProduct(identifier, (error, response) => {
               this.setState({spinnerVisible:false})
                // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
@@ -274,24 +294,25 @@ export default class FalPaylas extends React.Component {
                  if(response && response.productIdentifier) {
                    Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2,this.state.super)
                    this.setState({modalVisible:false,inputVisible:false})
+                   if(this.state.super===0){this.props.userStore.setGunlukUsedTrue()}
                    Keyboard.dismiss()
 
                    this.setState({sosyalInput:'',falPhotos:[]})
 
-                   axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
-                     uid: Backend.getUid(),
-                   })
-                   .then( (response) => {
-                     var responseJson=response.data
+                   setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},550)
+                   setTimeout(()=>{
 
-                     this.props.socialStore.setSocials(responseJson.sosyals)
-                    this.props.socialStore.setTek(responseJson.tek)
-                   })
-                   .catch(function (error) {
+                     axios.post('https://eventfluxbot.herokuapp.com/appapi/getTek', {
+                       uid: Backend.getUid(),
+                     })
+                     .then((response) => {
+                       var responseJson=response.data
+                       this.props.socialStore.setTek(responseJson)
+                     })
+                     .catch(function (error) {
 
-                   });
-
-                    setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!");this.props.navigation.goBack();},950)
+                     });
+                  },850)
 
                  }
                }
@@ -365,6 +386,7 @@ export default class FalPaylas extends React.Component {
             <Text style={styles.faltypeyazikucukpopup}>
               Falınız sosyal panoda yer almaz.
             </Text>
+
           </View>
         )
       }
@@ -379,6 +401,7 @@ export default class FalPaylas extends React.Component {
                 multiline={true}
                 value={this.state.sosyalInput}
                 maxLength={150}
+                blurOnSubmit={true}
                 onChangeText={(text) =>{this.setState({sosyalInput:text})}}
                 placeholder={"Sorunuzu yazınız"}
                 style={{height:80,width:'100%',fontSize:14, padding:14,borderRadius:4,marginBottom:10,backgroundColor:'white'}}
@@ -403,15 +426,25 @@ export default class FalPaylas extends React.Component {
               />
             </View>
             <Text style={{color:'white',fontSize:10,marginTop:5}}>Not: Anket yapmak istemiyorsanız bu seçenekleri boş bırakabilirsiniz.</Text>
+            {this.state.profileIsValid?
+              null:<View style={{width:'100%',marginTop:20}}>
+                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+              </View>
+            }
           </View>
         )
 
       }
       else {
         return (
-          <TouchableOpacity onPress={()=>{alert("foto yokmuş")}}>
-            <Text style={{color:'white'}}>Fotoğrafım yok</Text>
-          </TouchableOpacity>
+          <View style={{width:'100%',marginLeft:-15,marginRight:-15,marginTop:10}}>
+            <TouchableOpacity  onPress={()=>{alert("foto yokmuş")}}>
+              <Text style={{color:'white'}}>Fotoğrafım yok</Text>
+
+            </TouchableOpacity>
+
+            <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+          </View>
         )
       }
     }
@@ -481,10 +514,12 @@ export default class FalPaylas extends React.Component {
 
   componentDidMount() {
     const { params } = this.props.navigation.state;
-    var falType = params ? params.falType : null;
-    var storePhotos=this.props.socialStore.falPhotos
-    this.setState({falPhotos:storePhotos})
-    this.setState({falType:falType+1})
+    if(params.photos){
+      this.setState({falPhotos:params.photos})
+    }
+
+    if(this.props.userStore.profileIsValid){this.setState({profileIsValid:true})}
+
       //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
   }
   componentDidUpdate() {
@@ -495,12 +530,62 @@ export default class FalPaylas extends React.Component {
 
 
   }
+  renderPrice(){
+    if(this.props.userStore.user){
+      if(this.state.super==1){
+        return(
+          <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
+            <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+            <Text style={[styles.label]}>
+              100
+            </Text>
 
+          </View>
+
+        )
+      }
+      else if (this.state.super==2) {
+        return(
+          <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
+            <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+            <Text style={[styles.label]}>
+              150
+            </Text>
+
+          </View>
+        )
+      }
+      else {
+        if(this.props.userStore.gunlukUsed){
+          return(
+            <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
+              <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+              <Text style={[styles.label]}>
+                100
+              </Text>
+
+            </View>
+          )
+        }
+        else {
+          return(
+            <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
+
+              <Text style={[styles.label]}>
+                ÜCRETSİZ
+              </Text>
+
+            </View>
+          )
+        }
+      }
+    }
+  }
 
   render() {
     var backgroundImage={}
     if(this.state.super===0){
-      backgroundImage=require('../static/images/background.png')
+      backgroundImage=require('../static/images/newImages/BG.png')
     }
     else if (this.state.super===1) {
       backgroundImage=require('../static/images/sosyalbg.jpeg')
@@ -515,38 +600,47 @@ export default class FalPaylas extends React.Component {
         <KeyboardAwareScrollView  style={{flex:1}} >
           <View style={{flex:1,alignItems:'center',paddingBottom:40,paddingLeft:15,paddingRight:15}}>
             <View style={{flex:1,marginLeft:-15,marginRight:-15,paddingLeft:15,paddingRight:15,alignSelf: 'stretch'}}>
-              <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:15}}>
-              {this.state.falType ==2||this.state.falType ==3?
-                  null
-                  : this.state.falType==1?
 
-                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                    <Text style={[styles.label]}>
-                      50
-                    </Text>
+              <View style={{
+                elevation:4,
+                position:'absolute',
+                top:-77,
+                left:-75,
 
-                  </View>
-                  :
-                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:0,left:0}}>
-                    <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                    <Text style={[styles.label]}>
-                      100
-                    </Text>
-
-                  </View>
-
-              }
+                width: 120,
+                height: 120,
+                backgroundColor: "rgb(89, 70, 159)",
+                shadowColor: "rgba(0, 0, 0, 0.2)",
+                shadowOffset: {
+                  width: 0,
+                  height: 2
+                },
+                shadowRadius: 1,
+                shadowOpacity: 1,
+                borderRadius: 50,
+                zIndex:1000,
+                transform: [
+                  {scaleX: 2}]}}>
 
               </View>
+              {this.renderPrice()}
+
+
 
 
             </View>
 
+            {this.props.navigation.state.params.type==1?
+              <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
+                <SwitchSelector  options={options2} buttonColor={'rgb(236,196,75)'} initial={0} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+              </View>:
+              <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
+                <SwitchSelector  options={options} buttonColor={'rgb(236,196,75)'} initial={0} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+              </View>
+            }
 
-            <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
-              <SwitchSelector  options={options} buttonColor={'rgb(236,196,75)'} initial={this.state.super} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
-            </View>
+
+
 
             {this.renderFalInfo()}
 
@@ -570,7 +664,7 @@ export default class FalPaylas extends React.Component {
             </View>
             {this.renderSosyalInput()}
 
-           <TouchableOpacity  onPress={() => {this.sendSosyal();}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+           <TouchableOpacity  onPress={() => {this.sendSosyal(this.state.super);}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
              <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>PAYLAŞ</Text>
            </TouchableOpacity>
 
