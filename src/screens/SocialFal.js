@@ -12,6 +12,7 @@ import {
   Keyboard,
   ActivityIndicator,
   Alert,
+  Dimensions,
     ImageBackground,
   Share
 } from 'react-native';
@@ -22,6 +23,7 @@ import Backend from '../Backend';
 import { NavigationActions,SafeAreaView } from 'react-navigation'
 import moment from 'moment';
 import Lightbox from 'react-native-lightbox';
+import CountDown from 'react-native-countdown-component';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import { NativeModules } from 'react-native'
@@ -36,8 +38,10 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function replaceGecenHafta(string) {
-    return string.replace("geçen hafta ","")
+function replaceGecenHafta(str) {
+  str=str.replace("geçen ","")
+  str=str.replace("bugün ","")
+  return str
 }
 
 @inject("userStore")
@@ -60,6 +64,7 @@ export default class SocialFal extends React.Component {
       voters1:[],
       voters2:[],
       votedFor:false,
+      expired:false
   };
 }
 
@@ -73,30 +78,10 @@ export default class SocialFal extends React.Component {
 
   componentDidMount() {
     const { params } = this.props.navigation.state;
-    var id =Backend.getUid()
-    if(params.fal){
-      this.setState({fal:params.fal,comments:params.fal.comments})
 
-      if(params.fal.poll1){
-        voters1=params.fal.voters1
-        voters2=params.fal.voters2
-        this.setState({voters1:voters1,voters2:voters2})
-        for (var i = 0; i < voters1.length; i++) {
-          if(id==voters1[i]){
-            this.setState({votedFor:true})
-            break;
-          }
-        }
-        for (var i = 0; i < voters2.length; i++) {
-          if(id==voters2[i]){
-            this.setState({votedFor:true})
-            break;
-          }
-        }
-      }
-      if(id==params.fal.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3w'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
-        this.setState({falowner:true,votedFor:true})
-      }
+
+    if(params.fal){
+      this.setFal(params.fal)
     }
     else if (params.falId) {
       fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
@@ -112,27 +97,7 @@ export default class SocialFal extends React.Component {
       .then((response) => response.json())
        .then((responseJson) => {
 
-           this.setState({fal:responseJson,comments:responseJson.comments});
-           if(responseJson.poll1){
-             voters1=responseJson.voters1
-             voters2=responseJson.voters2
-             this.setState({voters1:voters1,voters2:voters2})
-             for (var i = 0; i < voters1.length; i++) {
-               if(id==voters1[i]){
-                 this.setState({votedFor:true})
-                 break;
-               }
-             }
-             for (var i = 0; i < voters2.length; i++) {
-               if(id==voters2[i]){
-                 this.setState({votedFor:true})
-                 break;
-               }
-             }
-           }
-           if(id==responseJson.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3w'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
-             this.setState({falowner:true,votedFor:true})
-           }
+           this.setFal(responseJson)
        })
     }
   }
@@ -159,6 +124,42 @@ export default class SocialFal extends React.Component {
  _keyboardDidHide = () =>  {
   // alert('Keyboard Hidden');
   this.setState({keyboardHeight:0})
+ }
+
+ setFal = (fal) => {
+   this.setState({fal:fal,comments:fal.comments})
+   var id =Backend.getUid()
+   var simdi=moment()
+   if(fal.status==1){
+     if(simdi.diff(moment(fal.time),"days")>2){
+         this.setState({expired:true})
+     }
+   }
+   else if (fal.status==3) {
+     if(simdi.diff(moment(fal.time),"days")>3){
+         this.setState({expired:true})
+     }
+   }
+   if(fal.poll1){
+     voters1=fal.voters1
+     voters2=fal.voters2
+     this.setState({voters1:voters1,voters2:voters2})
+     for (var i = 0; i < voters1.length; i++) {
+       if(id==voters1[i]){
+         this.setState({votedFor:true})
+         break;
+       }
+     }
+     for (var i = 0; i < voters2.length; i++) {
+       if(id==voters2[i]){
+         this.setState({votedFor:true})
+         break;
+       }
+     }
+   }
+   if(id==fal.fireID||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
+     this.setState({falowner:true,votedFor:true})
+   }
  }
 
  startChat = (falsever,seviye) => {
@@ -241,6 +242,29 @@ export default class SocialFal extends React.Component {
       // iOS only:
 
     })
+  }
+
+  deleteFal = () => {
+
+      Alert.alert(
+        'Fal Silimi',
+        'Falını silmek istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {
+            Backend.deleteSosyal(this.state.fal._id)
+            this.props.socialStore.setTek(null)
+            setTimeout(()=>{
+              Backend.getSocials().then((socials)=>{
+                this.props.socialStore.setSocials(socials)
+                this.props.navigation.goBack()
+              })
+            },650)
+
+          }},
+        ],
+      )
+
   }
 
   payChat = (creditNeeded,falsever) => {
@@ -402,6 +426,69 @@ export default class SocialFal extends React.Component {
     }
   }
 
+  showSuper = () => {
+    this.popupSuper.show()
+  }
+
+  superle = () => {
+    if(this.props.userStore.userCredit>49){
+      Backend.addCredits(-50)
+      this.props.userStore.increment(-50)
+      Backend.superle(this.state.fal._id)
+      Alert.alert('Super Fal',"Falınız süperlendi! 🌟 Artık falınız panonun üst bölümünde yer alacak ve falınıza daha çok yorum gelecek")
+      var fal=this.state.fal
+      this.state.fal.status=3
+      this.setState({fal:fal})
+      setTimeout(()=>{
+        Backend.getSocials().then((socials)=>{
+          this.props.socialStore.setSocials(socials)
+        })
+      },650)
+
+      this.popupSuper.dismiss()
+    }
+    else {
+      this.paySuper()
+    }
+  }
+
+  paySuper = () => {
+    this.setState({spinnerVisible:true})
+    var products = [
+       'com.grepsi.kahvefaliios.50',
+    ];
+
+    InAppUtils.loadProducts(products, (error, products) => {
+      if(error){this.setState({spinnerVisible:false})}
+      else{
+
+        var identifier = 'com.grepsi.kahvefaliios.50'
+        InAppUtils.purchaseProduct(identifier, (error, response) => {
+          this.setState({spinnerVisible:false})
+           // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+           if(error){
+
+           }
+           else{
+             if(response && response.productIdentifier) {
+               Backend.superle(this.state.fal._id)
+               Alert.alert('Super Fal',"Falınız süperlendi! 🌟 Artık falınız panonun üst bölümünde yer alacak ve falınıza daha çok yorum gelecek")
+               var fal=this.state.fal
+               this.state.fal.status=3
+               this.setState({fal:fal})
+               setTimeout(()=>{
+                 Backend.getSocials().then((socials)=>{
+                   this.props.socialStore.setSocials(socials)
+                 })
+               },650)
+               this.popupSuper.dismiss()
+             }
+           }
+        });
+      }
+    });
+  }
+
 
     deleteComment = (index) => {
       Alert.alert(
@@ -421,17 +508,24 @@ export default class SocialFal extends React.Component {
     }
 
   renderAktifStripe = () => {
-    if(this.state.fal)
+    if(this.state.expired)
     {
-      var simdi = moment();
-      if(simdi.diff(this.state.fal.time,"days")>7)
-      {
-        return(
-          <View style={{backgroundColor:'red'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16,margin:3}}>Yeni Yoruma Kapalı</Text></View>
-        )
+      return(
+        <View style={{backgroundColor:'red'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16,margin:3}}>Yeni Yoruma Kapalı</Text></View>
+      )
+    }
+    else {
+      if(this.state.fal){
+        if(this.state.fal.status==3){
+          return(
+            <View style={{justifyContent:'center',zIndex:5,position:'absolute',height:30,width:'100%',backgroundColor:'rgb( 236 ,196 ,75)'}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16}}>Süper Fal🌟   2 Kat FalPuan Kazan!</Text></View>
+          )
+        }
       }
+
     }
   }
+
   renderCommentDelete = (index) => {
     if(this.state.falowner==true){
       return (
@@ -442,9 +536,19 @@ export default class SocialFal extends React.Component {
       );
     }
   }
+  renderFalDelete = () => {
+    if(this.state.falowner==true){
+      return (
+        <TouchableOpacity style={{width:20,alignItems:'center',justifyContent:'center',position:'absolute',top:5,right:5,height:20}} onPress={() => {this.deleteFal()}}>
+          <Icon name="trash-o" color={'#241466'} size={18} />
+        </TouchableOpacity>
+      );
+    }
+  }
 
   renderComments = () => {
     if(this.state.comments.length>0){
+
       return(
         <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
         {
@@ -490,7 +594,7 @@ export default class SocialFal extends React.Component {
               }
               dislikecount=comment.dislikes.length
             }
-
+            {/*
             if(dislikecount>4){
               return(
                       <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#F2F1F3',borderColor:'gray'}}>
@@ -507,8 +611,8 @@ export default class SocialFal extends React.Component {
                         </View>
                       </View>
                   )
-            }
-            else {
+            }*/}
+
               return (
                 <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
                   <View style={{marginLeft:comment.parentIndex?47:0}}>
@@ -551,24 +655,25 @@ export default class SocialFal extends React.Component {
                           Cevap Ver
                         </Text>
                       </TouchableOpacity>
-                      {/* <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
+                       <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
                         {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
                         <Text style={{marginLeft:4}}>{likecount}</Text>
                       </TouchableOpacity>
                       <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
                         {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
                         <Text style={{marginLeft:4}}>{dislikecount}</Text>
-                      </TouchableOpacity> */}
+                      </TouchableOpacity>
                     </View>
                   </View>
                   {this.renderCommentDelete(index)}
                 </View>
                 );
-            }
+
 
           }, this)
         }
         {this.renderYorumYap()}
+
         </ScrollView>
       )
     }
@@ -583,23 +688,37 @@ export default class SocialFal extends React.Component {
 
 
   renderYorumYap = () => {
-      if(this.state.comments.length<3){
+    if(this.state.falowner){
+      var a = moment();
+
+       var b = moment(this.state.fal.time).add(2, 'days');;
+       var hours=b.diff(a, 'hours')
+       var minutes=b.diff(a, 'minutes')
+       minutes=minutes%60
+       return(
+         <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
+           {"Panoda kalan süreniz: "+hours+" saat, "+minutes+" dk"}
+         </Text>
+       )
+    }
+    else {
+      if(this.state.fal.status==3){
         return(
           <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-            <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+            <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Bu bir <Text style={{fontWeight:'bold'}}>Süper Fal!</Text> Güzel bir yorum yap ve <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
           </View>
         )
-      }
-      else {
-        if(this.state.fal.super){
+      }else {
+        if(this.state.comments.length<3){
           return(
             <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-              <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Bu bir <Text style={{fontWeight:'bold'}}>Süper Fal!</Text> Güzel bir yorum yap ve <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+              <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
             </View>
           )
         }
       }
     }
+  }
 
 
 
@@ -843,7 +962,23 @@ export default class SocialFal extends React.Component {
 
    }
 
-   renderPoll = () => {
+   renderSuperle = () => {
+     if(this.state.fal.status===1&&this.state.falowner){
+
+       return(
+         <View style={{flexDirection:'row',backgroundColor:'#f7f7f7',paddingBottom:10,paddingRight:50,paddingLeft:50}}>
+           <TouchableOpacity  onPress={() => {this.showSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:35,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+             <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>FALINI SÜPERLE 🌟 </Text>
+           </TouchableOpacity>
+
+         </View>
+       )
+     }
+
+   }
+
+
+     renderPoll = () => {
        if(this.state.fal.poll1){
 
          if(this.state.fal.poll1.length>1){
@@ -909,11 +1044,13 @@ export default class SocialFal extends React.Component {
          var v1count=this.state.voters1.length
          var v2count=this.state.voters2.length
 
+         let deviceWidth = Dimensions.get('window').width
+
          var v1percentage=parseInt(v1count*100/(v1count+v2count))
          var v2percentage =100-v1percentage
          if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
          return(
-           <View style={{flexDirection:'row',paddingBottom:5,justifyContent:'space-between',height:77,marginLeft:"8%",marginRight:"8%"}}>
+           <View style={{marginTop:-10,flexDirection:'row',paddingBottom:5,justifyContent:'space-between',height:77,marginLeft:"7%",marginRight:"7%"}}>
 
              <View style={{flex:1,alignItems:'flex-start',flexDirection:"column"}} >
 
@@ -926,10 +1063,10 @@ export default class SocialFal extends React.Component {
      color: "#5033c0"}}>
                     {this.state.fal.poll1}
                </Text>
-             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
-             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
+             <View style={{flex:1,justifyContent:'space-between',flexDirection:"row",alignItems:"center",marginBottom:5}} >
+               <View style={{height:14,width:(deviceWidth*0.33),borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
 
-                   <View style={{height:14,width:135*(v1percentage/100),borderRadius:8,backgroundColor: "#5033c0"}}>
+                   <View style={{height:14,width:(deviceWidth*0.33)*(v1percentage/100),borderRadius:8,backgroundColor: "#5033c0"}}>
 
                    </View>
 
@@ -957,13 +1094,13 @@ export default class SocialFal extends React.Component {
      color: "#b81e5e"}}>
                     {this.state.fal.poll2}
                </Text>
-             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
-             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
+             <View style={{flex:1,justifyContent:'space-between',flexDirection:"row",alignItems:"center",marginBottom:5}} >
+             <View   style={{height:14,width:(deviceWidth*0.33),borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
 
                    <View style={{height:14,
                   // position:"absolute",
 
-                   width:135*(v2percentage/100),
+                   width:(deviceWidth*0.35)*(v2percentage/100),
 
 
                      borderRadius:8,backgroundColor: "#b81e5e"}}>
@@ -989,6 +1126,8 @@ export default class SocialFal extends React.Component {
          return null
        }
      }
+
+
 
 
   voteFor = (vote) => {
@@ -1096,7 +1235,9 @@ export default class SocialFal extends React.Component {
                      </Text>
                   </Text>
                 </View>
+                {this.renderFalDelete()}
               </View>
+              {this.renderSuperle()}
               <View style={{alignItems:'flex-start',borderColor:'gray',backgroundColor:'white',borderBottomWidth:0,padding:5,paddingRight:15,marginLeft:"4%",marginRight:"4%",marginBottom:15,marginTop:10,flexDirection:"row",justifyContent:"flex-start"}}>
               <Image source={require('../static/images/newImages/noun548595Cc.png')} style={{  width: 40,
                                 height: 40,
@@ -1150,14 +1291,15 @@ export default class SocialFal extends React.Component {
                 }, this)}
               </View>
               {this.renderPoll()}
+
               <View style={{flex:1}}>
                 <View style={{height: 40,backgroundColor:'#241466',alignItems:"center",justifyContent:"center",flexDirection:"row"}}><Text style={{  fontFamily: "SourceSansPro-Bold",
-    fontSize: 14,
-    fontWeight: "bold",
-    fontStyle: "normal",
-    letterSpacing: 0,
-    textAlign: "center",
-    color: "#faf9ff",margin:3}}>YORUMLAR ({this.state.comments.length})</Text></View>
+                  fontSize: 14,
+                  fontWeight: "bold",
+                  fontStyle: "normal",
+                  letterSpacing: 0,
+                  textAlign: "center",
+                  color: "#faf9ff",margin:3}}>YORUMLAR ({this.state.comments.length})</Text></View>
                 {this.renderComments()}
               </View>
 
@@ -1177,11 +1319,18 @@ export default class SocialFal extends React.Component {
     let newStyle = {
       height:keyboardHeight
     }
+    let paddingBottom = 58
+    let paddingTop=0
+    if(this.state.expired){paddingBottom:0}else {
+        if(this.state.fal){if(this.state.fal.status==3){paddingTop=30}}
+    }
+
     return (
 
-      <View style={styles.containerrr}>
+      <View style={[styles.containerrr,{paddingBottom:paddingBottom,paddingTop:paddingTop}]}>
+        {this.renderAktifStripe()}
         <ScrollView>
-          {this.renderAktifStripe()}
+
           {this.renderBody()}
 
 
@@ -1201,31 +1350,93 @@ export default class SocialFal extends React.Component {
              </ScrollView>
            </View>
          </PopupDialog>
-        <View style={{bottom:this.state.writing?this.state.keyboardHeight:0,flexDirection:'row',padding:10,backgroundColor:"#37208e",position:'absolute',width:'100%'}} >
-          <TextInput
-            editable={true}
-            multiline={true}
-            onBlur={() => {this.setState({replyingTo:false,writing:false})} }
-            onFocus={() => {this.setState({writing:true})} }
-            ref='Input'
-            blurOnSubmit={true}
-            value={this.state.commentInput}
-            onChangeText={(text) => this.setState({commentInput:text})}
-            placeholder={this.state.replyingTo?"Cevabını yaz":"Yorumunu yaz"}
-            onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
-            style={{height:this.state.keyboardHeight>0?80:38,borderRadius:4,borderColor: "#37208e", borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
-          />
-          <TouchableOpacity style={{padding:5,paddingLeft:15,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
-            {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/800"}</Text>:null}
-            <Text style={{  fontFamily: "SourceSansPro-Regular",
-              fontSize: 16,
-              fontWeight: "600",
-              fontStyle: "normal",
-              letterSpacing: 0,
-              textAlign: "center",
-              color: "#ffffff"}}>Gönder</Text>
-          </TouchableOpacity>
-        </View>
+         <PopupDialog
+          dialogStyle={{marginTop:-100,borderRadius:4}}
+          width={0.9}
+          height={0.5}
+          ref={(popupDialog) => { this.popupSuper = popupDialog; }}
+          >
+            <ImageBackground source={require('../static/images/background.png')} style={[styles.container,{borderRadius:4}]}>
+              <ScrollView style={{flex:1,paddingTop:20,borderRadius:4}}>
+                <Text style={{color:'white',fontFamily:'SourceSansPro-Bold',fontSize:30,textAlign:'center'}}>Süper Fal 🌟</Text>
+                <Text style={styles.superyazi}>{'\n'}</Text>
+                <Text style={styles.superyazi}>{'\u2022'} Falın panonun en üstünde yer alır</Text>
+                <Text style={styles.superyazi}>{'\u2022'} Minimum 20 yorum gelmezse kredin iade</Text>
+                <Text style={styles.superyazi}>{'\u2022'} Falın 3 gün boyunca panoda kalır</Text>
+                  <TouchableOpacity style={ { width:'80%',flexDirection:'row',alignSelf:'center',height: 40,
+                    borderRadius: 4,
+                    backgroundColor: "#37208e",
+                    alignItems: 'center', justifyContent: 'center',marginTop:50}} onPress={()=>{this.superle()}}>
+
+                    <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+                      <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center' }}>
+                        <View style={{padding:10,alignItems:'center',justifyContent:'center'}}>
+                           <Text style={{  fontFamily: "SourceSansPro-Bold",
+                            fontSize: 12,
+                            fontWeight: "bold",
+                            fontStyle: "normal",
+
+                            textAlign: "center",
+                            color: "#ffffff"}}>
+                              50
+                            </Text>
+                         </View>
+                         <Image source={require("../static/images/sosyal/coins-copy.png")} />
+                      </View>
+                      <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
+
+                         <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
+                        textAlign: "center",
+                        color: "#ffffff"}}>
+                         Süperle
+                         </Text>
+                      </View>
+                    </View>
+                    <View style={{
+                         flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
+                         height: 40,
+                         borderRadius: 4,
+                         backgroundColor:'rgb( 236 ,196 ,75)'
+                       }}>
+                       </View>
+                       <View style={{
+                         flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                         borderRadius: 4,
+                         backgroundColor: "transparent"
+                       }}>
+                    </View>
+                  </TouchableOpacity>
+              </ScrollView>
+            </ImageBackground>
+          </PopupDialog>
+         {this.state.expired?null:
+           <View style={{bottom:this.state.writing?this.state.keyboardHeight:0,flexDirection:'row',padding:10,backgroundColor:"#37208e",position:'absolute',width:'100%'}} >
+             <TextInput
+               editable={true}
+               multiline={true}
+               onBlur={() => {this.setState({replyingTo:false,writing:false})} }
+               onFocus={() => {this.setState({writing:true})} }
+               ref='Input'
+               blurOnSubmit={true}
+               value={this.state.commentInput}
+               onChangeText={(text) => this.setState({commentInput:text})}
+               placeholder={this.state.replyingTo?"Cevabını yaz":"Yorumunu yaz"}
+               onContentSizeChange={(e) => this.updateSize(e.nativeEvent.contentSize.height)}
+               style={{height:this.state.keyboardHeight>0?80:38,borderRadius:4,borderColor: "#37208e", borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
+             />
+             <TouchableOpacity style={{padding:5,paddingLeft:15,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
+               {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/800"}</Text>:null}
+               <Text style={{  fontFamily: "SourceSansPro-Regular",
+                 fontSize: 16,
+                 fontWeight: "600",
+                 fontStyle: "normal",
+                 letterSpacing: 0,
+                 textAlign: "center",
+                 color: "#ffffff"}}>Gönder</Text>
+             </TouchableOpacity>
+           </View>
+         }
+
       </View>
 
     );
@@ -1238,9 +1449,15 @@ export default class SocialFal extends React.Component {
 const styles = StyleSheet.create({
   containerrr: {
 
-    paddingBottom:36,
     flex:1,
     backgroundColor:'white'
+
+  },
+  container: {
+    flex: 1,
+    alignSelf: 'stretch',
+    width: null,
+    alignItems:'center',
 
   },
   contain: {
@@ -1253,6 +1470,11 @@ const styles = StyleSheet.create({
     margin:7,
     marginLeft:15,
     borderRadius:24,
+  },
+  superyazi:{
+    fontSize:14,
+    color:'white',
+    fontFamily:'SourceSansPro-Bold'
   }
 
 

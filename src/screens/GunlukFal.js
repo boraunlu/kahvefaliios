@@ -12,6 +12,8 @@ import {
   Keyboard,
   ActivityIndicator,
   Alert,
+  Button,
+  Switch,
     ImageBackground,
   Share
 } from 'react-native';
@@ -19,11 +21,13 @@ import axios from 'axios';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
 import Backend from '../Backend';
+import StarRating from 'react-native-star-rating';
 import { NavigationActions,SafeAreaView } from 'react-navigation'
 import moment from 'moment';
 import Lightbox from 'react-native-lightbox';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import Spinner from 'react-native-loading-spinner-overlay';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 var esLocale = require('moment/locale/tr');
@@ -62,22 +66,59 @@ export default class GunlukFal extends React.Component {
       voters1:[],
       voters2:[],
       votedFor:false,
+      starCount: 0,
+      sikayet:"",
+      spinnerVisible:false,
   };
 }
 
-  static navigationOptions = {
-      title: 'Fal',
-    };
+  static navigationOptions = ({ navigation }) => ({
+      title: 'Günlük Fal',
+      headerRight:<Button title={"Puan Ver"} onPress={() => {navigation.state.params.showpopup()}}/>,
+  });
 
+
+    showpopup = () => {
+      this.popupRate.show()
+    }
+
+    payBahsis = (bahsis) => {
+      this.setState({spinnerVisible:true})
+      var products = [
+         'com.grepsi.kahvefaliios.bahsis'+bahsis,
+      ];
+      InAppUtils.loadProducts(products, (error, products) => {
+        if(error){this.setState({spinnerVisible:false})}
+        else{
+
+          var identifier = 'com.grepsi.kahvefaliios.bahsis'+bahsis
+          InAppUtils.purchaseProduct(identifier, (error, response) => {
+            this.setState({spinnerVisible:false})
+             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
+             if(error){
+
+             }
+             else{
+               if(response && response.productIdentifier) {
+                 Backend.sendPayload('bahsis'+bahsis)
+                 Backend.addCredits(0,"bahsis"+bahsis)
+                 Alert.alert('Bahşiş',"Memnun kalmanıza çok sevindik. Bahşişiniz falcımıza iletiliyor.")
+               }
+             }
+          });
+        }
+      });
+    }
 
   componentDidMount() {
+    this.props.navigation.setParams({ showpopup: this.showpopup})
     const { params } = this.props.navigation.state;
     var id =Backend.getUid()
     if(params.fal){
       this.setState({fal:params.fal,comments:params.fal.comments})
     }
     else if (params.falId) {
-      fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
+      fetch('https://eventfluxbot.herokuapp.com/appapi/getGunluk', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -91,26 +132,6 @@ export default class GunlukFal extends React.Component {
        .then((responseJson) => {
 
            this.setState({fal:responseJson,comments:responseJson.comments});
-           if(responseJson.poll1){
-             voters1=responseJson.voters1
-             voters2=responseJson.voters2
-             this.setState({voters1:voters1,voters2:voters2})
-             for (var i = 0; i < voters1.length; i++) {
-               if(id==voters1[i]){
-                 this.setState({votedFor:true})
-                 break;
-               }
-             }
-             for (var i = 0; i < voters2.length; i++) {
-               if(id==voters2[i]){
-                 this.setState({votedFor:true})
-                 break;
-               }
-             }
-           }
-           if(id==responseJson.fireID||id=='cPO19kVs6NUJ9GTEDwyUgz184IC3w'||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
-             this.setState({falowner:true,votedFor:true})
-           }
        })
     }
   }
@@ -137,6 +158,55 @@ export default class GunlukFal extends React.Component {
  _keyboardDidHide = () =>  {
   // alert('Keyboard Hidden');
   this.setState({keyboardHeight:0})
+ }
+
+ onStarRatingPress = (rating) => {
+   this.setState({
+     starCount: rating
+   });
+ }
+
+ sendReview = () => {
+   if(this.state.starCount==0){
+     alert('Lütfen önce puan veriniz')
+   }
+   else{
+     if(this.state.starCount<3){
+       Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.")
+       fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           uid: Backend.getUid(),
+           star:this.state.starCount,
+           text:this.state.sikayet,
+           falci:this.state.falciNo
+         })
+       })
+       this.popupRate.dismiss()
+     }
+     else{
+       fetch('https://eventfluxbot.herokuapp.com/sendMail', {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           uid: Backend.getUid(),
+           star:this.state.starCount,
+           text:this.state.sikayet,
+           falci:this.state.falciNo
+         })
+       })
+       Keyboard.dismiss()
+       this.popupRate.dismiss()
+       this.popupBahsis.show()
+     }
+   }
  }
 
  startChat = (falsever,seviye) => {
@@ -332,18 +402,6 @@ export default class GunlukFal extends React.Component {
       )
     }
 
-  renderAktifStripe = () => {
-    if(this.state.fal)
-    {
-      var simdi = moment();
-      if(simdi.diff(this.state.fal.time,"days")>7)
-      {
-        return(
-          <View style={{backgroundColor:'red'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16,margin:3}}>Yeni Yoruma Kapalı</Text></View>
-        )
-      }
-    }
-  }
   renderCommentDelete = (index) => {
     if(this.state.falowner==true){
       return (
@@ -431,7 +489,7 @@ export default class GunlukFal extends React.Component {
 
             }, this)
           }
-            <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>Günlük falınız tamamlanmıştır...</Text>
+            <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>Günlük falınız tamamlanmıştır...{"\n"}Dilerseniz falınızı <Text style={{textDecorationLine:'underline'}} onPress={()=>{this.showpopup()}}>buradan</Text> değerlendirebilirsiniz</Text>
           <View style={{backgroundColor:'#241466',padding:20}}>
 
             <TouchableOpacity  onPress={() => {this.sendtoSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
@@ -453,25 +511,6 @@ export default class GunlukFal extends React.Component {
     }
   }
 
-
-  renderYorumYap = () => {
-      if(this.state.comments.length<3){
-        return(
-          <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-            <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
-          </View>
-        )
-      }
-      else {
-        if(this.state.fal.super){
-          return(
-            <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-              <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Bu bir <Text style={{fontWeight:'bold'}}>Süper Fal!</Text> Güzel bir yorum yap ve <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
-            </View>
-          )
-        }
-      }
-    }
 
 
 
@@ -715,171 +754,7 @@ export default class GunlukFal extends React.Component {
 
    }
 
-   renderPoll = () => {
-       if(this.state.fal.poll1){
 
-         if(this.state.fal.poll1.length>1){
-           return(
-             <View>
-
-             {this.state.votedFor
-
-               ?
-               this.renderPollResults()
-               :
-               <View style={{flexDirection:'row',padding:30,paddingBottom:5,paddingTop:5,marginBottom:17,justifyContent:'space-between'}}>
-               <TouchableOpacity style={{justifyContent:'center',height:50,width:'45%',  backgroundColor: "#5033c0",
-     shadowColor: "rgba(0, 0, 0, 0.2)",
-     shadowOffset: {
-       width: 0,
-       height: 2
-     },
-     shadowRadius: 2,
-     shadowOpacity: 1, marginLeft:5,borderRadius:5,paddingLeft:8,paddingRight:8}} onPress={()=>{this.voteFor(1)}}>
-                <Text style={{  fontFamily: "SourceSansPro-Bold",
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-
-     color: "#ffffff",textAlign:'center'}}>
-                 {this.state.fal.poll1}
-                </Text>
-               </TouchableOpacity>
-               <TouchableOpacity style={{justifyContent:'center',height:50,width:'45%',  backgroundColor: "#b81e5e",
-     shadowColor: "rgba(0, 0, 0, 0.2)",
-     shadowOffset: {
-       width: 0,
-       height: 2
-     },
-     shadowRadius: 2,
-     shadowOpacity: 1, marginRight:5,borderRadius:5,paddingLeft:8,paddingRight:8}} onPress={()=>{this.voteFor(2)}}>
-                 <Text style={{ fontFamily: "SourceSansPro-Bold",
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-
-     color: "#ffffff",textAlign:'center'}}>
-                  {this.state.fal.poll2}
-                 </Text>
-               </TouchableOpacity>
-             </View>
-               }
-
-
-
-                 </View>
-           )
-         }
-         else{return null}
-       }
-     }
-
-     renderPollResults = () => {
-       if(this.state.votedFor){
-         var v1count=this.state.voters1.length
-         var v2count=this.state.voters2.length
-
-         var v1percentage=parseInt(v1count*100/(v1count+v2count))
-         var v2percentage =100-v1percentage
-         if(v1count+v2count==0){v1percentage=0;v2percentage=0;}
-         return(
-           <View style={{flexDirection:'row',paddingBottom:5,justifyContent:'space-between',height:77,marginLeft:"8%",marginRight:"8%"}}>
-
-             <View style={{flex:1,alignItems:'flex-start',flexDirection:"column"}} >
-
-               <Text style={{  fontFamily: "SourceSansPro-Bold",position:"relative",top:12,
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-     textAlign: "left",
-     color: "#5033c0"}}>
-                    {this.state.fal.poll1}
-               </Text>
-             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
-             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
-
-                   <View style={{height:14,width:135*(v1percentage/100),borderRadius:8,backgroundColor: "#5033c0"}}>
-
-                   </View>
-
-                  </View>
-               <Text style={{  fontFamily: "SourceSansPro-Bold",paddingLeft:3,
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-     textAlign: "left",
-     color: "#5033c0"}}>
-                    {"%"+v1percentage}
-               </Text>
-             </View>
-            </View>
-
-             <View style={{flex:1,alignItems:'flex-start',flexDirection:"column"}} >
-
-               <Text style={{  fontFamily: "SourceSansPro-Bold",position:"relative",top:12,
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-     textAlign: "left",
-     color: "#b81e5e"}}>
-                    {this.state.fal.poll2}
-               </Text>
-             <View style={{flex:1,justifyContent:'flex-start',flexDirection:"row",alignItems:"center",marginBottom:5}} >
-             <View   style={{height:14,width:135,borderRadius:8,elevation:1,backgroundColor:"#d8d8d8"}}>
-
-                   <View style={{height:14,
-                  // position:"absolute",
-
-                   width:135*(v2percentage/100),
-
-
-                     borderRadius:8,backgroundColor: "#b81e5e"}}>
-
-                   </View>
-
-                  </View>
-               <Text style={{  fontFamily: "SourceSansPro-Bold",paddingLeft:3,
-     fontSize: 14,
-     fontWeight: "bold",
-     fontStyle: "normal",
-     letterSpacing: 0,
-     textAlign: "left",
-     color: "#b81e5e"}}>
-                    {"%"+v2percentage}
-               </Text>
-             </View>
-            </View>
-           </View>
-         )
-       }
-       else {
-         return null
-       }
-     }
-
-
-  voteFor = (vote) => {
-    if(!this.state.votedFor){
-      if(vote==1){
-        var voters1=this.state.fal.voters1
-        voters1.push(Backend.getUid())
-        this.setState({voters1:voters1,votedFor:true})
-        Backend.voteFor(1,this.state.fal._id)
-      }
-      if(vote==2){
-        var voters2=this.state.fal.voters1
-        voters2.push(Backend.getUid())
-        this.setState({voters2:voters2,votedFor:true})
-        Backend.voteFor(2,this.state.fal._id)
-      }
-    }
-
-  }
 
   renderBody = () => {
       var fal = this.state.fal
@@ -1041,12 +916,74 @@ export default class GunlukFal extends React.Component {
     return (
 
       <View style={styles.containerrr}>
+        <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
         <ScrollView>
-          {this.renderAktifStripe()}
           {this.renderBody()}
 
 
         </ScrollView>
+        <PopupDialog
+           dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Puan Ver" />}
+           width={0.9}
+           height={320}
+           dialogStyle={{marginTop:-250}}
+           ref={(popupDialog) => { this.popupRate = popupDialog; }}>
+          <View style={{margin:10,marginLeft:20,marginRight:20,flex:1}}>
+           <StarRating
+            disabled={false}
+            maxStars={5}
+            rating={this.state.starCount}
+            selectedStar={(rating) => this.onStarRatingPress(rating)}
+            starColor={'gold'}
+            />
+
+            <View style={{height:80,marginTop:10}}>
+              <Text style={{fontFamily:'SourceSansPro-Italic',fontStyle:'italic',color:'gray'}}>(Zorunlu Değil)</Text>
+              <TextInput
+                multiline = {true}
+                underlineColorAndroid='rgba(0,0,0,0)'
+                style={{fontFamily:'SourceSansPro-Regular',flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+                onChangeText={(text) => this.setState({sikayet:text})}
+                placeholder={'Buraya falcımız ile ilgili yorumlarınızı yazabilirsiniz. Teşekkür ederiz!'}
+                editable = {true}
+              />
+            </View>
+            <View style={{flexDirection:'row',alignItems:'center',justifyContent:'space-around',marginTop:10}}>
+              <Text style={{fontFamily:'SourceSansPro-Regular'}}> Falcı değerlendirmemi görebilsin </Text>
+              <Switch
+                onValueChange={(value) => this.setState({falseSwitchIsOn: value})}
+                value={this.state.falseSwitchIsOn} />
+            </View>
+            <View style={{marginTop:10}}>
+              <Button title={"Gönder"}  onPress={() => {this.sendReview()}}/>
+            </View>
+          </View>
+         </PopupDialog>
+         {this.state.comments?
+         <PopupDialog
+           dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Bahşiş" />}
+           width={0.9}
+           height={320}
+           dialogStyle={{marginTop:-200}}
+           ref={(popupDialog) => { this.popupBahsis = popupDialog; }}>
+          <View style={{margin:20,flex:1}}>
+             <Image style={{alignSelf:'center',height:50,width:50, borderRadius:25,marginBottom:10}} source={{uri:this.state.comments[0].photoURL}}></Image>
+             <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:16,color:'black'}}>{"Falını beğendiysen "+this.state.comments[0].name+" falcımıza ufak bir bahşiş vermeye ne dersin?"}</Text>
+             <View style={{flexDirection:'row',height:50,marginTop:15}}>
+
+               <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(60,179,113, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(1)}}>
+                 <Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>1.29 TL</Text>
+               </TouchableHighlight>
+               <TouchableHighlight style={{flexGrow:2,marginRight:10,marginLeft:10,backgroundColor:'rgba(114,0,218, 0.8)',justifyContent:'center'}} onPress={() => {this.payBahsis(2)}}>
+                 <Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>3.49 TL</Text>
+               </TouchableHighlight>
+               <TouchableHighlight style={{flexGrow:2,backgroundColor:'rgba(249,50,12, 0.8)',justifyContent:'center'}} onPress={() => {this.popupBahsis.dismiss(); Alert.alert('Puanlama',"Yorumlarınız bizim için çok değerli. Puanlamanız için teşekkür ederiz.");}}>
+                 <Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',fontSize:18}}>İstemiyorum</Text>
+               </TouchableHighlight>
+             </View>
+          </View>
+         </PopupDialog>
+         :null}
         <PopupDialog
 
          dialogStyle={{marginTop:-140}}

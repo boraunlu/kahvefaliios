@@ -23,10 +23,6 @@ export default class SocialStore {
 
     this.tek=tek
   }
-  @action addComment(comment,index) {
-
-
-  }
   @action addPhoto(image) {
 
     this.falPhotos.push(image)

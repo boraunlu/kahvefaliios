@@ -17,8 +17,7 @@ import {
   Alert,
   TouchableHighlight,
   Modal,
-  ActionSheetIOS,
-  RefreshControl
+  RefreshControl,
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -29,12 +28,6 @@ import { NavigationActions } from 'react-navigation'
 import moment from 'moment';
 import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
 import Spinner from 'react-native-loading-spinner-overlay';
-import CameraRollPicker from 'react-native-camera-roll-picker';
-import CameraPick from '../components/CameraPick';
-import Camera from 'react-native-camera';
-import NavBar, { NavButton, NavButtonText, NavTitle } from 'react-native-nav';
-import { NativeModules } from 'react-native'
-const { InAppUtils } = NativeModules
 import ScrollableTabView, { DefaultTabBar, } from 'react-native-scrollable-tab-view';
 //import Marquee from '@remobile/react-native-marquee';
 var esLocale = require('moment/locale/tr');
@@ -50,8 +43,10 @@ function capitalizeFirstLetter(string) {
 
 }
 
-function replaceGecenHafta(string) {
-    return string.replace("geçen hafta ","")
+function replaceGecenHafta(str) {
+    str=str.replace("geçen ","")
+    str=str.replace("bugün ","")
+    return str
 }
 
 function generatefalcisayisi() {
@@ -106,18 +101,6 @@ export default class Social extends React.Component {
 
   static navigationOptions = ({ navigation }) => ({
       title: 'Sosyal',
-      headerStyle: {
-        backgroundColor:'white',
-
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",
-        color: "#241466",
-  textAlign:'center',
-  fontFamily:'SourceSansPro-Bold'
-      },
       tabBarIcon: ({ tintColor }) => (
         <Icon name="group" color={tintColor} size={22} />
       ),
@@ -156,7 +139,7 @@ export default class Social extends React.Component {
   }
 
   navigateToTekFal = () => {
-    if(this.props.userStore.user.lastFalType==0){
+    if(this.props.userStore.user.lastFalType==2){
       this.props.navigation.navigate('SocialFal',{fal:this.props.socialStore.tek})
     }
     else {
@@ -181,14 +164,8 @@ export default class Social extends React.Component {
 
   componentDidMount() {
     this.props.navigation.setParams({ showpopup: this.showpopup  })
-    var marquees=["Artık diğer falseverlere özel mesaj atabilirsiniz!","Beğenmediğiniz yorumları 👎 tuşuna basarak işaretleyebilirsiniz.","Rahatsız edici yorumlar yapan kullanıcıların hesabı kapatılacaktır.","Siz de sağ üstteki '+ Fal Paylaş' butonuna basarak falınızı burada paylaşabilirsiniz!","Beğendiğiniz yorumları ❤️'lemeyi unutmayın :)","Profilinize sizi en iyi anlatan cümleyi yazmayı unutmayın!","Şehir bilginizi profil sayfanızdan girebilirsiniz."]
-    var marquee=''
-    for (var i = 0; i < marquees.length; i++) {
-      marquee=marquee+"  ||  "+marquees[i]
-    }
-    this.setState({marquee:marquee})
 
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals', {
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
       uid: Backend.getUid(),
     })
     .then( (response) => {
@@ -222,20 +199,10 @@ export default class Social extends React.Component {
     .catch(function (error) {
 
     });
-    /*
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getTek', {
-      uid: Backend.getUid(),
-    })
-    .then( (response) => {
-
-      this.props.socialStore.setTek(response.data)
-    })
-    .catch(function (error) {
-
-    });*/
 
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
+
   }
 
    componentWillUnmount() {
@@ -256,7 +223,9 @@ export default class Social extends React.Component {
    // alert('Keyboard Hidden');
    this.setState({keyboardVisible:false})
   }
-
+  navigateToFalPaylas = (type) => {
+    this.props.navigation.navigate('FalPaylas',{type:type})
+  }
 
 
   replaceAvatar = (index) => {
@@ -435,7 +404,7 @@ export default class Social extends React.Component {
       }else {
         return(
           <View style={{backgroundColor:'transparent',padding:20,height:90}}>
-            <TouchableOpacity  onPress={() => {this.sendtoSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+            <TouchableOpacity  onPress={() => {this.navigateToFalPaylas(1);}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
               <Text style={{fontSize:18,fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white'}}>FAL PAYLAŞ     </Text>
                <Image source={require('../static/images/fincan.png')} style={{ height: 20,width:20,alignSelf:'center'}}></Image>
             </TouchableOpacity>
@@ -485,10 +454,13 @@ export default class Social extends React.Component {
     renderItem = (item,index) => {
 
 
+
         var profile_pic=null
         item.profile_pic?profile_pic={uri:item.profile_pic}:item.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
         return (
-          <TouchableOpacity key={index}  style={{backgroundColor: "#ffffff",width:'100%',borderColor:'rgb(166, 158, 171)',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(item,index)}}>
+          <TouchableOpacity key={index}  style={{backgroundColor: '#ffffff',width:'100%',borderColor:'rgb(166, 158, 171)',flex:1,borderBottomWidth:1}} onPress={() => {this.navigateToFal(item,index)}}>
+            {item.status==3?<View style={[styles.triangleCorner]}></View>:null}
+            {item.status==3?<Text style={{position:'absolute',top:3}}>🌟</Text>:null}
            <View style={{flexDirection:'row',height:80,paddingTop:10}}>
 
            <Image source={profile_pic} onError={(error) => {this.replaceAvatar(index)}} style={styles.falciAvatar}></Image>
@@ -523,15 +495,15 @@ export default class Social extends React.Component {
                  </Text>
 
              </View>
-             <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
-                {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+             <View style={{paddingRight:10,alignItems:'center',justifyContent:'flex-end',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
+                {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:28}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
                 <Text style={{fontFamily: "SourceSansPro-Bold",
       fontSize: 15,
       fontWeight: "bold",
       fontStyle: "normal",
       letterSpacing: 0,
-      textAlign: "center",flexDirection:"row",
-      color: "#241466"}}>{item.comments?item.comments.length>5?<Text> ({item.comments.length}) <Text style={{fontSize:16}}>🔥</Text></Text>:"("+item.comments.length+")":0}</Text>
+      textAlign: "right",flexDirection:"row",
+      color: "#241466"}}>{item.comments?item.comments.length>5?<Text> <Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
              </View>
            </View>
 
@@ -588,9 +560,6 @@ export default class Social extends React.Component {
       var responseJson=response.data
       var sosyals=Array.from(responseJson.sosyals)
       this.props.socialStore.setSocials(sosyals)
-      this.props.socialStore.setTek(responseJson.tek)
-      var commenteds=Array.from(responseJson.commenteds)
-      this.props.socialStore.setCommenteds(commenteds)
       /*
       var commenteds=[]
       var id = Backend.getUid()
@@ -637,10 +606,10 @@ export default class Social extends React.Component {
           tabBarUnderlineStyle={{backgroundColor:'rgb( 236, 196, 75)', borderColor: 'rgb( 236, 196, 75)'}}
           tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
          >
-           <View         tabLabel='YORUM BEKLEYENLER' >
+           <View      style={{flex:1}}     tabLabel='YORUM BEKLEYENLER' >
             {this.renderSosyaller()}
           </View>
-           <View         tabLabel='YORUMLADIKLARINIZ'>
+           <View     style={{flex:1}}      tabLabel='YORUMLADIKLARINIZ'>
             {this.renderCommenteds()}
           </View>
          </ScrollableTabView>
@@ -726,6 +695,19 @@ const styles = StyleSheet.create({
       color:'white',
       backgroundColor: 'transparent',
       overflow: 'hidden',
-  }
+  },
+  triangleCorner: {
+    width: 0,
+    height: 0,
+    backgroundColor: 'transparent',
+    borderStyle: 'solid',
+    borderRightWidth: 36,
+    borderTopWidth: 36,
+    borderRightColor: 'transparent',
+    borderTopColor: 'rgb( 236 ,196 ,75)',
+    position:'absolute',
+    top:0,
+    left:0
+  },
 
 });

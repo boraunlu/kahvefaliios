@@ -74,10 +74,10 @@ export default class Home extends React.Component {
 
                  // store fcm token in your server
              });
-    
+
              this.refreshTokenListener = FCM.on(FCMEvent.RefreshToken, (token) => {
                  //console.log(token)
-                 axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+                 axios.post('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
                    uid: user.uid,
                    token: token
                  })

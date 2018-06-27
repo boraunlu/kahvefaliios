@@ -75,6 +75,20 @@ let KahvefaliappNav = StackNavigator({
     FalPuan: {screen:FalPuan},
     FalPaylas: {screen:FalPaylas},
     Leader: {screen:Leader},
+},{
+  navigationOptions:{
+    headerStyle:{
+      backgroundColor:'white'
+    },
+    headerTitleStyle: {
+      fontWeight: 'bold',
+      fontSize:18,
+      textAlign: 'center',
+      color: "#241466",
+      alignSelf:'center',
+      fontFamily:'SourceSansPro-Bold'
+    }
+  }
 });
 
 export default class Kahvefaliapp extends Component {

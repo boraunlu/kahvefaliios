@@ -68,18 +68,6 @@ export default class Profil extends React.Component {
 
   static navigationOptions = {
       title: 'Profilin',
-      headerStyle: {
-        backgroundColor:'white',
-
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",
-        color: "#241466",
-  textAlign:'center',
-  fontFamily:'SourceSansPro-Bold'
-      },
       tabBarLabel: 'Profil',
        tabBarIcon: ({ tintColor }) => (
          <Icon name="user" color={tintColor} size={25} />
@@ -394,7 +382,7 @@ export default class Profil extends React.Component {
 
     return (
 
-      <ImageBackground  source={require('../static/images/newImages/BG.png')} style={styles.container}>
+      <ImageBackground  source={require('../static/images/background.png')} style={styles.container}>
 
         <ScrollView style={{flex:1,width:'100%',padding:15,paddingTop:0}}>
 

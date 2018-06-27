@@ -36,8 +36,10 @@ function capitalizeFirstLetter(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function replaceGecenHafta(string) {
-    return string.replace("geçen hafta ","")
+function replaceGecenHafta(str) {
+  str=str.replace("geçen ","")
+  str=str.replace("bugün ","")
+  return str
 }
 
 @inject("userStore")
@@ -58,18 +60,6 @@ export default class Mesajlar extends React.Component {
 
   static navigationOptions = {
       title: 'Mesajların',
-      headerStyle: {
-        backgroundColor:'white',
-
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",
-        color: "#241466",
-  textAlign:'center',
-  fontFamily:'SourceSansPro-Bold'
-      },
       tabBarLabel: 'Mesajlar',
        tabBarIcon: ({ tintColor }) => (
 
@@ -650,7 +640,7 @@ export default class Mesajlar extends React.Component {
       )
     }
   }
-  renderNotification = () => {
+  renderNotifications = () => {
     if(this.state.notifications==null){
       return null
     }
@@ -658,19 +648,19 @@ export default class Mesajlar extends React.Component {
 
       return(
         <FlatList
-          data={sosyaller}
+          data={this.state.notifications}
           keyExtractor={this._keyExtractor}
-          renderItem={({item,index}) => this.renderSosyalItem(item,index)}
+          renderItem={({item,index}) => this.renderNotificationItem(item,index)}
         />
 
       )
     }
   }
 
-  renderNotificationItem(){
+  renderNotificationItem(item,index){
     return(
       <View>
-        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {this.navigateto('ChatBizden'); this.props.userStore.setBizdenUnread(0)}}>
+        <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0'}} onPress={() => {}}>
          <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
             <View>
             <Image source={require('../static/images/anneLogo3.png')} style={styles.falciAvatar}></Image>
@@ -681,11 +671,11 @@ export default class Mesajlar extends React.Component {
                Nevin
               </Text>
               <Text numberOfLines={1} ellipsizeMode={'tail'}>
-                {capitalizeFirstLetter(this.state.lastBizden)}
+                {item.text}
              </Text>
            </View>
            <View style={{padding:20}}>
-           {this.props.userStore.bizdenUnread==1 ?    <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> :    <Icon name="angle-right" color={'gray'} size={20} />}
+
 
           </View>
          </View>
@@ -716,7 +706,7 @@ export default class Mesajlar extends React.Component {
           {this.renderAllGunluks()}
          </ScrollView>
          <ScrollView tabLabel='BİLDİRİMLERİN' style={{flex:1,width:'100%'}}>
-          {this.renderBizden()}
+          {this.renderNotifications()}
          </ScrollView>
        </ScrollableTabView>
       </ImageBackground>

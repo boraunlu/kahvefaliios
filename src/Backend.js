@@ -992,43 +992,48 @@ loadMessages = (callback) => {
   uploadImages = (images) => {
     let urls = [];
     return new Promise((resolve, reject) => {
+      if(images[0].includes("firebasestorage")){
+        resolve(images)
+      }
+      else {
+        var imageslength=images.length;
+        this.uploadImage(images[0])
+        .then((url)=>{
+          urls.push(url)
+          if(imageslength>1){
+            this.uploadImage(images[1])
+            .then((url)=>{
+              urls.push(url)
+              if(imageslength>2){
+                this.uploadImage(images[2])
+                .then((url)=>{
+                  urls.push(url)
+                  //this.postSosyal(question,urls,anonim)
+                  resolve(urls)
 
-      var imageslength=images.length;
-      this.uploadImage(images[0])
-      .then((url)=>{
-        urls.push(url)
-        if(imageslength>1){
-          this.uploadImage(images[1])
-          .then((url)=>{
-            urls.push(url)
-            if(imageslength>2){
-              this.uploadImage(images[2])
-              .then((url)=>{
-                urls.push(url)
+                })
+                .catch(error => {
+                  reject(error)
+                })
+              }else {
                 //this.postSosyal(question,urls,anonim)
                 resolve(urls)
-
-              })
-              .catch(error => {
-                reject(error)
-              })
-            }else {
+              }
+            })
+            .catch(error => {
+              reject(error)
+            })
+          }
+          else {
               //this.postSosyal(question,urls,anonim)
               resolve(urls)
-            }
-          })
-          .catch(error => {
-            reject(error)
-          })
-        }
-        else {
-            //this.postSosyal(question,urls,anonim)
-            resolve(urls)
-        }
-      })
-      .catch(error => {
-        reject(error)
-      })
+          }
+        })
+        .catch(error => {
+          reject(error)
+        })
+      }
+
 
    })
 
@@ -1123,6 +1128,49 @@ loadMessages = (callback) => {
       });
     })
   }
+
+  getSosyal = (falId) => {
+    return new Promise((resolve, reject) => {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
+        falId: falId,
+      })
+      .then( (response) => {
+        var responseJson=response.data
+        resolve(responseJson)
+      })
+      .catch(function (error) {
+
+      });
+    })
+  }
+
+  getSocials = () => {
+    return new Promise((resolve, reject) => {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
+        uid: this.getUid(),
+      })
+      .then((response) => {
+        resolve(Array.from(response.data.sosyals))
+      })
+      .catch(function (error) {
+        reject(error)
+      });
+    })
+  }
+
+  superle = (falId) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/superle', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        falId: falId,
+      })
+    })
+  }
+
 }
 
 export default new Backend();

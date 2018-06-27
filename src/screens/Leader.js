@@ -146,71 +146,182 @@ export default class Leader extends React.Component {
 
 
   }
-
   renderProfInfo = () => {
     if(this.state.profinfo){
+      var infoText=""
+      this.state.profinfo.age?infoText=infoText+this.state.profinfo.age+" yaşında":null
+      this.state.profinfo.iliski?infoText=infoText+", "+this.state.profinfo.iliski:null
+      this.state.profinfo.meslek?infoText=infoText+", "+this.state.profinfo.meslek:null
       var falPuan =this.state.profinfo.falPuan
       var seviye = 1
       var limit =20
       var gosterilenpuan=falPuan
       var unvan = "Yeni Falsever"
-      var kolor='rgb(209,142,12)'
+      var kolor="#ffd967"
       if (falPuan>20&&falPuan<51){
         seviye = 2
         limit = 30
         gosterilenpuan=falPuan-20
         unvan = "Falsever"
-        kolor='rgb(60,179,113)'
+        kolor='#e6d5a0'
       }else if (falPuan>50&&falPuan<101) {
         seviye = 3
         limit = 50
         gosterilenpuan=falPuan-50
         unvan = "Deneyimli Falsever"
-        kolor='rgb(114,0,218)'
+        kolor='#8975cd'
       }else if (falPuan>100&&falPuan<176) {
         seviye = 4
         limit = 75
         gosterilenpuan=falPuan-100
         unvan = "Fal Uzmanı"
-        kolor='rgb(0,185,241)'
+        kolor='rgb(184,30,94)'
       }
       else if (falPuan>175) {
         seviye = 5
         limit = 12500
         gosterilenpuan=falPuan
         unvan = "Fal Profesörü"
-        kolor='rgb(249,50,12)'
+        kolor='rgb(103,35,120)'
       }
       return(
-      <View>
-        <ImageBackground style={{backgroundColor:'transparent',alignSelf:'center',height:94,width:94,paddingTop:7}} source={require('../static/images/cerceve.png')}>
-          <Image style={{backgroundColor:'transparent',alignSelf:'center',height:80,width:80, borderRadius:40}} source={this.state.profinfo.profile_pic}></Image>
-        </ImageBackground>
-        <Text style={{alignSelf:'center',marginBottom:5,fontWeight:'bold',color:'black',fontSize:18}}>{this.state.profinfo.name}</Text>
-        <Text style={{alignSelf:'center'}}>{this.state.profinfo.age+" yaşında, "+this.state.profinfo.iliski+", "+this.state.profinfo.meslek}</Text>
-        {this.state.profinfo.city? <Text style={{position:'absolute',right:10,fontSize:14}}>{"📍 "+this.state.profinfo.city}</Text>:null}
-        {this.state.profinfo.bio? <Text style={{alignSelf:'center',marginTop:10,fontStyle:'italic',color:'darkslategray',fontSize:14}}>{'"'+this.state.profinfo.bio+'"'}</Text>:null}
-        <View style={{alignSelf:'center',alignItems:'center',marginTop:20,flexDirection:'row'}}>
+        <View style={{flexDirection:"column",justifyContent:"space-between"}}>
+
+          <View style={{backgroundColor:'transparent',height:80,width:80,alignSelf:'center',borderRadius:40,elevation:4}} >
+          <Image style={{backgroundColor:'transparent',height:80,width:80,alignSelf:'center',borderRadius:40}} source={this.state.profinfo.profile_pic}/>
+          </View>
+
+
+        <Text style={{alignSelf:'center',marginBottom:4,marginTop:4,fontFamily: "SourceSansPro-Bold",
+      fontSize: 18,
+      fontWeight: "bold",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      textAlign: "center",
+      color: "#241466"}}>{this.state.profinfo.name}</Text>
+    {this.state.profinfo.bio? <Text style={{marginTop:10, fontFamily: "SourceSansPro-Italic",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "italic",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#241466",marginBottom:10}}>{this.state.profinfo.bio}</Text>:null}
+
+        <Text style={{fontFamily: "SourceSansPro-Italic",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "italic",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#241466"}}>{infoText}</Text>
+{this.state.profinfo.city? <Text style={{position:'relative',right:10,  fontFamily: "SourceSansPro-Italic",
+  fontSize: 14,
+  fontWeight: "normal",
+  fontStyle: "italic",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#241466"}}>{"📍 "+this.state.profinfo.city}</Text>:null}
+
+        <View style={{alignSelf:'center',alignItems:'center',marginTop:10,flexDirection:'row'}}>
           <Text style={{fontSize:16,color:kolor,fontWeight:'bold'}}>{unvan}</Text>
         </View>
-        <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15}}>
+        <View style={{alignSelf:'center',alignItems:'center',marginTop:10,marginBottom:15,flexDirection:'row'}}>
           <View style={{justifyContent:'center'}}>
-            <View style={{position:'absolute',zIndex: 3,left:-40,justifyContent:'center',height:30,width:30,borderRadius:15,backgroundColor:kolor}}><Text style={{fontSize:18,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-            <View style={{height:24,width:200,borderWidth:3,borderColor:kolor}}>
-              <View style={{height:21,width:200*(gosterilenpuan/limit),backgroundColor:kolor}}>
+            <View style={{position:'absolute',zIndex: 3,left:-12,elevation:3,justifyContent:'center',height:26,width:26,borderRadius:13,backgroundColor:kolor}}><Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
+            <View style={{height:16,width:200,borderRadius:8,elevation:1}}>
+              <View style={{height:16,width:200*(gosterilenpuan/limit),backgroundColor:kolor,borderRadius:8}}>
               </View>
+              <Text style={{position:'absolute',bottom:0,elevation:2,backgroundColor:'rgba(0,0,0,0)',fontSize:12,alignSelf:'center',fontWeight:'bold',color:'rgb(55,32,142)'}}>{gosterilenpuan+"/"+limit}</Text>
             </View>
-          </View>
-          <Text style={{}}>{gosterilenpuan+"/"+limit+" FalPuan"}</Text>
-        </View>
-        {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,fontStyle:'italic'}}>Yorum bekleyen falı bulunmamaktadır.</Text>}
-        <TouchableOpacity style={{height:30,borderRadius:4,width:'60%',backgroundColor:'teal',flexDirection:'row',alignSelf:'center',marginTop:10,alignItems:'center',justifyContent:'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
-            <Icon name="paper-plane" color={'white'} size={18} />
-          <Text style={{color:'white',fontSize:16,fontWeight:'bold'}}> Özel Mesaj</Text>
 
-          <Text style={{color:'white',fontSize:12}}>{"     "+seviye*10}</Text>
-          <Image source={require('../static/images/coins.png')} style={{width:12, height: 12,marginLeft:3}}/>
-        </TouchableOpacity>
+          </View>
+
+     </View>
+     <View style={{width:"100%",marginTop:15,height:1,
+        backgroundColor: "#cecece"}}>
+        </View>
+     {/**/}
+
+     {/**/}
+
+
+        {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,marginBottom: 20, fontFamily: "SourceSansPro-Regular",
+  fontSize: 16,
+  fontWeight: "normal",
+  fontStyle: "normal",
+  letterSpacing: 0,
+
+  color: "#37208e"}}>Yorum bekleyen fal bulunmamaktadır.</Text>}
+
+
+
+
+        <TouchableOpacity style={ { width:'60%',
+  flexDirection:'row',alignSelf:'center',
+    height: 40,
+  borderRadius: 4,
+  backgroundColor: "#37208e",
+  alignItems: 'center', justifyContent: 'center',marginTop:20}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+
+
+                    <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+
+
+                      <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center',top:3 }}>
+                        <View style={ {
+
+                                padding:8,alignItems:'center',
+
+                                justifyContent:'center'}}>
+                                 <Text style={{  fontFamily: "SourceSansPro-Bold",
+                              fontSize: 12,
+                              fontWeight: "bold",
+                              fontStyle: "normal",
+                              letterSpacing: 0,
+                              textAlign: "center",
+                              color: "#ffffff"}}>
+                               {seviye*10}
+                                           </Text>
+                             </View>
+                        <Image source={require("../static/images/sosyal/coins-copy.png")} />
+                           </View>
+                           <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
+
+                             <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,top:3,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
+                            textAlign: "center",
+                            color: "#ffffff"}}>
+                             Özel Mesaj
+                             </Text>
+
+                           </View>
+
+
+                         </View>
+
+
+                         <View style={{
+                           flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
+                           height: 40,
+                           borderRadius: 4,
+                           backgroundColor: "#5033c0"
+                         }}>
+                         </View>
+                         <View style={{
+                           flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                           borderRadius: 4,
+                           backgroundColor: "transparent"
+                         }}>
+                         </View>
+
+
+
+                  </TouchableOpacity>
+
+      {/* part */}
+
+
+
+
       </View>
 
     )
@@ -218,7 +329,6 @@ export default class Leader extends React.Component {
     else {
       return(<ActivityIndicator/>)
     }
-
   }
 
   renderKendiFali = (kendiFali) =>{
@@ -228,15 +338,15 @@ export default class Leader extends React.Component {
       <Text style={{fontWeight:'bold',textAlign:'center',marginBottom:10,fontSize:16}}>Yorum Bekleyen Falı</Text>
       <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,1)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1,borderTopWidth:1}} onPress={() => {this.navigateToFal(sosyal)}}>
        <View style={{flexDirection:'row',height:60,}}>
-         <View style={{padding:10,flex:1}}>
+         <View style={{width:"100%",flex:1}}>
 
            <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
              {sosyal.question}
             </Text>
             <Text style={{fontWeight:'normal',fontSize:14}}>
-              {sosyal.name} - <Text style={{color:'gray'}}>
+
                {capitalizeFirstLetter(replaceGecenHafta(moment(sosyal.time).calendar()))}
-              </Text>
+
              </Text>
 
          </View>
@@ -252,81 +362,81 @@ export default class Leader extends React.Component {
 
   }
 
-  navigateToFal = (fal) => {
-    const { navigate } = this.props.navigation;
-    navigate( "SocialFal",{fal:fal} )
-  }
-
   showProfPopup = (fireid,profPhoto) =>{
     this.popupDialog.show()
     this.setState({profinfo:null})
-    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
-      uid: fireid,
+    fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: fireid,
+      })
     })
-    .then( (response) => {
-      var responseJson=response.data
-      responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
-       var meslek =''
-       switch(responseJson.workStatus) {
-         case 1:
-             meslek='Çalışıyor';
-             break;
-         case 2:
-             meslek='İş arıyor';
-             break;
-         case 3:
-             meslek='Öğrenci';
-             break;
-         case 4:
-             meslek='Çalışmıyor';
-             break;
-         case 5:
-             meslek='Kamuda Çalışıyorum';
-             break;
-         case 6:
-             meslek='Özel Sektör';
-             break;
-         case 7:
-             meslek='Kendi İşim';
-             break;
-       }
-       var iliski =''
-       switch(responseJson.relStatus) {
-           case "0":
-               iliski='İlişkisi Yok';
-               break;
-           case "1":
-               iliski='Sevgilisi Var';
-               break;
-           case "2":
-               iliski='Evli';
-               break;
-           case "3":
-               iliski='Nişanlı';
-               break;
-           case "4":
-               iliski='Platonik';
-               break;
-           case "5":
-               iliski='Ayrı Yaşıyor';
-               break;
-           case "6":
-               iliski='Yeni Ayrılmış';
-               break;
-           case "7":
-               iliski='Boşanmış';
-               break;
+    .then((response) => response.json())
+   .then((responseJson) => {
+     //alert(responseJson.profile_pic)
 
-       }
-       responseJson.iliski=iliski
-       responseJson.meslek=meslek
-          this.setState({profinfo:responseJson});
+    responseJson.profile_pic?responseJson.profile_pic={uri:responseJson.profile_pic}:profPhoto?responseJson.profile_pic={uri:profPhoto}:responseJson.gender=="female"?responseJson.profile_pic=require('../static/images/femaleAvatar.png'):responseJson.profile_pic=require('../static/images/maleAvatar.png')
+     var meslek =''
+     switch(responseJson.workStatus) {
+       case 1:
+           meslek='Çalışıyor';
+           break;
+       case 2:
+           meslek='İş arıyor';
+           break;
+       case 3:
+           meslek='Öğrenci';
+           break;
+       case 4:
+           meslek='Çalışmıyor';
+           break;
+       case 5:
+           meslek='Kamuda Çalışıyorum';
+           break;
+       case 6:
+           meslek='Özel Sektör';
+           break;
+       case 7:
+           meslek='Kendi İşim';
+           break;
+     }
+     var iliski =''
+     switch(responseJson.relStatus) {
+         case "0":
+             iliski='İlişkisi Yok';
+             break;
+         case "1":
+             iliski='Sevgilisi Var';
+             break;
+         case "2":
+             iliski='Evli';
+             break;
+         case "3":
+             iliski='Nişanlı';
+             break;
+         case "4":
+             iliski='Platonik';
+             break;
+         case "5":
+             iliski='Ayrı Yaşıyor';
+             break;
+         case "6":
+             iliski='Yeni Ayrılmış';
+             break;
+         case "7":
+             iliski='Boşanmış';
+             break;
 
-    })
-    .catch(function (error) {
+     }
+     responseJson.iliski=iliski
+     responseJson.meslek=meslek
+        this.setState({profinfo:responseJson});
 
-    });
-
+      })
   }
 
   renderLeaders = () => {
@@ -340,24 +450,39 @@ export default class Leader extends React.Component {
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
-              <View style={{flexDirection:'row',height:60}}>
+              <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
-                  <Text style={{fontWeight:'bold',fontSize:22}}>{index+1+"."}</Text>
+                  <Text style={styles.index}>{index+1+"."}</Text>
                 </View>
                 <Image source={profile_pic} onError={(error) => {}} style={styles.falciAvatar}></Image>
 
-                  <View style={{padding:10,flex:1,justifyContent:'center',}}>
+                  <View style={{width:"100%",flex:1,justifyContent:'center',}}>
 
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
-                      {leader.name}
-                     </Text>
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
+                    {leader.name}
+                    </Text>
 
 
                   </View>
-                  <View style={{padding:15,justifyContent:'center',width:100,borderColor:'teal'}}>
+                  <View style={{width:"100%",justifyContent:'center', width: 70,marginTop:18,marginRight:15,
+                                height: 45,
+                                borderRadius: 4,
+                                backgroundColor: "#e7e5e9"}}>
 
-                    <Text style={{textAlign:'center',color:'black'}}>FalPuan</Text>
-                    <Text style={{textAlign:'center',fontSize:18,fontWeight:'bold',color:'black'}}>{leader.falPuan}</Text>
+                    <Text style={{textAlign:'center',  fontFamily: "SourceSansPro-Regular",
+                                fontSize: 12,
+                                fontWeight: "normal",
+                                fontStyle: "normal",
+                                letterSpacing: 0,
+                                textAlign: "center",
+                                color: "#241466"}}>FalPuan</Text>
+                              <Text style={{textAlign:'center', fontFamily: "SourceSansPro-Bold",
+                                fontSize: 13,
+                                fontWeight: "bold",
+                                fontStyle: "normal",
+                                letterSpacing: 0,
+                                textAlign: "center",
+                                color: "#241466"}}>{leader.falPuan}</Text>
                   </View>
               </View>
 
@@ -387,24 +512,39 @@ export default class Leader extends React.Component {
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
-              <View style={{flexDirection:'row',height:60}}>
+              <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
-                  <Text style={{fontWeight:'bold',fontSize:22}}>{index+1+"."}</Text>
+                  <Text style={styles.index}>{index+1+"."}</Text>
                 </View>
                 <Image source={profile_pic} onError={(error) => {}} style={styles.falciAvatar}></Image>
 
-                  <View style={{padding:10,flex:1,justifyContent:'center',}}>
+                  <View style={{width:"100%",flex:1,justifyContent:'center',}}>
 
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
                       {leader.name}
                      </Text>
 
 
                   </View>
-                  <View style={{padding:15,justifyContent:'center',width:100,borderColor:'teal'}}>
+                  <View style={{width:"100%",justifyContent:'center', width: 70,marginTop:18,marginRight:15,
+  height: 45,
+  borderRadius: 4,
+  backgroundColor: "#e7e5e9"}}>
 
-                    <Text style={{textAlign:'center',color:'black'}}>FalPuan</Text>
-                    <Text style={{textAlign:'center',fontSize:18,fontWeight:'bold',color:'black'}}>{leader.falPuan}</Text>
+                    <Text style={{textAlign:'center',  fontFamily: "SourceSansPro-Regular",
+  fontSize: 12,
+  fontWeight: "normal",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#241466"}}>FalPuan</Text>
+<Text style={{textAlign:'center', fontFamily: "SourceSansPro-Bold",
+  fontSize: 13,
+  fontWeight: "bold",
+  fontStyle: "normal",
+  letterSpacing: 0,
+  textAlign: "center",
+  color: "#241466"}}>{leader.falPuan}</Text>
                   </View>
               </View>
 
@@ -422,7 +562,6 @@ export default class Leader extends React.Component {
       />)
     }
   }
-
   renderWeekResults = () => {
     var leaders = this.state.weekResults
     if(leaders.length>0){
@@ -434,24 +573,39 @@ export default class Leader extends React.Component {
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
-              <View style={{flexDirection:'row',height:60}}>
+              <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
-                  <Text style={{fontWeight:'bold',fontSize:22}}>{index+1+"."}</Text>
+                  <Text style={styles.index}>{index+1+"."}</Text>
                 </View>
                 <Image source={profile_pic} onError={(error) => {}} style={styles.falciAvatar}></Image>
 
-                  <View style={{padding:10,flex:1,justifyContent:'center',}}>
+                  <View style={{width:"100%",flex:1,justifyContent:'center',}}>
 
-                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={{fontWeight:'bold',marginBottom:5,fontSize:14}}>
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
                       {leader.name}
                      </Text>
 
 
                   </View>
-                  <View style={{padding:15,justifyContent:'center',width:100,borderColor:'teal'}}>
+                  <View style={{width:"100%",justifyContent:'center', width: 70,marginTop:18,marginRight:15,
+                                height: 45,
+                                borderRadius: 4,
+                                backgroundColor: "#e7e5e9"}}>
 
-                    <Text style={{textAlign:'center',color:'black'}}>FalPuan</Text>
-                    <Text style={{textAlign:'center',fontSize:18,fontWeight:'bold',color:'black'}}>{leader.falPuan}</Text>
+                    <Text style={{textAlign:'center',  fontFamily: "SourceSansPro-Regular",
+                                fontSize: 12,
+                                fontWeight: "normal",
+                                fontStyle: "normal",
+                                letterSpacing: 0,
+                                textAlign: "center",
+                                color: "#241466"}}>FalPuan</Text>
+                              <Text style={{textAlign:'center', fontFamily: "SourceSansPro-Bold",
+                                fontSize: 13,
+                                fontWeight: "bold",
+                                fontStyle: "normal",
+                                letterSpacing: 0,
+                                textAlign: "center",
+                                color: "#241466"}}>{leader.falPuan}</Text>
                   </View>
               </View>
 
@@ -475,48 +629,49 @@ export default class Leader extends React.Component {
 
     return (
 
-      <ImageBackground source={require('../static/images/splash4.png')} style={styles.container}>
-      <ScrollableTabView
-        style={{paddingTop:50,flex:1}}
-       renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='lightgray' tabStyle={{height:40}} underlineStyle={{backgroundColor:'white'}} backgroundColor='teal' />}
-       tabBarPosition='overlayTop'
-       >
-       <ScrollView tabLabel='Haftalık Yarışma' style={{flex:1,width:'100%'}}>
-        {this.renderWeeks()}
-       </ScrollView>
-       <ScrollView tabLabel='Geçen Haftanın Kazananları' style={{flex:1,width:'100%'}}>
-        {this.renderWeekResults()}
-       </ScrollView>
-       <ScrollView tabLabel='Tüm Zamanlar' style={{flex:1,width:'100%'}}>
-         {this.renderLeaders()}
-       </ScrollView>
-     </ScrollableTabView>
+      <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
+      <View style={{flex:1,width:'100%'}}>
+        <ScrollableTabView
+          style={{paddingTop:50,flex:1}}
+         renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='#766d97' tabStyle={{height:40,alignSelf:"center",justifyContent:"center",alignItems:"center"}} underlineStyle={{backgroundColor:'#ecc44b'}} backgroundColor='#241466' />}
+         tabBarPosition='overlayTop'
+         >
+         <ScrollView tabLabel='HAFTALIK YARIŞMA' style={{flex:1,width:"100%"}}>
+          {this.renderWeeks()}
+         </ScrollView>
+         <ScrollView  tabLabel='GEÇEN HAFTANIN KAZANANLARI'  style={{flex:1,width:"100%"}}>
+          {this.renderWeekResults()}
+         </ScrollView>
+         <ScrollView tabLabel='TÜM ZAMANLAR' style={{flex:1,width:"100%"}}>
+           {this.renderLeaders()}
+         </ScrollView>
+       </ScrollableTabView>
+       </View>
+       <PopupDialog
 
-     <PopupDialog
-
-      dialogStyle={{marginTop:-230}}
-      width={0.9}
-      height={430}
-      ref={(popupDialog) => { this.popupDialog = popupDialog; }}
-      >
-        <View style={{flex:1}}>
-          <ScrollView style={{padding:10,paddingTop:15}}>
-           {this.renderProfInfo()}
+        dialogStyle={{marginTop:-140}}
+        width={0.9}
+        height={430}
+        ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+        >
+          <View style={{flex:1}}>
+            <ScrollView style={{width:"100%",paddingTop:25}}>
+             {this.renderProfInfo()}
 
 
-          </ScrollView>
-        </View>
-      </PopupDialog>
-    </ImageBackground>
+            </ScrollView>
+          </View>
+        </PopupDialog>
+      </ImageBackground>
 
     );
   }
-}
+  }
 
 
 
 
-const styles = StyleSheet.create({
+  const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignSelf: 'stretch',
@@ -526,10 +681,30 @@ const styles = StyleSheet.create({
 
   },
   falciAvatar:{
-    height:40,
-    width:40,
-    margin:10,
-    borderRadius:20,
+    width: 48,
+    height: 48,
+    margin:15,
+    borderRadius:24,
+    marginLeft:0,
+    marginRight:0
   },
+  row:{
+    flexDirection:'row',
+    height:80,
+    borderBottomWidth:1,
+    borderColor:"rgba(166,158,171,0.4)",
+    backgroundColor: "#ffffff"
 
-});
+  },name:{
+    fontFamily: "SourceSansPro-Regular",fontSize: 15,fontWeight: "600",fontStyle: "normal",letterSpacing: 0,textAlign: "left",color: "#241466",marginBottom:0,marginLeft:10
+  },index:{
+    fontFamily: "SourceSansPro-Bold",
+    fontSize: 18,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign: "center",
+    color: "#241466"
+  }
+
+  });

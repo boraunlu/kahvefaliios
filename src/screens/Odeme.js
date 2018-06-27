@@ -57,18 +57,6 @@ export default class Odeme extends React.Component {
 
   static navigationOptions = {
       title: 'Kredilerin',
-      headerStyle: {
-        backgroundColor:'white',
-
-      },
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",
-        color: "#241466",
-  textAlign:'center',
-  fontFamily:'SourceSansPro-Bold'
-      },
       tabBarLabel: 'Krediler',
        tabBarIcon: ({ tintColor }) => (
          <Icon name="database" color={tintColor} size={20} />

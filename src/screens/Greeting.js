@@ -75,6 +75,8 @@ function generateRandom(uzunluk, mevcut,gender,falType) {
     return (num === mevcut ) ? generateRandom(uzunluk, mevcut,gender,falType) : num;
 }
 
+
+
 @inject("socialStore")
 @inject("userStore")
 @observer
@@ -101,66 +103,12 @@ export default class Greeting extends React.Component {
 
 static navigationOptions = ({ navigation }) => ({
     title: 'Kahve Falı Sohbeti',
-    headerStyle: {
-      backgroundColor:'white',
-
-    },
-    headerTitleStyle: {
-      fontWeight: 'bold',
-      fontSize:18,
-      textAlign: "center",
-      color: "#241466",
-      textAlign:'center',
-      fontFamily:'SourceSansPro-Bold'
-    },
     tabBarLabel: 'Ana Sayfa',
      tabBarIcon: ({ tintColor }) => (
        <Icon name="home" color={tintColor} size={25} />
        ),
 
   })
-
-
-    pay = (falType) => {
-      this.setState({spinnerVisible:true})
-      var credit = 0;
-      switch (falType) {
-        case 0:
-            credit = 100;
-            break;
-        case 1:
-            credit = 100;
-            break;
-        case 2:
-            credit = 150;
-            break;
-        case 3:
-            credit = 50;
-            break;
-      }
-      var products = [
-         'com.grepsi.kahvefaliios.'+credit,
-      ];
-      InAppUtils.loadProducts(products, (error, products) => {
-        if(error){this.setState({spinnerVisible:false})}
-        else{
-          var identifier = 'com.grepsi.kahvefaliios.'+credit
-          InAppUtils.purchaseProduct(identifier, (error, response) => {
-            this.setState({spinnerVisible:false})
-             // NOTE for v3.0: User can cancel the payment which will be availble as error object here.
-             if(error){}
-             else{
-               if(response && response.productIdentifier) {
-                  //AlertIOS.alert('Purchase Successful', 'Your Transaction ID is ' + response.transactionIdentifier);
-                        this.navigateto('Chat',0,falType);
-                        Backend.addCredits(0,"greeting"+credit)
-               }
-             }
-          });
-        }
-      });
-
-    }
 
   navigateToAktif = (falciNo) => {
     const { navigate } = this.props.navigation;
@@ -207,7 +155,7 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   navigateToFal = () => {
-    if(this.props.userStore.user.lastFalType==0){
+    if(this.props.userStore.user.lastFalType==2){
       this.props.navigation.navigate('SocialFal',{fal:this.props.socialStore.tek})
     }
     else {
@@ -244,99 +192,6 @@ static navigationOptions = ({ navigation }) => ({
   }
 
 
-  startgunluk1 = () => {
-
-    var userData=this.props.userStore.user
-    if(userData.timesUsed>9&&typeof userData.lastSosyal === 'undefined'){
-      this.popupParaiste.show()
-    }
-    else {
-      this.popupGunluk.show()
-    }
-  }
-
-  startGunluk2 = () => {
-    if(this.props.userStore.profileIsValid){
-      var userData =this.state.userData
-      if(!userData.gunlukUsed){
-        this.navigateto('Chat',0,0)
-      }else {
-        if(this.props.userStore.userCredit<100){
-          this.pay(0)
-        }
-        else{
-          this.navigateto('Chat',0,0)
-          Backend.addCredits(-100)
-        }
-      }
-      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
-    }
-    else{
-      this.setState({checkValidation:true})
-    }
-  }
-
-
-  startAsk2 = () => {
-    if(this.props.userStore.profileIsValid){
-      if(this.props.userStore.userCredit<100){
-                this.pay(1)
-      }
-      else{
-        Backend.addCredits(-100)
-        this.navigateto('Chat',0,1);
-      }
-      Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
-    }
-    else{
-      this.setState({checkValidation:true})
-    }
-  }
-
-
-
-  startDetay2 = () => {
-    if(this.props.userStore.profileIsValid){
-        if(this.props.userStore.userCredit<150){
-                  this.pay(2)
-        }
-        else{
-          Backend.addCredits(-150)
-          this.navigateto('Chat',0,2);
-        }
-        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
-      }
-    else {
-      this.setState({checkValidation:true})
-    }
-  }
-
-  startHand2 = () => {
-
-
-    var userData =this.state.userData
-
-    if(this.props.userStore.profileIsValid){
-      if(userData.handUsed){
-        if(this.props.userStore.userCredit<50){
-                  this.pay(3)
-        }
-        else{
-          Backend.addCredits(-50)
-          this.navigateto('Chat',0,3);
-        }
-      }
-      else{
-        this.navigateto('Chat',0,3);
-      }
-
-        Backend.setProfile(this.props.userStore.userName,this.props.userStore.age,this.props.userStore.iliskiStatus,this.props.userStore.meslekStatus)
-      }
-    else {
-      this.setState({checkValidation:true})
-    }
-
-  }
 
 
   fadeButtons = () => {
@@ -395,6 +250,7 @@ static navigationOptions = ({ navigation }) => ({
  generatefalcisayisi = () => {
    var saat = moment().hour()
    var gun = moment().day()%3
+   var dk = moment().minute()%10
    var falcisayisi= 5
    if(saat>7&&saat<11){
      falcisayisi=4+gun
@@ -414,7 +270,7 @@ static navigationOptions = ({ navigation }) => ({
    if(saat>3&&saat<8){
      falcisayisi=1+gun
    }
-   return falcisayisi
+   return falcisayisi*40+dk
  }
 
   componentDidUpdate(prevProps,prevState){
@@ -448,16 +304,20 @@ static navigationOptions = ({ navigation }) => ({
 
      this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
 
-
          if(notif.deeplink){
            var deeplink=JSON.parse(notif.deeplink)
            //alert(deeplink.type)
            if(deeplink.type=='gunluk'){
              //alert("asd")
-             Backend.getGunluk(notif.deeplink_value).then( (response) => {
+             Backend.getGunluk(deeplink.value).then( (response) => {
                 this.props.socialStore.setTek(response)
              })
              //this.props.navigation.navigate('GunlukFal',{falId:notif.deeplink_value})
+           }
+           else if (deeplink.type=='sosyal') {
+             Backend.getSosyal(deeplink.value).then( (response) => {
+                this.props.socialStore.setTek(response)
+             })
            }
          }
          // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
@@ -472,11 +332,11 @@ static navigationOptions = ({ navigation }) => ({
              //alert(deeplink.type)
              if(deeplink.type=='falId'){
                //alert("asd")
-               this.props.navigation.navigate('SocialFal',{falId:notif.deeplink_value})
+               this.props.navigation.navigate('SocialFal',{falId:deeplink.value})
              }
              else if(deeplink.type=='gunluk'){
                //alert("asd")
-               this.props.navigation.navigate('GunlukFal',{falId:notif.deeplink_value})
+               this.props.navigation.navigate('GunlukFal',{falId:deeplink.value})
              }
            }
          }
@@ -505,87 +365,6 @@ static navigationOptions = ({ navigation }) => ({
 
 
 
-  }
-
-componentWillMount() {
-  this.greetingMounted=true;
-
-}
-componentWillUnmount() {
-
-}
-
-  renderAktif = () => {
-
-    if(this.state.userData==null){
-      return null
-    }
-    else{
-      var userData = this.state.userData
-      if(userData.aktif== true){
-
-        return(
-          <View>
-          <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
-          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
-           <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
-              <View>
-              <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
-              <View style={{height:12,width:12,borderRadius:6,backgroundColor:'#00FF00',right:8,top:8,position:'absolute'}}></View>
-             </View>
-             <View style={{padding:10,flex:2}}>
-               <Text style={{fontWeight:'bold',fontSize:16}}>
-                 {falcilar[userData.currentFalci].name}
-                </Text>
-                <Text numberOfLines={1} ellipsizeMode={'tail'}>
-                {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
-               </Text>
-             </View>
-             <View style={{padding:20}}>
-              {this.props.userStore.aktifUnread<1 ?      <Icon name="angle-right" color={'gray'} size={20} /> :  <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View> }
-
-               </View>
-           </View>
-
-          </TouchableOpacity>
-          </View>
-        )
-      }
-      else{
-        if(userData.lastMessage){
-          return(
-            <View>
-            <View style={{borderColor:'white',backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Son Konuşman</Text></View>
-            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
-             <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
-                <View>
-                <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
-                <View style={{height:12,width:12,borderRadius:6,backgroundColor:'gray',right:8,top:8,position:'absolute'}}></View>
-               </View>
-               <View style={{padding:10,flex:2}}>
-                 <Text style={{fontWeight:'bold',fontSize:16}}>
-                   {falcilar[userData.currentFalci].name}
-                   <Text style={{fontStyle:'italic',fontWeight:'normal',fontSize:12,color:'gray'}}> (Sohbetten Ayrıldı)</Text>
-                  </Text>
-                  <Text numberOfLines={1} ellipsizeMode={'tail'}>
-                  {capitalizeFirstLetter(userData.lastMessage.text)}
-                 </Text>
-               </View>
-               <View style={{padding:20}}>
-
-                 <Icon name="angle-right" color={'gray'} size={20} />
-                 </View>
-             </View>
-
-            </TouchableOpacity>
-            </View>
-          )
-        }
-        else{
-        }
-
-      }
-    }
   }
 
   renderTek = () => {
@@ -672,29 +451,6 @@ componentWillUnmount() {
 
         <View style={{}}>
           <View style={{flexDirection:'row',borderRadius:4}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.props.navigation.navigate('Social')}}>
-              <View  style={styles.faltypeimage}>
-
-                <View style={{flex:1,alignSelf: 'stretch',borderRadius:4,alignItems:'center',justifyContent:'center',backgroundColor:'rgb(230,213,160)'}}>
-
-                  <Text style={styles.faltypeyazi}>
-                    Sosyal Fal
-                  </Text>
-                  <Text style={styles.faltypeyazikucuk}>
-                    Diğer Falseverle Buluşma Yeriniz!
-                  </Text>
-                <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
-                    <Image source={require('../static/images/anasayfa/page1.png')} style={{}}/>
-                </View>
-                </View>
-
-
-
-              </View>
-            </TouchableOpacity>
-
-          </View>
-          <View style={{flexDirection:'row',borderRadius:4}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(0)}}>
               <View style={styles.faltypeimage}>
 
@@ -706,7 +462,7 @@ componentWillUnmount() {
 
                 width: 100,
                 height: 100,
-                backgroundColor: "#d4993a",
+                backgroundColor: 'rgb(209, 190, 142)',
                 shadowColor: "rgba(0, 0, 0, 0.2)",
                 shadowOffset: {
                   width: 0,
@@ -734,7 +490,7 @@ componentWillUnmount() {
                   </View>
                   )}
 
-                <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(228,176,92)'}}>
+                <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(230,213,160)'}}>
 
                   <Text style={styles.faltypeyazi}>
                     Günlük Fal
@@ -751,8 +507,60 @@ componentWillUnmount() {
             </TouchableOpacity>
 
           </View>
-          <View style={{flexDirection:'row'}}>
+          <View style={{flexDirection:'row',borderRadius:4}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(1)}}>
+              <View  style={styles.faltypeimage}>
+                <View style={{
+
+                  position:'absolute',
+                  top:-57,
+                  right:-65,
+                  overflow:'hidden',
+                  width: 100,
+                  height: 100,
+                  backgroundColor: "#d4993a",
+                  shadowColor: "rgba(0, 0, 0, 0.2)",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2
+                  },
+                  shadowRadius: 1,
+                  shadowOpacity: 1,
+                  borderRadius: 50,
+                  borderRadius: 50,
+                  zIndex:1,
+                  transform: [
+                    {scaleX: 2}]}}>
+
+                </View>
+                <View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
+                  <Text style={[styles.label]}>
+                    100
+                  </Text>
+                  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
+                </View>
+                <View style={{flex:1,alignSelf: 'stretch',borderRadius:4,alignItems:'center',justifyContent:'center',backgroundColor:'rgb(228,176,92)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    Sosyal Fal
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Diğer Falseverle Buluşma Yeriniz!
+                  </Text>
+                <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
+                    <Image source={require('../static/images/anasayfa/page1.png')} style={{}}/>
+                </View>
+                </View>
+
+
+
+              </View>
+            </TouchableOpacity>
+
+          </View>
+
+          <View style={{flexDirection:'row'}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(2)}}>
               <View  style={styles.faltypeimage}>
 
                 <View style={{
@@ -780,19 +588,16 @@ componentWillUnmount() {
                 </View>
                 <View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
                   <Text style={[styles.label]}>
-                    100
+                    150
                   </Text>
                   <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
                 </View>
 
                 <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(188,69,118)'}}>
-                <View style={{padding:5,flexDirection:'row',position:'absolute',top:5,left:5}}>
 
-                  <Text style={{color:'white',fontSize:10,fontStyle:'italic'}}> Deneyimli {"\n"} Falcılar</Text>
-                </View>
 
                   <Text style={styles.faltypeyazi}>
-                    Aşk Falı
+                    Süper Sosyal Fal
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
                   Detaylı Aşk Yorumları,{"\n"}
@@ -800,74 +605,19 @@ componentWillUnmount() {
                   Diğer Fal Severlerden Yorum İsteme İmkanı
                   </Text>
                 <View style={{position:'absolute',zIndex:-100,left:0,bottom:0,backgroundColor:'transparent'}}>
-                    <Image source={require('../static/images/anasayfa/group.png')} style={{}}/>
-                </View>
-                </View>
-
-              </View>
-            </TouchableOpacity>
-
-
-          </View>
-          <View style={{flexDirection:'row',borderRadius: 4}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.popupDetay.show()}}>
-              <View style={styles.faltypeimage}>
-<View style={{
-  elevation:4,
-  position:'absolute',
-  top:-57,
-  right:-65,
-
-  width: 100,
-  height: 100,
-  backgroundColor: "#816fbe",
-  shadowColor: "rgba(0, 0, 0, 0.2)",
-  shadowOffset: {
-    width: 0,
-    height: 2
-  },
-  shadowRadius: 1,
-  shadowOpacity: 1,
-  borderRadius: 50,
-  zIndex:1000,
-  transform: [
-    {scaleX: 2}]}}>
-
-</View>
-<View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
-                  <Text style={[styles.label]}>
-                    150
-                  </Text>
-                  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
-                </View>
-
-
-              <View style={{padding:10,flex:1,alignSelf: 'stretch',alignItems:'center',borderRadius:4,justifyContent:'center',backgroundColor: "#8975cd"}}>
-              <View style={{padding:5,flexDirection:'row',position:'absolute',top:5,left:5}}>
-
-                <Text style={{color:'white',fontSize:10,fontStyle:'italic'}}> Deneyimli {"\n"} Falcılar</Text>
-              </View>
-
-                <Text style={styles.faltypeyazi}>
-                  Detaylı Fal
-                </Text>
-                <Text style={styles.faltypeyazikucuk}>
-                Tüm Konularda Detay{"\n"}
-
-                Diğer Falseverlerden Yorum İsteme İmkanı
-                </Text>
-                <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
                     <Image source={require('../static/images/anasayfa/coffee.png')} style={{}}/>
                 </View>
-
-              </View>
+                </View>
 
               </View>
             </TouchableOpacity>
+
+
           </View>
 
+
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={[styles.faltypecontainer,{borderRadius:4,backgroundColor:'rgb(103,104,145)'}]} onPress={() => {this.popupHand.show()}}>
+            <TouchableOpacity style={[styles.faltypecontainer,{borderRadius:4,backgroundColor:"#8975cd"}]} onPress={() => {this.navigateToFalPaylas(3)}}>
               <View  style={styles.faltypeimage}>
               {this.state.userData.handUsed == true &&
                                     <View style={{position:'absolute',top:0,right:0}}>
@@ -880,7 +630,7 @@ componentWillUnmount() {
 
                                       width: 100,
                                       height: 100,
-                                      backgroundColor: "#57587e",
+                                      backgroundColor: "#816fbe",
                                       shadowColor: "rgba(0, 0, 0, 0.2)",
                                       shadowOffset: {
                                         width: 0,
@@ -942,7 +692,7 @@ componentWillUnmount() {
 
     return (
 
-      <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.containerasd}>
+      <ImageBackground source={require('../static/images/background.png')} style={styles.containerasd}>
 
         <ScrollView style={{flex:1,width:'100%',padding:15,paddingTop:0}}>
 
@@ -959,7 +709,7 @@ componentWillUnmount() {
               <View style={{height:24,position:'relative',right:29,top:3,paddingRight:20,paddingLeft:30,paddingBottom:2,borderRadius:12,backgroundColor:'rgba(0,0,0,0.18)',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
                     <Text style={{textAlign:'left',fontWeight:'bold',position:'relative',left:5,fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',fontSize:12}}>
-                    Canlı Falcı Sayısı:</Text>
+                    Çevrimiçi Kullanıcı Sayısı:</Text>
                     <Text style={{fontSize:14,fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',position:'relative',left:7}}>
 
                     &nbsp;
@@ -971,14 +721,14 @@ componentWillUnmount() {
 
           </View>
 
-            {/* Bizimle ilgli görüşler */}
+            {/* Bizimle ilgli görüşler
 
           <View style={{height: 70,borderRadius: 15,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',paddingBottom:40}}>
 
                <Text style={{textAlign:'right',fontWeight:'normal',fontFamily:'SourceSansPro-Bold',color: "#a48bff",fontSize:10,paddingRight:5}}>
                    Bizimle ilgili görüşlerinizi{'\n'}profil sayfanızdan iletebilirsiniz</Text>
               <Image source={require('../static/images/anasayfa/noun1616273Cc.png')} style={{height:25,width:25,position:'relative',top:3}}/>
-          </View>
+          </View>*/}
 
 
 
@@ -994,210 +744,6 @@ componentWillUnmount() {
         </ScrollView>
           {/* End of page */}
 
-
-
-        <PopupDialog
-
-          ref={(popupDialog2) => { this.popupGunluk = popupDialog2; }}
-          dialogStyle={{marginTop:-150}}
-          overlayOpacity={0.75}
-          width={0.8}
-          height={0.7}
-        >
-          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/gunluk.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(60,179,113, 0.8)'}}>
-            {this.state.userData ? this.state.userData.gunlukUsed ?
-                (<View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
-                <Text style={[styles.label]}>
-                  100
-                </Text>
-                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-              </View>) :
-                (<View style={{padding:5,flexDirection:'row',position:'absolute',top:4,right:5}}>
-                <Animatable.Text style={[styles.label,{color:'#F8D38C'}]} animation="pulse" iterationCount={"infinite"} direction="alternate">ÜCRETSİZ</Animatable.Text>
-
-
-              </View>) : null
-              }
-              { Dimensions.get('screen').height>599 ?
-              <Text style={styles.faltypeyazipopup}>
-                Günlük Fal
-              </Text> : null
-              }
-              <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
-              <Text style={styles.faltypeyazikucukpopup}>
-                Falcılarımız ile canlı sohbet edin! Kahve fotoğraflarınızı gönderin, yorumlasınlar
-
-              </Text>
-
-              <View style={{position:'absolute',bottom:0,width:'100%'}}>
-                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
-
-                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                  <TouchableOpacity  onPress={() => {this.popupGunluk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity  onPress={() => {this.startGunluk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>SOHBETE BAŞLA</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </ImageBackground>
-        </PopupDialog>
-        <PopupDialog
-
-          ref={(popupDialog2) => { this.popupAsk = popupDialog2; }}
-          dialogStyle={{marginTop:-150}}
-          overlayOpacity={0.75}
-          width={0.8}
-          height={0.7}
-        >
-          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/ask.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(249,50,12,0.6)'}}>
-              <View style={{padding:5,flexDirection:'row',position:'absolute',top:4,right:4}}>
-                <Text style={[styles.label]}>
-                  100
-                </Text>
-                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-              </View>
-              { Dimensions.get('screen').height>599 ?
-              <Text style={styles.faltypeyazipopup}>
-                Sırlar dökülsün, aşk konuşalım
-              </Text> : null
-              }
-
-              <Text style={{position:'absolute',color:'transparent',backgroundColor:'transparent',fontSize:0}}>{this.props.userStore.userCredit}</Text>
-              <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Falınızı sosyal panoda paylaşma imkanı{'\n'}
-                {'\u2022'} Detaylı aşk yorumları{'\n'}
-                {'\u2022'} İlişki tavsiyeleri{'\n'}
-              </Text>
-
-              <View style={{position:'absolute',bottom:0,width:'100%'}}>
-                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
-
-                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                  <TouchableOpacity  onPress={() => {this.popupAsk.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity  onPress={() => {this.startAsk2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center',alignItems:'center',fontWeight:'bold'}}>SOHBETE BAŞLA</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </ImageBackground>
-        </PopupDialog>
-        <PopupDialog
-          ref={(popupDialog) => { this.popupDetay = popupDialog; }}
-          dialogStyle={{marginTop:-150}}
-          width={0.8}
-          height={0.7}
-          overlayOpacity={0.75}
-        >
-          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/detayli.jpg')}>
-            <View style={{flex:1,paddingTop:10,alignSelf: 'stretch',backgroundColor:'rgba(114,0,218,0.6)'}}>
-              <View style={{padding:5,flexDirection:'row',position:'absolute',top:4,right:4}}>
-                <Text style={[styles.label]}>
-                  150
-                </Text>
-                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-              </View>
-              { Dimensions.get('screen').height>599 ?
-              <Text style={styles.faltypeyazipopup}>
-                Ortaya çıkmayan detay kalmasın
-              </Text> : null
-              }
-
-              <Text style={styles.faltypeyazikucukpopup}>
-                {'\u2022'} Falınızı sosyal panoda paylaşma imkanı{'\n'}
-                {'\u2022'} Her konuya dair detaylı yorumlar{'\n'}
-                {'\u2022'} Ruh haliniz incelensin{'\n'}
-
-              </Text>
-              <View style={{position:'absolute',bottom:0,width:'100%'}}>
-              <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
-
-                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                  <TouchableOpacity  onPress={() => {this.popupDetay.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Vazgeç</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity  onPress={() => {this.startDetay2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center',fontWeight:'bold'}}>SOHBETE BAŞLA</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </ImageBackground>
-        </PopupDialog>
-        <PopupDialog
-
-          ref={(popupDialog) => { this.popupHand = popupDialog; }}
-          dialogStyle={{marginTop:-150}}
-          width={0.8}
-          height={0.7}
-          overlayOpacity={0.75}
-        >
-          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/elfali.jpg')}>
-            <View style={{flex:1,alignSelf: 'stretch',backgroundColor:'rgba(0,185,241, 0.6)'}}>
-              {this.state.userData ? this.state.userData.handUsed ?
-                  <View style={{padding:5,flexDirection:'row',position:'absolute',top:4,right:4}}>
-                  <Text style={[styles.label]}>
-                    50
-                  </Text>
-                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-                </View> : null : null}
-
-              { Dimensions.get('screen').height>599 ?
-                <Text style={styles.faltypeyazipopup}>
-                  Eliniz, kaderiniz
-                </Text> : null
-              }
-              <Text style={styles.faltypeyazikucukpopup}>
-                Elinizin fotoğrafını gönderin, falcılarımız ile sohbet ederek el falınıza baktırın!
-              </Text>
-              <View style={{position:'absolute',bottom:0,width:'100%'}}>
-              <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
-
-                <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                  <TouchableOpacity  onPress={() => {this.popupHand.dismiss()}} style={{flex:1,height:40,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center'}}>Hayır</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity  onPress={() => {this.startHand2()}} style={{flex:1,height:40,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                    <Text style={{textAlign:'center',fontWeight:'bold'}}>SOHBETE BAŞLA</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-            </View>
-          </ImageBackground>
-        </PopupDialog>
-        <PopupDialog
-          ref={(popupDialog) => { this.popupParaiste = popupDialog; }}
-          dialogStyle={{marginTop:-150}}
-          width={0.8}
-          height={0.6}
-          overlayOpacity={0.75}
-        >
-          <ImageBackground style={{flex:1,width: null,height: null}} source={require('../static/images/paraisteback.jpg')}>
-
-            <Image source={require('../static/images/appicon.png')} style={{marginTop:10,marginBottom:10,height:80,width:80,borderRadius:40,alignSelf:'center'}}/>
-            <Text style={{backgroundColor:'transparent',color:'white',marginLeft:15,marginRight:15,fontSize:16}}>
-              {"Sevgili "+this.props.userStore.userName+",\n\nÜcretsiz günlük fal haklarını maalesef tükettin 😞\n\n"}
-              Bir kere <Text style={{fontWeight:'bold'}}>AŞK</Text> veya <Text style={{fontWeight:'bold'}}>DETAYLI</Text> fal baktırırsan ücretsiz ve sınırsız günlük fal haklarına tekrar kavuşacaksın!🎉🎊
-            </Text>
-            <View style={{position:'absolute',bottom:0,width:'100%'}}>
-              <View style={{alignSelf:'stretch',flex:1,flexDirection:'row',justifyContent:'space-around',backgroundColor:'white'}}>
-                <TouchableOpacity  onPress={() => {this.popupParaiste.dismiss();this.popupAsk.show()}} style={{flex:1,height:60,flexGrow:1,borderRightWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center',fontWeight:'bold'}}>AŞK Falına Bak{'\n'}❤️</Text>
-                </TouchableOpacity>
-                <TouchableOpacity  onPress={() => {this.popupParaiste.dismiss();this.popupDetay.show()}} style={{flex:1,height:60,flexGrow:1,borderLeftWidth:1,justifyContent:'center'}}>
-                  <Text style={{textAlign:'center',fontWeight:'bold'}}>DETAYLI Falına Bak{'\n'}🔮</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </ImageBackground>
-        </PopupDialog>
         {this.renderReklam()}
       </ImageBackground>
 
