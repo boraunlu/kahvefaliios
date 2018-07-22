@@ -16,7 +16,8 @@ import {
   ScrollView,
   ImageBackground,
   AsyncStorage,
-  Platform
+  Platform,
+  AppState,
 } from 'react-native';
 
 
@@ -94,7 +95,8 @@ export default class Greeting extends React.Component {
       spinnerVisible:false,
       checkValidation:false,
       marquee:'',
-      reklam:null
+      reklam:null,
+      appState: AppState.currentState
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -249,7 +251,8 @@ static navigationOptions = ({ navigation }) => ({
 
  generatefalcisayisi = () => {
    var saat = moment().hour()
-   var gun = moment().day()%3
+   var gun = 2
+   if(moment().weekday()>4){gun=4}
    var dk = moment().minute()%10
    var falcisayisi= 5
    if(saat>7&&saat<11){
@@ -258,17 +261,17 @@ static navigationOptions = ({ navigation }) => ({
    if(saat>10&&saat<16){
      falcisayisi=6+gun
    }
-   if(saat>15&&saat<22){
-     falcisayisi=8+gun
+   if(saat>15&&saat<20){
+     falcisayisi=7+gun
    }
    if(saat>21&&saat<25){
-     falcisayisi=5+gun
+     falcisayisi=8+gun
    }
    if(saat<4){
-     falcisayisi=2+gun
+     falcisayisi=5+gun
    }
    if(saat>3&&saat<8){
-     falcisayisi=1+gun
+     falcisayisi=2+gun
    }
    return falcisayisi*40+dk
  }
@@ -282,11 +285,8 @@ static navigationOptions = ({ navigation }) => ({
 
   componentDidMount() {
 
-
+    AppState.addEventListener('change', this._handleAppStateChange);
     FCM.setBadgeNumber(0);
-
-
-
     axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
       uid: Backend.getUid(),
     })
@@ -295,13 +295,43 @@ static navigationOptions = ({ navigation }) => ({
       this.setState({userData:responseJson,credit:responseJson.credit});
        //alert(JSON.stringify(responseJson))
        this.props.userStore.setUser(responseJson)
-       this.props.socialStore.setTek(responseJson.tek)
 
     })
     .catch(function (error) {
 
     });
 
+    Backend.getAllFals().then( (response) => {
+       this.props.socialStore.setAllFals(response)
+    })
+
+
+    this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
+       // Get the action triggered by the notification being opened
+
+       const action = notificationOpen.action;
+       alert(action)
+       const notification: Notification = notificationOpen.notification;
+       var notif =notification.data
+       if(notif.deeplink){
+         var deeplink=JSON.parse(notif.deeplink)
+         //alert(deeplink.type)
+         if(deeplink.type=='sosyal'){
+           //alert("asd")
+           this.props.navigation.navigate('SocialFal',{falId:deeplink.value})
+         }
+         else if(deeplink.type=='gunluk'){
+           //alert("asd")
+           this.props.navigation.navigate('GunlukFal',{falId:deeplink.value})
+         }
+         else if(deeplink.type=='chat'){
+
+           this.props.navigation.navigate( "ChatFalsever",{falsever:deeplink.value} )
+         }
+
+       }
+   });
+   /*
      this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
 
          if(notif.deeplink){
@@ -358,13 +388,44 @@ static navigationOptions = ({ navigation }) => ({
              case NotificationType.WillPresent:
                notif.finish(WillPresentNotificationResult.None) //other types available: WillPresentNotificationResult.None
                break;
-           }*/
+           }
          }
-     });
+     });*/
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      fetch('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: Backend.getUid(),
+        })
+      })
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({userData:responseJson,credit:responseJson.credit});
+         //alert(JSON.stringify(responseJson))
+         this.props.userStore.setUser(responseJson)
 
 
+      })
+      .catch(function (error) {
 
+      });
 
+      Backend.getAllFals().then( (response) => {
+         this.props.socialStore.setAllFals(response)
+      })
+    }
+    this.setState({appState: nextAppState});
   }
 
   renderTek = () => {
@@ -387,10 +448,10 @@ static navigationOptions = ({ navigation }) => ({
                  {bakildi?
                    <View style={{padding:10,flex:2,justifyContent:'center'}}>
                    <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
-                     {tek.comments[0].name}
+                     {lastComment.name}
                     </Text>
                     <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
-                    {capitalizeFirstLetter(tek.comments[0].comment)}
+                    {capitalizeFirstLetter(lastComment.comment)}
                    </Text>
                    </View>
                    :
@@ -402,13 +463,13 @@ static navigationOptions = ({ navigation }) => ({
                  }
 
                <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
-                {this.props.userStore.aktifUnread<1
+                {tek.unread==0
                   ?
                   <Icon name="angle-right" color={'gray'} size={20}/>
                   :
                   <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
                     <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
-                    <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center',position:'absolute',top:1,right:11}}>1</Text>
+                    <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{tek.unread}</Text>
                   </View>
                 }
                </View>
@@ -496,7 +557,7 @@ static navigationOptions = ({ navigation }) => ({
                     Günlük Fal
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    Her Gün 1 Adet Kahve Falı Bizden Size <Text style={{fontWeight:'bold'}}>HEDİYE!</Text>
+                    Falınıza bir falcımızdan yorum alın
                   </Text>
                 <View style={{position:'absolute',left:-15,bottom:-10,backgroundColor:'transparent'}}>
                     <Image source={require('../static/images/anasayfa/noun1410215Cc.png')} style={{}}/>
@@ -545,7 +606,7 @@ static navigationOptions = ({ navigation }) => ({
                     Sosyal Fal
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    Diğer Falseverle Buluşma Yeriniz!
+                    Falınıza bir çok farklı falcıdan yorum alın!
                   </Text>
                 <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
                     <Image source={require('../static/images/anasayfa/page1.png')} style={{}}/>
@@ -600,9 +661,8 @@ static navigationOptions = ({ navigation }) => ({
                     Süper Sosyal Fal
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                  Detaylı Aşk Yorumları,{"\n"}
-
-                  Diğer Fal Severlerden Yorum İsteme İmkanı
+                  Maksimum yorum, maksimum sohbet!{"\n"}
+                  20 farklı falcıdan yorum gelmezse krediniz iade
                   </Text>
                 <View style={{position:'absolute',zIndex:-100,left:0,bottom:0,backgroundColor:'transparent'}}>
                     <Image source={require('../static/images/anasayfa/coffee.png')} style={{}}/>

@@ -90,7 +90,13 @@ export default class ChatFalsever extends React.Component {
   static navigationOptions = ({ navigation }) => ({
 
       headerTitle:<TouchableWithoutFeedback onPress={() => {navigation.state.params.showpopup()}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:navigation.state.params.falsever.avatar}}></Image><Text style={{fontWeight:'bold',fontSize:20}}>{navigation.state.params.falsever.name}</Text></View></TouchableWithoutFeedback>,
-
+      headerRight:<TouchableOpacity style={{flexDirection:"row",alignItems:"center"}} onPress={() => {navigation.state.params.engelle()}}><Text style={{textDecorationLine:"underline",textDecorationColor:"black",textDecorationStyle:"solid",padding:5,fontFamily: "SourceSansPro-Regular",
+      fontSize: 13,
+      fontWeight: "normal",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      textAlign: "center",
+      color: "#000000"}}>Engelle</Text></TouchableOpacity>,
   })
 
 
@@ -105,7 +111,7 @@ export default class ChatFalsever extends React.Component {
 
   showpopup = () => {
     //alert("asdf")
-      this.showProfPopup(this.state.falsever.fireID,this.state.falsever.avatar)
+    this.props.navigation.navigate('User',{fireid:this.state.falsever.fireID,profPhotos:this.state.falsever.profile_pic})
   }
 
 
@@ -172,7 +178,8 @@ export default class ChatFalsever extends React.Component {
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({ showpopup: this.showpopup  })
+    
+    this.props.navigation.setParams({ showpopup: this.showpopup,engelle: this.engelle  })
     const { params } = this.props.navigation.state;
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/mesajlar/'+this.state.falsever.fireID);
     falseverref.on('child_added',function(snapshot,key){
@@ -217,6 +224,28 @@ export default class ChatFalsever extends React.Component {
       falseverbilgiref.update(updates)
     }
 
+
+  }
+
+  engelle = () => {
+
+      Alert.alert(
+        'Engelle',
+        'Bu kullanıcıyı engellemek istediğinden emin misin?',
+        [
+          {text: 'Hayır', onPress: () => {}},
+          {text: 'Evet', onPress: () => {
+            Backend.blockUser(this.state.falsever.fireID)
+
+            setTimeout(()=>{
+              this.props.navigation.goBack()
+
+
+            },650)
+
+          }},
+        ],
+      )
 
   }
 

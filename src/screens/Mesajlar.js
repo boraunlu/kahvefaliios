@@ -13,7 +13,8 @@ import {
   TextInput,
   Alert,
   FlatList,
-  Switch
+  Switch,
+  AppState
 } from 'react-native';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
@@ -42,6 +43,7 @@ function replaceGecenHafta(str) {
   return str
 }
 
+@inject("socialStore")
 @inject("userStore")
 @observer
 export default class Mesajlar extends React.Component {
@@ -54,7 +56,8 @@ export default class Mesajlar extends React.Component {
       lastBizden:null,
       sosyals:null,
       gunluks:null,
-      notifications:null
+      notifications:null,
+      appState: AppState.currentState
   };
 }
 
@@ -162,76 +165,20 @@ export default class Mesajlar extends React.Component {
     }
 
   componentDidMount() {
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getAllFals', {
-      uid: Backend.getUid(),
-    })
-    .then( (response) => {
 
-      var responseJson=response.data
-      //this.props.socialStore.setTek(responseJson.tek)
-      var sosyals=Array.from(responseJson.sosyals)
-      var gunluks=Array.from(responseJson.gunluks)
-      console.log("sosyals "+sosyals)
-      this.setState({gunluks:gunluks,sosyals:sosyals})
-
-    })
-    .catch(function (error) {
-      console.log(error)
-    });
-    /*
-    Backend.getLastMessages().then((snapshot) => {
-        if(snapshot.output.length==0){
-          this.setState({messages:[]})
-        }
-        else{
-            this.setState({messages:snapshot.output})
-        }
-        if(snapshot.aktif){
-          if(snapshot.aktif.read==false){
-            this.props.userStore.setAktifUnread(1)
-
-          }
-          this.setState({aktifChat:snapshot.aktif})
-        }
-
-    })*/
-    Backend.getBizden().then((snapshot) => {
-      if(snapshot){
-        var data = snapshot
-        var output =[]
-        for (var key in data) {
-            data[key].key = key;   // save key so you can access it from the array (will modify original data)
-            output.push(data[key]);
-        }
-        output.sort(function(b, a){
-            var keyA = new Date(a.createdAt),
-                keyB = new Date(b.createdAt);
-            // Compare the 2 dates
-            if(keyA < keyB) return -1;
-            if(keyA > keyB) return 1;
-            return 0;
-        })
-
-        var lastBizden = output[output.length-1]
-        if(lastBizden.read==false){
-              this.props.userStore.setBizdenUnread(1)
-        }
-
-        this.setState({lastBizden:lastBizden.text,notifications:output})
-      }
-
-    })
 
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler');
     falseverref.on('value',function(dataSnapshot){
         var falsevers=dataSnapshot.val()
+        var unreadCount=0
         var data = falsevers
         var output =[]
         for (var key in data) {
             data[key].fireID = key;
             output.push(data[key]);
             if(data[key].read==false){
-              this.props.userStore.increaseFalseverUnread(1)
+              unreadCount=unreadCount+1
+
             }
             if(moment().diff(data[key].createdAt,'days')>2){
               data[key].timePassed=true
@@ -246,10 +193,9 @@ export default class Mesajlar extends React.Component {
             if(keyA > keyB) return 1;
             return 0;
         })
+        this.props.socialStore.setFalseverUnread(unreadCount)
         this.setState({falsevers:output})
     }.bind(this))
-
-
   }
 
   componentDidUpdate(prevProps,prevState) {
@@ -264,7 +210,31 @@ export default class Mesajlar extends React.Component {
     }*/
   }
 
-  componentWillMount() {
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+    if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getAllFals', {
+        uid: Backend.getUid(),
+      })
+      .then( (response) => {
+
+        var responseJson=response.data
+        //this.props.socialStore.setTek(responseJson.tek)
+        var sosyals=Array.from(responseJson.sosyals)
+        var gunluks=Array.from(responseJson.gunluks)
+        console.log("sosyals "+sosyals)
+        this.setState({gunluks:gunluks,sosyals:sosyals})
+
+      })
+      .catch(function (error) {
+        console.log(error)
+      });
+    }
+    this.setState({appState: nextAppState});
 
   }
 
@@ -394,7 +364,9 @@ export default class Mesajlar extends React.Component {
     }
     else if (this.state.falsevers.length==0) {
       return(
-        null
+        <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+          <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:0,color:'black',padding:15,fontSize:16}}>Sohbetiniz bulunmamaktadır. Sosyal Panodaki falcılara mesaj göndererek sohbet başlatabilirsiniz!</Text>
+        </View>
       )
     }
     else{
@@ -442,31 +414,34 @@ export default class Mesajlar extends React.Component {
   renderAllSosyals = (props) => {
 
 
-      var sosyaller = this.state.sosyals
+      var sosyaller = this.props.socialStore.allSocials
       if(sosyaller){
       if(sosyaller.length>0){
         return (
-          <View style={{flex:1}}>
-          <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
-            <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>SOSYAL FALLARIN</Text>
-          </View>
+
           <FlatList
             data={sosyaller}
             keyExtractor={this._keyExtractor}
             renderItem={({item,index}) => this.renderSosyalItem(item,index)}
           />
-        </View>
 
         )
-        }
+      }
         else{
           return(
-          <ActivityIndicator
-            animating={true}
-            style={[styles.centering, {height: 80}]}
-            size="large"
-          />)
+            <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+              <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:0,color:'black',padding:15,fontSize:16}}>Hiç sosyal falın yok. Haydi ana sayfadan ilk sosyal falını paylaş!</Text>
+            </View>
+          )
         }
+      }
+      else{
+        return(
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />)
       }
   }
 
@@ -504,15 +479,16 @@ export default class Mesajlar extends React.Component {
 
 
          </View>
-         <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
-            {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+         <View style={{paddingRight:10,alignItems:'center',justifyContent:'flex-end',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
+           {item.unread==0 ? null:   <View style={{marginRight:15,height:22,width:22,borderRadius:11,backgroundColor:'red',alignSelf:'center',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{item.unread}</Text></View> }
+
             <Text style={{fontFamily: "SourceSansPro-Bold",
-  fontSize: 15,
-  fontWeight: "bold",
-  fontStyle: "normal",
-  letterSpacing: 0,
-  textAlign: "center",flexDirection:"row",
-  color: "#241466"}}>{item.comments?item.comments.length>5?<Text> ({item.comments.length}) <Text style={{fontSize:16}}>🔥</Text></Text>:"("+item.comments.length+")":0}</Text>
+              fontSize: 15,
+              fontWeight: "bold",
+              fontStyle: "normal",
+              letterSpacing: 0,
+              textAlign: "right",flexDirection:"row",
+              color: "#241466"}}>{"("+item.comments.length+")"}</Text>
          </View>
        </View>
 
@@ -525,32 +501,36 @@ export default class Mesajlar extends React.Component {
   renderAllGunluks = (props) => {
 
 
-      var sosyaller = this.state.gunluks
+      var sosyaller = this.props.socialStore.allGunluks
       if(sosyaller){
       if(sosyaller.length>0){
         return (
-          <View style={{flex:1}}>
-          <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
-            <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>GÜNLÜK FALLARIN</Text>
-          </View>
-          <FlatList
-            data={sosyaller}
-            keyExtractor={this._keyExtractor}
-            renderItem={({item,index}) => this.renderGunlukItem(item,index)}
-          />
-        </View>
+
+        <FlatList
+          data={sosyaller}
+          keyExtractor={this._keyExtractor}
+          renderItem={({item,index}) => this.renderGunlukItem(item,index)}
+        />
 
         )
         }
         else{
           return(
-          <ActivityIndicator
-            animating={true}
-            style={[styles.centering, {height: 80}]}
-            size="large"
-          />)
+            <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+              <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:0,color:'black',padding:15,fontSize:16}}>Hiç günlük falın yok. Haydi ana sayfadan ilk günlük falını paylaş!</Text>
+            </View>
+          )
         }
       }
+      else{
+        return(
+
+        <ActivityIndicator
+          animating={true}
+          style={[styles.centering, {height: 80}]}
+          size="large"
+        />)
+    }
   }
 
   renderGunlukItem = (item,index) => {
@@ -592,7 +572,7 @@ export default class Mesajlar extends React.Component {
 
          </View>
          <View style={{paddingRight:10,paddingLeft:20,alignItems:'center',justifyContent:'center',width:80,borderColor:'teal',flexDirection:'row'}}>
-            {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:24}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+            {item.unread==0 ? null:   <View style={{marginRight:15,height:22,width:22,borderRadius:11,backgroundColor:'red',alignSelf:'center',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>{item.unread}</Text></View> }
             <Text style={{fontFamily: "SourceSansPro-Bold",
   fontSize: 15,
   fontWeight: "bold",
@@ -698,15 +678,26 @@ export default class Mesajlar extends React.Component {
           tabBarUnderlineStyle={{backgroundColor:'rgb( 236, 196, 75)', borderColor: 'rgb( 236, 196, 75)'}}
           tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
          >
-         <ScrollView tabLabel='FALSEVER SOHBETLERİN' style={{flex:1,width:'100%'}}>
+
+         <ScrollView tabLabel={'FALLARIN ('+(this.props.socialStore.sosyalUnread+this.props.socialStore.gunlukUnread)+")"} style={{flex:1,width:'100%'}}>
+           <View style={{flex:1}}>
+             <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
+               <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>SOSYAL FALLARIN</Text>
+             </View>
+             {this.renderAllSosyals()}
+           </View>
+
+          <View style={{flex:1}}>
+            <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
+              <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>GÜNLÜK FALLARIN</Text>
+            </View>
+            {this.renderAllGunluks()}
+          </View>
+
+
+         </ScrollView>
+         <ScrollView tabLabel={'SOHBETLERİN ('+this.props.socialStore.falseverUnread+")"} style={{flex:1,width:'100%'}}>
           {this.renderFalsevers()}
-         </ScrollView>
-         <ScrollView tabLabel='FALLARIN' style={{flex:1,width:'100%'}}>
-          {this.renderAllSosyals()}
-          {this.renderAllGunluks()}
-         </ScrollView>
-         <ScrollView tabLabel='BİLDİRİMLERİN' style={{flex:1,width:'100%'}}>
-          {this.renderNotifications()}
          </ScrollView>
        </ScrollableTabView>
       </ImageBackground>

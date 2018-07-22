@@ -113,27 +113,34 @@ export default class GunlukFal extends React.Component {
   componentDidMount() {
     this.props.navigation.setParams({ showpopup: this.showpopup})
     const { params } = this.props.navigation.state;
+    //this.props.socialStore.setUnread(0)
     var id =Backend.getUid()
     if(params.fal){
       this.setState({fal:params.fal,comments:params.fal.comments})
+
+      if(params.fal.unread>0){
+        Backend.setGunlukRead(params.fal._id).then(()=>{
+          Backend.getAllFals().then( (response) => {
+             this.props.socialStore.setAllFals(response)
+          })
+        })
+      }
     }
     else if (params.falId) {
-      fetch('https://eventfluxbot.herokuapp.com/appapi/getGunluk', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          falid: params.falId,
-        })
-      })
-      .then((response) => response.json())
-       .then((responseJson) => {
 
-           this.setState({fal:responseJson,comments:responseJson.comments});
-       })
+      Backend.getGunluk(params.falId).then( (response) => {
+        if(response.unread>0){
+          Backend.setGunlukRead(params.falId).then(()=>{
+            Backend.getAllFals().then((response) => {
+               this.props.socialStore.setAllFals(response)
+            })
+          })
+        }
+        this.setState({fal:response,comments:response.comments});
+      })
     }
+
+
   }
 
   componentDidUpdate() {
@@ -447,7 +454,7 @@ export default class GunlukFal extends React.Component {
                   <View  key={index}>
                   <View style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
                     <View style={{marginLeft:comment.parentIndex?47:0}}>
-                        <TouchableOpacity style={{marginTop:17}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
+                        <TouchableOpacity style={{marginTop:17}} onPress={() => {this.props.navigation.navigate('User',{fireid:comment.fireID,profPhotos:comment.profile_pic})}}>
                           {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
                           <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
                         </TouchableOpacity>

@@ -451,7 +451,7 @@ export default class FalPaylas extends React.Component {
                 onChangeText={(text) =>{this.setState({pollInput1:text})}}
                 placeholder={"Örn. EVET"}
                 placeholderTextColor={'rgba(184,30,94,0.6)'}
-                style={{height:40,flex:1,marginRight:5,color:'blue',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+                style={{height:40,flex:1,marginRight:5,color:'red',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
               />
               <TextInput
                 maxLength={20}
@@ -459,7 +459,7 @@ export default class FalPaylas extends React.Component {
                 onChangeText={(text) =>{this.setState({pollInput2:text})}}
                 placeholder={"Örn. HAYIR"}
                 placeholderTextColor={'rgba(74,144,226,0.6)'}
-                style={{height:40,flex:1,marginLeft:5,color:'red',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
+                style={{height:40,flex:1,marginLeft:5,color:'blue',borderRadius: 4,padding:3,textAlign:'center',fontSize:14,backgroundColor:'white'}}
               />
             </View>
             <Text style={{color:'white',fontSize:10,marginTop:5}}>Not: Anket yapmak istemiyorsanız bu seçenekleri boş bırakabilirsiniz.</Text>
@@ -671,10 +671,10 @@ export default class FalPaylas extends React.Component {
       backgroundImage=require('../static/images/newImages/BG.png')
     }
     else if (this.state.super===1) {
-      backgroundImage=require('../static/images/sosyalbg.jpeg')
+      backgroundImage=require('../static/images/sosyalback.png')
     }
     else {
-      backgroundImage=require('../static/images/superbg.jpeg')
+      backgroundImage=require('../static/images/superback.png')
     }
 
     return (

@@ -449,7 +449,7 @@ export default class Leader extends React.Component {
            var profile_pic=null
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('User',{fireid:leader.fireID,profPhotos:leader.profile_pic})}}>
               <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
                   <Text style={styles.index}>{index+1+"."}</Text>
@@ -511,7 +511,7 @@ export default class Leader extends React.Component {
            var profile_pic=null
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('User',{fireid:leader.fireID,profPhotos:leader.profile_pic})}}>
               <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
                   <Text style={styles.index}>{index+1+"."}</Text>
@@ -572,7 +572,7 @@ export default class Leader extends React.Component {
            var profile_pic=null
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
-             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.showProfPopup(leader.fireID,leader.profile_pic)}}>
+             <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('User',{fireid:leader.fireID,profPhotos:leader.profile_pic})}}>
               <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
                   <Text style={styles.index}>{index+1+"."}</Text>

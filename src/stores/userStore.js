@@ -1,5 +1,6 @@
 import { observable,action,computed } from 'mobx';
 import Backend from '../Backend';
+import {AppState} from 'react-native';
 
 export default class UserStore {
   @observable user = null;
@@ -7,6 +8,8 @@ export default class UserStore {
   @observable userCredit= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
+  @observable gunlukUnread= 0;
+  @observable sosyalUnread= 0;
   @observable falseverUnread= 0;
   @observable sharedWeek= false;
   @observable aktifLastMessage= '';
@@ -18,6 +21,8 @@ export default class UserStore {
   @observable city= '';
   @observable dmBlocked= false;
   @observable gunlukUsed=false;
+  @observable isAdmin=false;
+
 
 
 
@@ -46,6 +51,10 @@ export default class UserStore {
     this.falseverUnread =this.falseverUnread+value
   }
 
+  @action setFalseverUnread(value) {
+    this.falseverUnread =value
+  }
+
   @action setSharedTrue() {
     this.sharedWeek =true
   }
@@ -71,6 +80,9 @@ export default class UserStore {
   }
   @action setGunlukUsedTrue() {
     this.gunlukUsed=true
+  }
+  @action setGunlukUnread(value) {
+    this.gunlukUnread=value
   }
 
   @action changeMeslek(value) {
@@ -126,7 +138,7 @@ export default class UserStore {
   }
 
   @computed get totalNoti() {
-        return this.falseverUnread+this.bizdenUnread + this.aktifUnread;
+        return this.falseverUnread+this.gunlukUnread + this.sosyalUnread;
   }
 
   @computed get meslek() {
@@ -215,6 +227,7 @@ export default class UserStore {
     this.city=user.city
     this.dmBlocked=user.dmBlocked
     this.sharedWeek=user.sharedToday
+    this.isAdmin=user.isAdmin
     if(user.lastMessage){
       this.aktifLastMessage=user.lastMessage.text
     }

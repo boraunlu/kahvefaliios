@@ -58,7 +58,25 @@ export default class Home extends React.Component {
 
         }
           //this._navigateTo('Greeting')
+          firebase.messaging().getToken()
+          .then(fcmToken => {
+            if (fcmToken) {
+              axios.post('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
+                uid: user.uid,
+                token: fcmToken
+              })
+              .then( (response) => {
 
+              })
+              .catch(function (error) {
+
+              });
+            } else {
+              // user doesn't have a device token yet
+            }
+          });
+
+          /*
              FCM.getFCMToken().then(token => {
 
                axios.post('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
@@ -88,7 +106,7 @@ export default class Home extends React.Component {
 
                  });
 
-             });
+             });*/
         //alert("hey");
       } else {
 

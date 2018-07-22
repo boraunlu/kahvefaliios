@@ -18,6 +18,7 @@ import {
   TouchableHighlight,
   Modal,
   RefreshControl,
+  AppState
 } from 'react-native';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -51,7 +52,8 @@ function replaceGecenHafta(str) {
 
 function generatefalcisayisi() {
   var saat = moment().hour()
-  var gun = moment().day()%3
+  var gun = 2
+  if(moment().weekday()>4){gun=4}
   var dk = moment().minute()%10
   var falcisayisi= 5
   if(saat>7&&saat<11){
@@ -60,17 +62,17 @@ function generatefalcisayisi() {
   if(saat>10&&saat<16){
     falcisayisi=6+gun
   }
-  if(saat>15&&saat<22){
-    falcisayisi=8+gun
+  if(saat>15&&saat<20){
+    falcisayisi=7+gun
   }
   if(saat>21&&saat<25){
-    falcisayisi=5+gun
+    falcisayisi=8+gun
   }
   if(saat<4){
-    falcisayisi=2+gun
+    falcisayisi=5+gun
   }
   if(saat>3&&saat<8){
-    falcisayisi=1+gun
+    falcisayisi=2+gun
   }
   return falcisayisi*40+dk
 }
@@ -95,7 +97,8 @@ export default class Social extends React.Component {
       cameraVisible: false,
       spinnerVisible:false,
       refreshing: false,
-      marquee:""
+      marquee:"",
+      appState: AppState.currentState
   };
 }
 
@@ -163,6 +166,7 @@ export default class Social extends React.Component {
 
 
   componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
     this.props.navigation.setParams({ showpopup: this.showpopup  })
 
     axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
@@ -178,23 +182,7 @@ export default class Social extends React.Component {
       var commenteds=Array.from(responseJson.commenteds)
       this.props.socialStore.setCommenteds(commenteds)
 
-/*
-      var commenteds=[]
-      var id = Backend.getUid()
-      for (var i = 0; i < sosyals.length; i++) {
-        var sosyal = sosyals[i]
-        var comments=sosyal.comments
-        if(comments.length>0){
 
-          for (var x = 0; x < comments.length; x++) {
-            if(comments[x].fireID==id){
-              commenteds.push(sosyal)
-              break;
-            }
-          }
-        }
-      }
-      this.props.socialStore.setCommenteds(commenteds)*/
     })
     .catch(function (error) {
 
@@ -210,6 +198,15 @@ export default class Social extends React.Component {
 
    this.keyboardDidShowListener.remove();
    this.keyboardDidHideListener.remove();
+   AppState.removeEventListener('change', this._handleAppStateChange);
+
+   }
+
+   _handleAppStateChange = (nextAppState) => {
+     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+       this._onRefresh()
+     }
+     this.setState({appState: nextAppState});
 
    }
 
@@ -386,17 +383,17 @@ export default class Social extends React.Component {
                        </View>
                    }
 
-                 <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
-                  {this.props.userStore.aktifUnread<1
-                    ?
-                    <Icon name="angle-right" color={'gray'} size={20}/>
-                    :
-                    <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
-                      <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
-                      <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center',position:'absolute',top:1,right:11}}>1</Text>
-                    </View>
-                  }
-                 </View>
+                   <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                    {tek.unread==0
+                      ?
+                      <Icon name="angle-right" color={'gray'} size={20}/>
+                      :
+                      <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                        <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                        <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{tek.unread}</Text>
+                      </View>
+                    }
+                   </View>
                </View>
               </TouchableOpacity>
             </View>

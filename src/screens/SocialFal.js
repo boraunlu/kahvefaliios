@@ -13,10 +13,13 @@ import {
   ActivityIndicator,
   Alert,
   Dimensions,
-    ImageBackground,
-  Share
+  ImageBackground,
+  Share,
+  Flatlist,
+  AppState
 } from 'react-native';
 import axios from 'axios';
+import ScrollableTabView, { DefaultTabBar,  ScrollableTabBar,  } from 'react-native-scrollable-tab-view';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
 import Backend from '../Backend';
@@ -64,7 +67,9 @@ export default class SocialFal extends React.Component {
       voters1:[],
       voters2:[],
       votedFor:false,
-      expired:false
+      expired:false,
+      commentLikes:null,
+      appState: AppState.currentState
   };
 }
 
@@ -78,27 +83,15 @@ export default class SocialFal extends React.Component {
 
   componentDidMount() {
     const { params } = this.props.navigation.state;
-
+    AppState.addEventListener('change', this._handleAppStateChange);
 
     if(params.fal){
       this.setFal(params.fal)
     }
     else if (params.falId) {
-      fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          falid: params.falId,
-        })
+      Backend.getSosyal(params.falId).then( (response) => {
+          this.setFal(response)
       })
-      .then((response) => response.json())
-       .then((responseJson) => {
-
-           this.setFal(responseJson)
-       })
     }
   }
 
@@ -114,6 +107,31 @@ export default class SocialFal extends React.Component {
  componentWillUnmount () {
    this.keyboardDidShowListener.remove();
    this.keyboardDidHideListener.remove();
+   AppState.removeEventListener('change', this._handleAppStateChange);
+ }
+
+ _handleAppStateChange = (nextAppState) => {
+   if(this.state.fal){
+     if (this.state.appState.match(/inactive|background/) && nextAppState === 'active') {
+       fetch('https://eventfluxbot.herokuapp.com/appapi/getSosyal', {
+         method: 'POST',
+         headers: {
+           'Accept': 'application/json',
+           'Content-Type': 'application/json',
+         },
+         body: JSON.stringify({
+           falid: this.state.fal._id,
+         })
+       })
+       .then((response) => response.json())
+        .then((responseJson) => {
+
+            this.setFal(responseJson)
+        })
+     }
+     this.setState({appState: nextAppState});
+   }
+
  }
 
  _keyboardDidShow = (e) => {
@@ -127,6 +145,7 @@ export default class SocialFal extends React.Component {
  }
 
  setFal = (fal) => {
+
    this.setState({fal:fal,comments:fal.comments})
    var id =Backend.getUid()
    var simdi=moment()
@@ -157,9 +176,26 @@ export default class SocialFal extends React.Component {
        }
      }
    }
-   if(id==fal.fireID||id=='lSSzczH3UcPLL0C9A7rQgbSWkay2'){
+   if(id==fal.fireID){
+
      this.setState({falowner:true,votedFor:true})
+     if(fal.unread>0){
+       Backend.setSosyalRead(fal._id).then(()=>{
+         Backend.getAllFals().then( (response) => {
+            this.props.socialStore.setAllFals(response)
+         })
+       })
+
+     }
+
    }
+
+   if(this.props.userStore.isAdmin){
+     this.setState({falowner:true})
+
+   }
+
+
  }
 
  startChat = (falsever,seviye) => {
@@ -304,7 +340,7 @@ export default class SocialFal extends React.Component {
     this.popupDialog.show()
     this.setState({profinfo:null})
 
-    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
+    axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
       uid: fireid,
     })
     .then( (response) => {
@@ -382,7 +418,7 @@ export default class SocialFal extends React.Component {
   addComment = () => {
     const { params } = this.props.navigation.state;
     var index = params.index
-    if(this.state.commentInput.length<40){
+    if(this.state.commentInput.length<40&&!this.state.replyingTo){
       Alert.alert("Kısa Yorum","Lütfen daha uzun ve detaylı yorumlayın.")
     }
     else {
@@ -489,6 +525,10 @@ export default class SocialFal extends React.Component {
     });
   }
 
+  showLikesPopup = (comment)=>{
+    this.setState({commentLikes:comment})
+    this.popupDialog2.show();
+  }
 
     deleteComment = (index) => {
       Alert.alert(
@@ -594,29 +634,13 @@ export default class SocialFal extends React.Component {
               }
               dislikecount=comment.dislikes.length
             }
-            {/*
-            if(dislikecount>4){
-              return(
-                      <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:'#F2F1F3',borderColor:'gray'}}>
-                        <View style={{marginLeft:comment.parentIndex?47:0}}>
-                          <TouchableOpacity style={{marginTop:17}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
-                            <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
-                          </TouchableOpacity>
-                          <View style={{position:'absolute',top:56,left:45,elevation:2,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
-                        </View>
-                        <View style={{padding:10,flex:2}}>
-                          <Text style={{fontWeight:'normal',textAlign:'center',padding:20,fontStyle:'italic',fontSize:12}}>
-                            Bu yorum olumsuz tepki aldığı için yayından kaldırılmıştır
-                          </Text>
-                        </View>
-                      </View>
-                  )
-            }*/}
 
               return (
                 <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
                   <View style={{marginLeft:comment.parentIndex?47:0}}>
-                      <TouchableOpacity style={{marginTop:17}} onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}}>
+                      <TouchableOpacity style={{marginTop:17}}
+                        onPress={() => {this.props.navigation.navigate('User',{fireid:comment.fireID,profPhotos:comment.photoURL})}}
+                        >
                         {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
                         <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
                       </TouchableOpacity>
@@ -659,10 +683,15 @@ export default class SocialFal extends React.Component {
                         {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
                         <Text style={{marginLeft:4}}>{likecount}</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
+                      <TouchableOpacity style={{marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
                         {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
                         <Text style={{marginLeft:4}}>{dislikecount}</Text>
                       </TouchableOpacity>
+                      <TouchableOpacity style={{marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.showLikesPopup(comment)}}>
+
+                        <Text style={{marginLeft:4,textDecorationLine:'underline'}}>{likecount+dislikecount>=1&& likecount+dislikecount+" kişi"}</Text>
+                      </TouchableOpacity>
+
                     </View>
                   </View>
                   {this.renderCommentDelete(index)}
@@ -680,11 +709,190 @@ export default class SocialFal extends React.Component {
     else{
       return(
         <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-          <Text style={{textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+          <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
         </View>
       )
     }
   }
+
+  renderLike=()=>{
+
+    return(<View style={{flex:1}}>
+
+     {this.state.commentLikes.likesNew&&this.state.commentLikes.likesNew.map((x,index)=>{
+       var _seviye = 1
+       var limit =20
+       var gosterilenpuan=x.seviye
+       var unvan = "Yeni Falsever"
+       var kolor="#ffd967"
+       if (x.seviye>20&&x.seviye<51){
+         _seviye = 2
+         limit = 30
+         gosterilenpuan=x.seviye-20
+         unvan = "Falsever"
+         kolor='rgb(60,179,113)'
+       }else if (x.seviye>50&&x.seviye<101) {
+         _seviye = 3
+         limit = 50
+         gosterilenpuan=x.seviye-50
+         unvan = "Deneyimli Falsever"
+         kolor='rgb(114,0,218)'
+       }else if (x.seviye>100&&x.seviye<176) {
+         _seviye = 4
+         limit = 75
+         gosterilenpuan=x.seviye-100
+         unvan = "Fal Uzmanı"
+         kolor='rgb(0,185,241)'
+       }
+       else if (x.seviye>175) {
+         _seviye = 5
+         limit = 12500
+         gosterilenpuan=x.seviye
+         unvan = "Fal Profesörü"
+         kolor='rgb(249,50,12)'
+       }
+          return(
+
+        <TouchableOpacity onPress={() => {this.props.navigation.navigate('User',{fireid:x.fireID,profPhotos:x.profile_pic})}} key={index} style={{marginLeft:0,flexDirection:'row',justifyContent:'flex-start',alignContent:"center",borderBottomWidth:1,backgroundColor:'#F9F8F9',borderColor:'gray'}}>
+        <View style={{marginTop:1}}>
+
+          {x.profile_pic?
+          <Image source={{uri:x.profile_pic}} style={styles.falciAvatar}/>
+          : x.gender=="female"?
+          <Image source={require('../static/images/femaleAvatar.png')} style={styles.falciAvatar}/>
+    :
+          <Image source={require('../static/images/maleAvatar.png')} style={styles.falciAvatar}/>
+        }
+
+      </View>
+      <View style={{position:'absolute',top:36,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{_seviye?_seviye:1}</Text></View>
+       <View>
+       {x.fireID==this.state.fal.fireID?
+       <Text style={{position:"absolute",top:5,left:14,elevation:2,fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
+       <Text style={{  fontFamily: "SourceSansPro-Bold",
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        fontStyle: "normal",
+                        letterSpacing: 0,
+                        textAlign: "left",marginTop:18,marginLeft:14,
+                        color: "#000000",}}>
+          {x.name} </Text>
+
+       </View>
+     </TouchableOpacity>)
+
+      })}
+      </View>
+  )
+ }
+ renderDislike=()=>{
+
+   return(
+     <View style={{flex:1}}>
+{/* <Text>dislikes:{this.state.commentLikes.dislikesNew&&JSON.stringify(this.state.commentLikes.dislikesNew)}</Text> */}
+{this.state.commentLikes.dislikesNew&&this.state.commentLikes.dislikesNew.map((x,index)=>{
+  var _seviye = 1
+  var limit =20
+  var gosterilenpuan=x.seviye
+  var unvan = "Yeni Falsever"
+  var kolor="#ffd967"
+  if (x.seviye>20&&x.seviye<51){
+    _seviye = 2
+    limit = 30
+    gosterilenpuan=x.seviye-20
+    unvan = "Falsever"
+    kolor='rgb(60,179,113)'
+  }else if (x.seviye>50&&x.seviye<101) {
+    _seviye = 3
+    limit = 50
+    gosterilenpuan=x.seviye-50
+    unvan = "Deneyimli Falsever"
+    kolor='rgb(114,0,218)'
+  }else if (x.seviye>100&&x.seviye<176) {
+    _seviye = 4
+    limit = 75
+    gosterilenpuan=x.seviye-100
+    unvan = "Fal Uzmanı"
+    kolor='rgb(0,185,241)'
+  }
+  else if (x.seviye>175) {
+    _seviye = 5
+    limit = 12500
+    gosterilenpuan=x.seviye
+    unvan = "Fal Profesörü"
+    kolor='rgb(249,50,12)'
+  }
+     return(<TouchableOpacity    onPress={() => {this.props.navigation.navigate('User',{fireid:x.fireID,profPhotos:x.profile_pic})}} key={index} style={{marginLeft:0,flexDirection:'row',justifyContent:'flex-start',alignContent:"center",borderBottomWidth:1,backgroundColor:'#F9F8F9',borderColor:'gray'}}>
+   <View style={{marginTop:1}}>
+
+     {x.profile_pic?
+     <Image source={{uri:x.profile_pic}} style={styles.falciAvatar}/>
+     : x.gender=="female"?
+     <Image source={require('../static/images/femaleAvatar.png')} style={styles.falciAvatar}/>
+:
+     <Image source={require('../static/images/maleAvatar.png')} style={styles.falciAvatar}/>
+   }
+
+ </View>
+ <View style={{position:'absolute',top:36,elevation:2,left:45,backgroundColor:"red",borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{_seviye?_seviye:1}</Text></View>
+<View>
+{x.fireID==this.state.fal.fireID?
+<Text style={{position:"absolute",top:5,left:14,elevation:2,fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
+<Text style={{  fontFamily: "SourceSansPro-Bold",
+                 fontSize: 18,
+                 fontWeight: "bold",
+                 fontStyle: "normal",
+                 letterSpacing: 0,
+                 textAlign: "left",marginTop:18,marginLeft:14,
+                 color: "#000000",}}>
+   {x.name} </Text>
+
+</View></TouchableOpacity>)
+
+})}
+     </View>
+   )
+ }
+
+ renderLikes = () =>{
+   if(this.state.commentLikes){
+     var profile_picture=require('../static/images/maleAvatar.png')
+     return(
+       <View>
+
+       <View style={{flex:1,width:'100%'}}>
+
+           <ScrollableTabView
+             style={{flex:1,width:'100%',height:1500}}
+             tabBarActiveTextColor='rgb(250, 249, 255)'
+             tabBarBackgroundColor='#241466'
+             tabBarInactiveTextColor='rgb( 118, 109, 151)'
+             tabBarUnderlineStyle={{backgroundColor:'rgb( 236, 196, 75)', borderColor: 'rgb( 236, 196, 75)'}}
+             tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
+             initialPage={0}
+             renderTabBar={() => <DefaultTabBar />}
+            >
+              <View      style={{flex:1,width:"100%"}}     tabLabel='Beğenenler' >
+               {/* <Text>likes:{this.state.commentLikes.likesNew&&JSON.stringify(this.state.commentLikes.likesNew)}</Text>  */}
+              {this.renderLike()}
+
+             </View>
+              <View     style={{flex:1}}      tabLabel='Beğenmeyenler'>
+             {/* {this.state.commentLikes.dislikesNew&&<Text>dislikes:{this.state.commentLikes.dislikesNew&&JSON.stringify(this.state.commentLikes.dislikesNew)}</Text>} */}
+             {this.renderDislike()}
+             </View>
+            </ScrollableTabView>
+            <View style={{flex:1,backgroundColor:"black"}}></View>
+         </View>
+
+     </View>
+   )}
+   else {
+     return(<ActivityIndicator/>)
+   }
+
+ }
+
 
 
   renderYorumYap = () => {
@@ -695,6 +903,8 @@ export default class SocialFal extends React.Component {
        var hours=b.diff(a, 'hours')
        var minutes=b.diff(a, 'minutes')
        minutes=minutes%60
+       hours<0?hours=0:null
+       minutes<0?minutes=0:null
        return(
          <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
            {"Panoda kalan süreniz: "+hours+" saat, "+minutes+" dk"}
@@ -1210,7 +1420,9 @@ export default class SocialFal extends React.Component {
 
 
               <View style={{alignItems:'flex-start',flexDirection:'row',backgroundColor:'#f7f7f7',justifyContent:'flex-start',borderColor:'gray',borderBottomWidth:0,paddingTop:8, height: 78}}>
-                <TouchableOpacity style={{}} onPress={()=>{this.showProfPopup(this.state.fal.fireID,this.state.fal.profile_pic)}}>
+                <TouchableOpacity style={{}}
+                                  onPress={() => {this.props.navigation.navigate('User',{fireid:this.state.fal.fireID,profPhotos:this.state.fal.profile_pic})}}
+                  >
                   <Image source={profile_pic} style={styles.falciAvatar}></Image>
                 </TouchableOpacity>
                 <View style={{paddingTop:10,paddingLeft:2}}>
@@ -1350,6 +1562,20 @@ export default class SocialFal extends React.Component {
              </ScrollView>
            </View>
          </PopupDialog>
+
+         <PopupDialog
+         dialogStyle={{marginTop:-140}}
+         width={0.9}
+         height={0.68}
+         ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}
+         >
+           <View style={{flex:1}}>
+             <ScrollView style={{padding:0,flex:1}}>
+              {this.renderLikes()}
+            </ScrollView>
+           </View>
+         </PopupDialog>
+
          <PopupDialog
           dialogStyle={{marginTop:-100,borderRadius:4}}
           width={0.9}
@@ -1425,7 +1651,7 @@ export default class SocialFal extends React.Component {
                style={{height:this.state.keyboardHeight>0?80:38,borderRadius:4,borderColor: "#37208e", borderWidth: 1,flex:1,padding:3,backgroundColor:'white'}}
              />
              <TouchableOpacity style={{padding:5,paddingLeft:15,justifyContent:'center'}} onPress={()=>{this.addComment()}}>
-               {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',top:0}}>{this.state.commentInput.length+"/800"}</Text>:null}
+               {this.state.keyboardHeight>0?<Text style={{fontSize:10,position:'absolute',color:'white',fontFamily:'SourceSansPro-Regular',top:0}}>{this.state.commentInput.length+"/800"}</Text>:null}
                <Text style={{  fontFamily: "SourceSansPro-Regular",
                  fontSize: 16,
                  fontWeight: "600",

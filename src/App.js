@@ -24,6 +24,7 @@ import Greeting from './screens/Greeting';
 import Kimiz from './screens/Kimiz';
 import Mesajlar from './screens/Mesajlar';
 import Swipers from './screens/Swipers';
+import User from './screens/User';
 import Profil from './screens/Profil';
 import FalPuan from './screens/FalPuan';
 import FalPaylas from './screens/FalPaylas';
@@ -75,6 +76,7 @@ let KahvefaliappNav = StackNavigator({
     FalPuan: {screen:FalPuan},
     FalPaylas: {screen:FalPaylas},
     Leader: {screen:Leader},
+    User: {screen:User}
 },{
   navigationOptions:{
     headerStyle:{

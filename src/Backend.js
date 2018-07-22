@@ -749,8 +749,8 @@ loadMessages = (callback) => {
             },
             body: JSON.stringify({
               toid: falsever.fireID,
-              text: message[i].text,
-              senderisim:message[i].user.name,
+              text:message[i].text,
+              falsever:message[i].user,
               type:"text"
             })
           })
@@ -1158,6 +1158,25 @@ loadMessages = (callback) => {
     })
   }
 
+  getAllFals = () => {
+    return new Promise((resolve, reject) => {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getAllFals', {
+        uid: this.uid,
+      })
+      .then( (response) => {
+
+        var responseJson=response.data
+
+        resolve(responseJson)
+
+
+      })
+      .catch(function (error) {
+        reject(error)
+      });
+    })
+  }
+
   superle = (falId) => {
     fetch('https://eventfluxbot.herokuapp.com/appapi/superle', {
       method: 'POST',
@@ -1168,6 +1187,78 @@ loadMessages = (callback) => {
       body: JSON.stringify({
         falId: falId,
       })
+    })
+  }
+
+  blockUser = (falseverId) => {
+    var deleteref2 =  firebase.database().ref('messages/'+this.getUid()+'/falsever/bilgiler/'+falseverId);
+      deleteref2.remove()
+      var deleteref =  firebase.database().ref('messages/'+this.getUid()+'/falsever/mesajlar/'+falseverId);
+        deleteref.remove()
+        var deleteref3 =  firebase.database().ref('messages/'+falseverId+'/falsever/bilgiler/'+this.getUid());
+          deleteref3.remove()
+          var deleteref4 =  firebase.database().ref('messages/'+falseverId+'/falsever/mesajlar/'+this.getUid());
+            deleteref4.remove()
+    fetch('https://eventfluxbot.herokuapp.com/appapi/blockUser', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        falseverId: falseverId,
+        fireID:this.getUid()
+      })
+    })
+  }
+
+  setGunlukRead = (falId) => {
+    return new Promise((resolve, reject) => {
+      fetch('https://eventfluxbot.herokuapp.com/appapi/setGunlukRead', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          falId: falId,
+
+        })
+      })
+      .then( (response) => {
+
+        resolve(response)
+
+
+      })
+      .catch(function (error) {
+        reject(error)
+      });
+    })
+  }
+
+  setSosyalRead = (falId) => {
+    return new Promise((resolve, reject) => {
+      fetch('https://eventfluxbot.herokuapp.com/appapi/setSosyalRead', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          falId: falId,
+
+        })
+      })
+      .then( (response) => {
+
+        resolve(response)
+
+
+      })
+      .catch(function (error) {
+        reject(error)
+      });
     })
   }
 
