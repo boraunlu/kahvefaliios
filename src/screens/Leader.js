@@ -639,7 +639,7 @@ export default class Leader extends React.Component {
          <ScrollView tabLabel='HAFTALIK YARIŞMA' style={{flex:1,width:"100%"}}>
           {this.renderWeeks()}
          </ScrollView>
-         <ScrollView  tabLabel='GEÇEN HAFTANIN KAZANANLARI'  style={{flex:1,width:"100%"}}>
+         <ScrollView  tabLabel='GEÇEN HAFTA'  style={{flex:1,width:"100%"}}>
           {this.renderWeekResults()}
          </ScrollView>
          <ScrollView tabLabel='TÜM ZAMANLAR' style={{flex:1,width:"100%"}}>

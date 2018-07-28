@@ -14,6 +14,7 @@ export default class SocialStore {
   @observable falseverUnread= 0;
   @observable sosyalUnread = 0;
   @observable gunlukUnread = 0;
+  @observable activeFalsevers = []
 
 
 
@@ -112,7 +113,9 @@ export default class SocialStore {
   @action setFalseverUnread(value) {
     this.falseverUnread =value
   }
-
+  @action setActiveFalsevers(falsevers) {
+    this.activeFalsevers=falsevers
+  }
   @computed get totalNoti() {
         return this.falseverUnread+this.sosyalUnread + this.gunlukUnread;
   }

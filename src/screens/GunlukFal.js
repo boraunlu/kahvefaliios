@@ -500,7 +500,7 @@ export default class GunlukFal extends React.Component {
           <View style={{backgroundColor:'#241466',padding:20}}>
 
             <TouchableOpacity  onPress={() => {this.sendtoSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
-              <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>SORU SOR VE DAHA FAZLA YORUM AL    </Text>
+              <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>SORU SOR VE DİĞER FALCILARDAN YORUM AL    </Text>
               <Icon name="share" color={'white'} size={15} />
             </TouchableOpacity>
 

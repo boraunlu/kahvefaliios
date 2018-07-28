@@ -53,7 +53,7 @@ export default class FalPuan extends React.Component {
 
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
         <ScrollView>
-          <Image style={{alignSelf:'center',height:60,width:60, borderRadius:30,marginTop:20,marginBottom:10}} source={require('../static/images/anneLogo3.png')}></Image>
+          <Image style={{alignSelf:'center',height:60,width:60, borderRadius:30,marginTop:20,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
           <View style={styles.containers}>
             <Text style={styles.textTitle}>
               Fal Puan Nasıl Kazanılır?{"\n"}

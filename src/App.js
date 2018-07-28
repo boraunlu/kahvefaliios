@@ -28,6 +28,9 @@ import User from './screens/User';
 import Profil from './screens/Profil';
 import FalPuan from './screens/FalPuan';
 import FalPaylas from './screens/FalPaylas';
+import Oneri from './screens/Oneri';
+import JoinTeam from './screens/JoinTeam';
+import TermsofUse from './screens/TermsofUse';
 import Leader from './screens/Leader';
 
 import { StackNavigator, TabNavigator,addNavigationHelpers } from 'react-navigation';
@@ -57,6 +60,7 @@ const MainScreenNavigator = TabNavigator({
   tabBarOptions: {
    activeTintColor: 'rgb(36, 20, 102)',
  },
+ lazy:false
 
 });
 
@@ -65,6 +69,9 @@ let KahvefaliappNav = StackNavigator({
     Login: { screen: Login },
     Greeting: { screen: MainScreenNavigator },
     Kimiz: { screen: Kimiz },
+    JoinTeam: { screen: JoinTeam },
+    TermsofUse: { screen: TermsofUse },
+    Oneri: {screen:Oneri},
     Chat: {screen:Chat},
     ChatOld: {screen:ChatOld},
     ChatBizden: {screen:ChatBizden},

@@ -393,9 +393,9 @@ export default class FalPaylas extends React.Component {
               Maksimum yorum, maksimum sohbet!
             </Text>
             <Animatable.Text   animation="pulse" easing="ease-out" iterationCount="infinite" style={[styles.faltypeyazikucukpopup]}>
+              {'\u2022'} Falınız 3 gün süre ile panoda kalır
               {'\u2022'} Minimum 20 yorum gelmezse krediniz iade{"\n"}
               {'\u2022'} Falınız panonun hep en üst bölümünde kalır{"\n"}
-              {'\u2022'} Falınız 3 gün süre ile panoda kalır
             </Animatable.Text>
           </View>
         )

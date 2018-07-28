@@ -23,7 +23,7 @@ import Backend from '../Backend';
 import UserData from '../components/UserData';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import PopupDialog, { DialogTitle } from 'react-native-popup-dialog';
+import PopupDialog, { DialogTitle ,  SlideAnimation } from 'react-native-popup-dialog';
 import Picker from 'react-native-picker';
 import Spinner from 'react-native-loading-spinner-overlay';
 import CameraRollPicker from 'react-native-camera-roll-picker';
@@ -37,13 +37,9 @@ import RadioForm, {RadioButton, RadioButtonInput, RadioButtonLabel} from 'react-
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 
-var radio_props = [
-  {label: 'Falıma bakılmadı', value: 0 },
-  {label: 'Falların içeriğini beğenmedim', value: 1 },
-  {label: 'Uygulamanın dizaynını beğenmedim', value: 2 },
-  {label: 'Reklam İzleyemiyorum', value: 3 },
-  {label: 'Diğer', value: 4 },
-];
+const slideAnimation = new SlideAnimation({
+slideFrom: 'left',
+});
 
 @inject("userStore")
 @observer
@@ -62,17 +58,42 @@ export default class Profil extends React.Component {
       pickerVisible: false,
       cameraVisible: false,
       spinnerVisible:false,
+      drawerVisible:false,
   };
 }
 
 
-  static navigationOptions = {
-      title: 'Profilin',
-      tabBarLabel: 'Profil',
-       tabBarIcon: ({ tintColor }) => (
-         <Icon name="user" color={tintColor} size={25} />
-       ),
-    };
+static navigationOptions =({ navigation }) =>  ({
+  title: 'Profilin',
+   headerLeft:<Icon
+   raised
+
+   name='navicon'
+   type='font-awesome'
+   color='#241466'
+   size={28}
+   style={{width:28,height:28,marginLeft:15,}}
+   onPress={()=>{navigation.state.params.openDrawer()} }/>
+   ,
+   headerRight:<View></View>,
+   headerStyle: {
+     backgroundColor:'white',
+     height: 46
+
+   },
+   headerTitleStyle: {
+     position:"absolute",fontWeight: 'bold',
+     fontSize:18,
+     textAlign: "center",
+     color: "#241466",
+ textAlign:'center',alignSelf: 'center'
+   },
+   tabBarLabel: 'Profil',
+    tabBarIcon: ({ tintColor }) => (
+      <Icon name="user" color={tintColor} size={25} />
+    ),
+
+  });
 
 
 
@@ -329,9 +350,24 @@ export default class Profil extends React.Component {
     Picker.show()
   }
 
+  OpenDrawer =  () => {
+    if(this.state.drawerVisible===true){
+      this.popupDialog.dismiss()
+      this.setState({
+      drawerVisible: false
+      })
+          }else{
+
+            this.popupDialog.show();
+            this.setState({
+              drawerVisible: true
+            })
+          }
+        }
+
 
   componentDidMount() {
-
+     this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })
     var user = firebase.auth().currentUser;
 
     if(user.photoURL){
@@ -480,26 +516,7 @@ export default class Profil extends React.Component {
 
           {/* Profile Page Buttons */}
 
-          <View style={{flex:1,marginBottom:10,marginTop:35,paddingRight:23,paddingLeft:23}}>
-
-            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}   onPress={() => {this.props.navigation.navigate('Kimiz')}}>
-              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"BİZ KİMİZ?"}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog2.show()}}>
-              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÖNERİ & ŞİKAYET"}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog3.show()}}>
-              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"EKİBİMİZE KATIL"}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30}}  onPress={() => {this.popupDialog.show()}}>
-              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"KULLANIM KOŞULLARI"}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={{marginBottom:7,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30,marginBottom:14}}  onPress={() => {this.logout()}}>
-              <Text style={{paddingTop:3,fontSize:14,flex:1,color: '#ffffff',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÇIKIŞ YAP"}</Text>
-            </TouchableOpacity>
-
-
-          </View>
+      
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <Modal
             animationType={'slide'}
@@ -531,106 +548,40 @@ export default class Profil extends React.Component {
             />
           </Modal>
         </ScrollView>
-
         <PopupDialog
-         dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Kullanım Koşulları" />}
-         dialogStyle={{marginTop:-250}}
-         width={0.9}
-         height={0.6}
-         ref={(popupDialog) => { this.popupDialog = popupDialog; }}
-         >
-           <View style={{flex:1}}>
-           <ScrollView style={{padding:10}}>
-             <Text style={{textAlign:'justify'}}>
-               ·  İş bu kullanım şartları Kahve Falı Sohbeti uygulamasının kullanım şartlarını içermektedir.{"\n"}
+        //dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title=" " />}
+        dialogStyle={{alignSelf:"flex-start",borderRadius:0}}
+        width={0.7}
+        height={1}
+        ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+        dialogAnimation={slideAnimation}
+      >
+      <View style={{flex:1}}>
+      <View style={{flex:1,marginBottom:10,marginTop:15,paddingRight:23,paddingLeft:23}}>
+        <Image style={{alignSelf:'center',height:80,width:80, borderRadius:0,marginTop:0,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
+        <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('Oneri')}}>
+          <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FİKİR VER, KAZAN"}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+          <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FAL PUAN"}</Text>
+        </TouchableOpacity>
+         <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('Kimiz')}}>
+           <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"BİZ KİMİZ?"}</Text>
+         </TouchableOpacity>
+         <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('JoinTeam')}}>
+           <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"EKİBİMİZE KATIL"}</Text>
+         </TouchableOpacity>
+         <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('TermsofUse')}}>
+           <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"KULLANIM KOŞULLARI"}</Text>
+         </TouchableOpacity>
+         <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30,marginBottom:14}}  onPress={() => {this.logout()}}>
+           <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÇIKIŞ YAP"}</Text>
+         </TouchableOpacity>
+        <Text style={{paddingTop:15,fontSize:12,flex:1,color: 'gray',textAlign: 'center',fontFamily:'SourceSansPro-Italic'}}>Uygulamada yaşadığınız her türlü problemi <Text style={{textDecorationLine:'underline'}}>info@kahvefalisohbeti.com</Text> adresine e-mail yoluyla iletebilirsiniz</Text>
 
-               ·  Kahve Falı Sohbeti uygulamasındaki yorumlar yorumcuların hayal gücü ile üretilmiş olup gelecek ile ilgili tahminleri paylaşma amaçlı olsa da gerçeği yansıtmamaktadır.
-
-               ·  Kahve Falı Sohbeti uygulamasındaki amaç sohbet ve eğlence amaçlı olarak yorumcuların kişisel yorumlarıyla oluşturdukları içerikleden oluşmaktadır ve bu yorumlar 18 yaşından küçükler için sakıncalı olabilir.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulamasındaki yorumcuların kişisel yorumlarından doğabilecek sonuçlardan Kahve Falı Sohbeti kesinlikle sorumlu değildir.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulaması fincan fotoğrafı gönderme bölümünde fincan fotoğrafının haricinde başka fotoğraf gönderen kullanıcıların üyeliklerini iptal etme hakkını saklı tutar.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulaması, kullanıcıların kişilik haklarına ve gizliliklerine saygılıdır. Koşullardaki maddelerde, kullanıcıların kendi isteği veya yetkili mercilerin talebi haricinde kullanıcıların bilgilerini gizili tutacağını taahhüt eder.{"\n"}
-
-               ·  Kahve Falı Sohbeti sitesinde kesinlikle büyü, hurafe vb. ile ilgili içerik ve tavsiye,öneri gibi yazılar, resimler, öneriler bulunmamaktadır,bulunamaz ve bulundurulmasına izin verilmez.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulamasını kullanan tüm kullanıcılar bu koşulları kabul ettiğini taahhüt eder.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulaması üyelerin bilgilerini, yasal mercilerden resmi bir istek gelmesi haricinde gizli tutacağını taahüt eder.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulamasının üyeleri bilgilerini istedikleri zaman düzenleyebilirler. Kullanım koşullarına uymayan bilgileri yönetim istediği zaman silme hakkına veya o üyenin üyeliğini iptal etme hakkına sahiptir.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulamasının üyeleri istedikleri zaman üyeliklerini iptal edebilirler.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulamasının üyeleri uygulama ile ilgili her türlü problemi <Text style={{fontWeight:'bold'}}>info@kahvefalisohbeti.com</Text> adresine e-posta göndererek bildirebilir. Kahve Falı Sohbeti, oluşacak sorunları en iyi niyetiyle çözmek için garanti verir.{"\n"}
-
-               ·  Kahve Falı Sohbeti uygulaması bu metindeki içeriği istediği zaman değiştirebileceğini beyan eder.{"\n"}
-             </Text>
-           </ScrollView>
-           </View>
-         </PopupDialog>
-         <PopupDialog
-          dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Öneri & Şikayet" />}
-          dialogStyle={{marginTop:-250}}
-          width={0.9}
-          height={0.3}
-          ref={(popupDialog) => { this.popupDialog2 = popupDialog; }}
-          >
-          <View style={{flex:1}}>
-            <TextInput
-
-              multiline = {true}
-
-              style={{height: 80,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-              onChangeText={(text) => this.setState({text})}
-
-              placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
-              editable = {true}
-            />
-
-            <View style={{marginBottom:10}}>
-              <Button title={"Gönder"}  onPress={() => {this.sendMail()}}/>
-            </View>
-          </View>
-        </PopupDialog>
-        <PopupDialog
-           dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Başvuru Formu" />}
-           dialogStyle={{marginTop:-250}}
-           width={0.9}
-           height={0.6}
-           ref={(popupDialog) => { this.popupDialog3 = popupDialog; }}
-         >
-         <View style={{flex:1,padding:5}}>
-            <View style={{height:50,marginBottom:10}}>
-              <Text>E-posta Adresiniz</Text>
-               <TextInput
-
-                 multiline = {true}
-
-                 style={{height: 20,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-                 onChangeText={(text) => this.setState({email:text})}
-
-                 editable = {true}
-               />
-             </View>
-             <Text>Kısaca kendinizi tanıtın</Text>
-              <TextInput
-
-                multiline = {true}
-
-                style={{height: 20,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-                onChangeText={(text) => this.setState({kendi:text})}
-                placeholder={"Bize biraz kendinizden bahsedin"}
-                editable = {true}
-              />
-
-           <View style={{marginBottom:10}}>
-             <Button title={"Gönder"}  onPress={() => {this.sendBasvuru()}}/>
-           </View>
-         </View>
-        </PopupDialog>
+       </View>
+      </View>
+     </PopupDialog>
 
       </ImageBackground>
 

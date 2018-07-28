@@ -36,7 +36,7 @@ import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
 import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
-import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
+//import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 //import Marquee from '@remobile/react-native-marquee';
 
 const { InAppUtils } = NativeModules
@@ -249,32 +249,32 @@ static navigationOptions = ({ navigation }) => ({
     }
   }
 
- generatefalcisayisi = () => {
-   var saat = moment().hour()
-   var gun = 2
-   if(moment().weekday()>4){gun=4}
-   var dk = moment().minute()%10
-   var falcisayisi= 5
-   if(saat>7&&saat<11){
-     falcisayisi=4+gun
-   }
-   if(saat>10&&saat<16){
-     falcisayisi=6+gun
-   }
-   if(saat>15&&saat<20){
-     falcisayisi=7+gun
-   }
-   if(saat>21&&saat<25){
-     falcisayisi=8+gun
-   }
-   if(saat<4){
-     falcisayisi=5+gun
-   }
-   if(saat>3&&saat<8){
-     falcisayisi=2+gun
-   }
-   return falcisayisi*40+dk
- }
+  generatefalcisayisi = () => {
+    var saat = moment().hour()
+    var gun = 2
+    if(moment().weekday()>4){gun=4}
+    var dk = moment().minute()%6
+    var falcisayisi= 5
+    if(saat>7&&saat<11){
+      falcisayisi=4+gun
+    }
+    if(saat>10&&saat<16){
+      falcisayisi=5+gun
+    }
+    if(saat>15&&saat<20){
+      falcisayisi=6+gun
+    }
+    if(saat>21&&saat<25){
+      falcisayisi=7+gun
+    }
+    if(saat<3){
+      falcisayisi=4+gun
+    }
+    if(saat>2&&saat<8){
+      falcisayisi=2+gun
+    }
+    return falcisayisi*40+dk+dk*5
+  }
 
   componentDidUpdate(prevProps,prevState){
 
@@ -286,7 +286,7 @@ static navigationOptions = ({ navigation }) => ({
   componentDidMount() {
 
     AppState.addEventListener('change', this._handleAppStateChange);
-    FCM.setBadgeNumber(0);
+    //FCM.setBadgeNumber(0);
     axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
       uid: Backend.getUid(),
     })
@@ -310,9 +310,10 @@ static navigationOptions = ({ navigation }) => ({
        // Get the action triggered by the notification being opened
 
        const action = notificationOpen.action;
-       alert(action)
+
        const notification: Notification = notificationOpen.notification;
        var notif =notification.data
+       //FCM.setBadgeNumber(1);
        if(notif.deeplink){
          var deeplink=JSON.parse(notif.deeplink)
          //alert(deeplink.type)
@@ -331,6 +332,36 @@ static navigationOptions = ({ navigation }) => ({
 
        }
    });
+
+   firebase.notifications().getInitialNotification()
+      .then((notificationOpen: NotificationOpen) => {
+        if (notificationOpen) {
+          // App was opened by a notification
+          // Get the action triggered by the notification being opened
+          const action = notificationOpen.action;
+
+          // Get information about the notification that was opened
+          const notification: Notification = notificationOpen.notification;
+          var notif =notification.data
+          if(notif.deeplink){
+            var deeplink=JSON.parse(notif.deeplink)
+            //alert(deeplink.type)
+            if(deeplink.type=='sosyal'){
+              //alert("asd")
+              this.props.navigation.navigate('SocialFal',{falId:deeplink.value})
+            }
+            else if(deeplink.type=='gunluk'){
+              //alert("asd")
+              this.props.navigation.navigate('GunlukFal',{falId:deeplink.value})
+            }
+            else if(deeplink.type=='chat'){
+
+              this.props.navigation.navigate( "ChatFalsever",{falsever:deeplink.value} )
+            }
+
+          }
+        }
+      });
    /*
      this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
 

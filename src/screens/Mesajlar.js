@@ -173,6 +173,7 @@ export default class Mesajlar extends React.Component {
         var unreadCount=0
         var data = falsevers
         var output =[]
+        var aktifFalsevers=[]
         for (var key in data) {
             data[key].fireID = key;
             output.push(data[key]);
@@ -182,6 +183,9 @@ export default class Mesajlar extends React.Component {
             }
             if(moment().diff(data[key].createdAt,'days')>2){
               data[key].timePassed=true
+            }
+            else {
+              aktifFalsevers.push(data[key])
             }
 
         }
@@ -194,6 +198,7 @@ export default class Mesajlar extends React.Component {
             return 0;
         })
         this.props.socialStore.setFalseverUnread(unreadCount)
+        this.props.socialStore.setActiveFalsevers(aktifFalsevers)
         this.setState({falsevers:output})
     }.bind(this))
   }

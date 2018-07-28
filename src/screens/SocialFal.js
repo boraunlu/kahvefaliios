@@ -683,13 +683,10 @@ export default class SocialFal extends React.Component {
                         {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
                         <Text style={{marginLeft:4}}>{likecount}</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={{marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!disliked&&comment.fireID!==Backend.getUid()?this.dislike(index):null}}>
-                        {disliked?<Icon name="thumbs-down" color={'blue'} size={20} />:<Icon name="thumbs-o-down" color={'gray'} size={20} />}
-                        <Text style={{marginLeft:4}}>{dislikecount}</Text>
-                      </TouchableOpacity>
+
                       <TouchableOpacity style={{marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.showLikesPopup(comment)}}>
 
-                        <Text style={{marginLeft:4,textDecorationLine:'underline'}}>{likecount+dislikecount>=1&& likecount+dislikecount+" kişi"}</Text>
+                        <Text style={{marginLeft:4,textDecorationLine:'underline'}}>{likecount>=1&& likecount+dislikecount+" kişi"}</Text>
                       </TouchableOpacity>
 
                     </View>
@@ -877,10 +874,7 @@ export default class SocialFal extends React.Component {
               {this.renderLike()}
 
              </View>
-              <View     style={{flex:1}}      tabLabel='Beğenmeyenler'>
-             {/* {this.state.commentLikes.dislikesNew&&<Text>dislikes:{this.state.commentLikes.dislikesNew&&JSON.stringify(this.state.commentLikes.dislikesNew)}</Text>} */}
-             {this.renderDislike()}
-             </View>
+
             </ScrollableTabView>
             <View style={{flex:1,backgroundColor:"black"}}></View>
          </View>

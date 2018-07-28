@@ -49,7 +49,7 @@ function replaceGecenHafta(string) {
 }
 
 
-
+@inject("socialStore")
 @inject("userStore")
 @observer
 export default class ChatFalsever extends React.Component {
@@ -90,7 +90,7 @@ export default class ChatFalsever extends React.Component {
   static navigationOptions = ({ navigation }) => ({
 
       headerTitle:<TouchableWithoutFeedback onPress={() => {navigation.state.params.showpopup()}} style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><View style={{flexDirection:'row',justifyContent:'center',alignItems:'center'}}><Image style={{height:30,width:30, borderRadius:15,marginRight:10}} source={{uri:navigation.state.params.falsever.avatar}}></Image><Text style={{fontWeight:'bold',fontSize:20}}>{navigation.state.params.falsever.name}</Text></View></TouchableWithoutFeedback>,
-      headerRight:<TouchableOpacity style={{flexDirection:"row",alignItems:"center"}} onPress={() => {navigation.state.params.engelle()}}><Text style={{textDecorationLine:"underline",textDecorationColor:"black",textDecorationStyle:"solid",padding:5,fontFamily: "SourceSansPro-Regular",
+      headerRight:<TouchableOpacity style={{marginRight:10,flexDirection:"row",alignItems:"center"}} onPress={() => {navigation.state.params.engelle()}}><Text style={{textDecorationLine:"underline",textDecorationColor:"black",textDecorationStyle:"solid",padding:5,fontFamily: "SourceSansPro-Regular",
       fontSize: 13,
       fontWeight: "normal",
       fontStyle: "normal",
@@ -178,9 +178,10 @@ export default class ChatFalsever extends React.Component {
   }
 
   componentDidMount() {
-    
+
     this.props.navigation.setParams({ showpopup: this.showpopup,engelle: this.engelle  })
     const { params } = this.props.navigation.state;
+
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/mesajlar/'+this.state.falsever.fireID);
     falseverref.on('child_added',function(snapshot,key){
         var mesaj=snapshot.val()
@@ -217,7 +218,7 @@ export default class ChatFalsever extends React.Component {
       });
     }
     if(!params.falsever.read){
-      this.props.userStore.increaseFalseverUnread(-1)
+      this.props.socialStore.increaseFalseverUnread(-1)
       var falseverbilgiref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+this.state.falsever.fireID);
       var updates = {};
       updates['/read'] = true;

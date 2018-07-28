@@ -50,31 +50,31 @@ function replaceGecenHafta(str) {
     return str
 }
 
-function generatefalcisayisi() {
+function generatefalcisayisi(){
   var saat = moment().hour()
   var gun = 2
   if(moment().weekday()>4){gun=4}
-  var dk = moment().minute()%10
+  var dk = moment().minute()%6
   var falcisayisi= 5
   if(saat>7&&saat<11){
     falcisayisi=4+gun
   }
   if(saat>10&&saat<16){
-    falcisayisi=6+gun
-  }
-  if(saat>15&&saat<20){
-    falcisayisi=7+gun
-  }
-  if(saat>21&&saat<25){
-    falcisayisi=8+gun
-  }
-  if(saat<4){
     falcisayisi=5+gun
   }
-  if(saat>3&&saat<8){
+  if(saat>15&&saat<20){
+    falcisayisi=6+gun
+  }
+  if(saat>21&&saat<25){
+    falcisayisi=7+gun
+  }
+  if(saat<3){
+    falcisayisi=4+gun
+  }
+  if(saat>2&&saat<8){
     falcisayisi=2+gun
   }
-  return falcisayisi*40+dk
+  return falcisayisi*40+dk+dk*5
 }
 
 import { observable } from 'mobx';

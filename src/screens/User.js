@@ -43,6 +43,8 @@ function capitalizeFirstLetter(string) {
 function replaceGecenHafta(string) {
     return string.replace("geçen hafta ","")
 }
+
+@inject("socialStore")
 @inject("userStore")
 @observer
 export default class User extends React.Component {
@@ -66,6 +68,7 @@ export default class User extends React.Component {
           expired:false,
           commentLikes:null,
           shouldSendMessage:true,
+          hasActiveChat:null
 
       };
 
@@ -99,42 +102,50 @@ export default class User extends React.Component {
 
 
       componentDidMount(){
-        this.showProfPopup(this.props.navigation.state.params.fireid,this.props.navigation.state.params.profPhotos)
-
+        var userID=this.props.navigation.state.params.fireid
+        this.setUser(userID,this.props.navigation.state.params.profPhotos)
+        this.props.socialStore.activeFalsevers.map((x)=>{x.fireID==userID&&this.setState({hasActiveChat:x});})
       }
 
 
       startChat = (falsever,seviye) => {
-        if(falsever.dmBlocked&&this.props.userStore.isAdmin!=true){
-          Alert.alert(falsever.name+" özel mesaj almak istememektedir")
+        if(this.state.hasActiveChat){
+          const { navigate } = this.props.navigation;
+          navigate( "ChatFalsever",{falsever:this.state.hasActiveChat} )
         }
         else {
-          var creditNeeded=seviye*10
-          falsever.avatar=falsever.profile_pic.uri
-          if(this.props.userStore.userCredit<creditNeeded){
-            Alert.alert(
-              'Kredi Gerekli',
-              'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
-              [
-                {text: 'İstemiyorum', onPress: () => {}},
-                {text: 'Tamam', onPress: () => {
-                  this.payChat(creditNeeded,falsever)
-
-                }},
-              ],
-            )
+          if(this.state.shouldSendMessage==false){
+            Alert.alert(falsever.name+" özel mesaj almak istememektedir")
           }
           else {
-            const { navigate } = this.props.navigation;
+            var creditNeeded=seviye*10
+            falsever.avatar=falsever.profile_pic.uri
+            if(this.props.userStore.userCredit<creditNeeded){
+              Alert.alert(
+                'Kredi Gerekli',
+                'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
+                [
+                  {text: 'İstemiyorum', onPress: () => {}},
+                  {text: 'Tamam', onPress: () => {
+                    this.payChat(creditNeeded,falsever)
 
-            navigate( "ChatFalsever",{falsever:falsever,first:true} )
-            Backend.addCredits(creditNeeded*-1)
-            this.props.userStore.increment(creditNeeded*-1)
-            Backend.startChat(falsever,creditNeeded)
-            var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
-            bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+                  }},
+                ],
+              )
+            }
+            else {
+              const { navigate } = this.props.navigation;
+
+              navigate( "ChatFalsever",{falsever:falsever,first:true} )
+              Backend.addCredits(creditNeeded*-1)
+              this.props.userStore.increment(creditNeeded*-1)
+              Backend.startChat(falsever,creditNeeded)
+              var bilgilerref= firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler/'+falsever.fireID);
+              bilgilerref.set({createdAt:firebase.database.ServerValue.TIMESTAMP,read:true,name:falsever.name,avatar:falsever.avatar,text:" "})
+            }
           }
         }
+
       }
 
       payChat = (creditNeeded,falsever) => {
@@ -169,7 +180,7 @@ export default class User extends React.Component {
         });
       }
 
-      showProfPopup = (fireid,profPhoto) =>{
+      setUser = (fireid,profPhoto) =>{
         //this.popupDialog2.dismiss()
         this.setState({profinfo:null})
         fetch('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
@@ -383,132 +394,73 @@ export default class User extends React.Component {
       color: "#37208e"}}>Yorum bekleyen fal bulunmamaktadır.</Text>}
 
 
-    {this.state.shouldSendMessage==true?
-
-            <TouchableOpacity style={ { width:'60%',
-    flexDirection:'row',alignSelf:'center',
-        height: 40,
-      borderRadius: 4,
-      backgroundColor: "#37208e",
-      marginTop:30,marginBottom:25,  alignItems: 'center', justifyContent: 'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
 
 
-                        <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+      <TouchableOpacity style={ { width:'60%',
+        flexDirection:'row',alignSelf:'center',
+            height: 40,
+          borderRadius: 4,
+          backgroundColor: "#37208e",
+          marginTop:30,marginBottom:25,  alignItems: 'center', justifyContent: 'center'}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+          <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+            {this.state.hasActiveChat?
+
+              <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center', }}>
+
+                  <View style={ {
+                          padding:12,alignItems:'center',
+                          justifyContent:'center'}}>
+                    <Icon name="chevron-right" color={'white'} size={18} />
+                  </View>
+                </View>
+                :
+            <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center', }}>
+              <View style={ {
+                      padding:12,alignItems:'center',
+                      justifyContent:'center'}}>
+                <Text style={{  fontFamily: "SourceSansPro-Bold",
+                    fontSize: 12,
+                    fontWeight: "bold",
+                    fontStyle: "normal",
+                    letterSpacing: 0,
+                    textAlign: "center",
+                    color: "#ffffff"}}>
+                     {seviye*10}
+                </Text>
+              </View>
+              <Image source={require("../static/images/sosyal/coins-copy.png")} />
+
+            </View>
+            }
+                 <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
+
+                   <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
+                  textAlign: "center",
+                  color: "#ffffff"}}>
+                   Özel Mesaj
+                   </Text>
+
+                 </View>
 
 
-                          <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center', }}>
-                            <View style={ {
-
-                                    padding:12,alignItems:'center',
-
-                                    justifyContent:'center'}}>
-                                     <Text style={{  fontFamily: "SourceSansPro-Bold",
-                                  fontSize: 12,
-                                  fontWeight: "bold",
-                                  fontStyle: "normal",
-                                  letterSpacing: 0,
-                                  textAlign: "center",
-                                  color: "#ffffff"}}>
-                                   {seviye*10}
-                                               </Text>
-                                 </View>
-                            <Image source={require("../static/images/sosyal/coins-copy.png")} />
-                               </View>
-                               <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
-
-                                 <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
-                                textAlign: "center",
-                                color: "#ffffff"}}>
-                                 Özel Mesaj
-                                 </Text>
-
-                               </View>
+               </View>
 
 
-                             </View>
+               <View style={{
+                 flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
+                 height: 40,
+                 borderRadius: 4,
+                 backgroundColor: "#5033c0"
+               }}>
+               </View>
+               <View style={{
+                 flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                 borderRadius: 4,
+                 backgroundColor: "transparent"
+               }}>
+               </View>
+        </TouchableOpacity>
 
-
-                             <View style={{
-                               flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
-                               height: 40,
-                               borderRadius: 4,
-                               backgroundColor: "#5033c0"
-                             }}>
-                             </View>
-                             <View style={{
-                               flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
-                               borderRadius: 4,
-                               backgroundColor: "transparent"
-                             }}>
-                             </View>
-
-
-
-                      </TouchableOpacity>
-
-                    :
-                    <TouchableOpacity style={ { width:'60%',
-                    flexDirection:'row',alignSelf:'center',
-                        height: 40,
-                      borderRadius: 4,
-                      backgroundColor: "#37208e",
-                      marginTop:30,marginBottom:25,  alignItems: 'center', justifyContent: 'center'}} onPress={()=>{this.AlertBlocked(this.state.profinfo.name)}}>
-
-
-                                        <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
-
-
-                                          <View style={{ flex: 1, flexDirection:"row", justifyContent: 'center', alignItems: 'center', }}>
-                                            <View style={ {
-
-                                                    padding:12,alignItems:'center',
-
-                                                    justifyContent:'center'}}>
-                                                     <Text style={{  fontFamily: "SourceSansPro-Bold",
-                                                  fontSize: 12,
-                                                  fontWeight: "bold",
-                                                  fontStyle: "normal",
-                                                  letterSpacing: 0,
-                                                  textAlign: "center",
-                                                  color: "#ffffff"}}>
-                                                   {seviye*10}
-                                                               </Text>
-                                                 </View>
-                                            <Image source={require("../static/images/sosyal/coins-copy.png")} />
-                                               </View>
-                                               <View style={{ flex: 2,  justifyContent: 'center', alignItems: 'center' }}>
-
-                                                 <Text style={{fontFamily: "SourceSansPro-Bold",fontSize: 15,fontWeight: "bold",fontStyle: "normal",letterSpacing: 0,
-                                                textAlign: "center",
-                                                color: "#ffffff"}}>
-                                                 Özel Mesaj
-                                                 </Text>
-
-                                               </View>
-
-
-                                             </View>
-
-
-                                             <View style={{
-                                               flex: 2, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center',
-                                               height: 40,
-                                               borderRadius: 4,
-                                               backgroundColor: "#5033c0"
-                                             }}>
-                                             </View>
-                                             <View style={{
-                                               flex: 1, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
-                                               borderRadius: 4,
-                                               backgroundColor: "transparent"
-                                             }}>
-                                             </View>
-
-
-
-                                      </TouchableOpacity>
-
-                    }
 
           {/* part */}
 
@@ -658,7 +610,7 @@ const styles = StyleSheet.create({
   },
 
   profileButton:{
-    borderWidth:2,borderColor:'rgba(245,245,245,0.25)',height:30
+    borderWidth:0,borderColor:'rgba(245,245,245,0.25)',height:30
 
   }
 });

@@ -20,7 +20,7 @@ import { Client } from 'bugsnag-react-native';
 
 const bugsnag = new Client();
 
-import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
+//import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 
 export default class Home extends React.Component {
   constructor(props) {
@@ -76,6 +76,30 @@ export default class Home extends React.Component {
             }
           });
 
+          firebase.messaging().requestPermission()
+            .then(() => {
+              firebase.messaging().getToken()
+              .then(fcmToken => {
+                if (fcmToken) {
+                  axios.post('https://eventfluxbot.herokuapp.com/webhook/saveNotiToken', {
+                    uid: user.uid,
+                    token: fcmToken
+                  })
+                  .then( (response) => {
+
+                  })
+                  .catch(function (error) {
+
+                  });
+                } else {
+                  // user doesn't have a device token yet
+                }
+              });
+            })
+            .catch(error => {
+              // User has rejected permissions
+            });
+
           /*
              FCM.getFCMToken().then(token => {
 
@@ -115,7 +139,7 @@ export default class Home extends React.Component {
       }
     }.bind(this));
 
-    FCM.requestPermissions(); // for iOS
+    // for iOS
   }
 componentWillUnmount() {
 
