@@ -69,7 +69,10 @@ export default class SocialFal extends React.Component {
       votedFor:false,
       expired:false,
       commentLikes:null,
-      appState: AppState.currentState
+      appState: AppState.currentState,
+      commentsList:[],
+      hiddenComments:[]
+
   };
 }
 
@@ -429,17 +432,17 @@ export default class SocialFal extends React.Component {
         this.setState({commentInput:''})
         var falPuan =this.props.userStore.user.falPuan
         var seviye = 1
-        if (falPuan>20&&falPuan<51){
+        if (falPuan>25&&falPuan<76){
           seviye = 2
-        }else if (falPuan>50&&falPuan<101) {
+        }else if (falPuan>75&&falPuan<201) {
           seviye = 3
-        }else if (falPuan>100&&falPuan<176) {
+        }else if (falPuan>200&&falPuan<501) {
           seviye = 4
         }
-        else if (falPuan>175) {
+        else if (falPuan>500) {
           seviye = 5
         }
-        var comment={comment:this.state.commentInput,parentIndex:this.state.replyingTo,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
+        var comment={comment:this.state.commentInput,parentIndex:this.state.replyingTo,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:this.props.userStore.profilePic}
         var newcomments=this.state.comments
         if(this.state.replyingTo){
           newcomments.splice(this.state.replyingTo, 0, comment);
@@ -463,10 +466,12 @@ export default class SocialFal extends React.Component {
   }
 
   showSuper = () => {
+    firebase.analytics().logEvent("superleSosyal")
     this.popupSuper.show()
   }
 
   superle = () => {
+    firebase.analytics().logEvent("superlePopup")
     if(this.props.userStore.userCredit>49){
       Backend.addCredits(-50)
       this.props.userStore.increment(-50)
@@ -547,6 +552,48 @@ export default class SocialFal extends React.Component {
       )
     }
 
+
+
+  parseComments =(comments) =>{
+      this.state.commentsList=[];
+      var _comments= [];
+      comments.map((x,index)=>{
+        if(x.parentIndex>0){
+          this.state.commentsList[this.state.commentsList.length-1].push(x)
+    }
+    else{
+      var clear = [];
+      _comments= clear
+       _comments.push(x);
+      this.state.commentsList.push(_comments)
+    }
+
+    })
+
+  }
+  showComments= (_hiddenComments) => {
+    if(_hiddenComments[0]==this.state.hiddenComments[0]){
+
+    //console.warn("hello")
+    var hide = [];
+    this.setState({hiddenComments:hide});
+    this.hideComments();
+
+    }else if(_hiddenComments==null){
+    //console.warn("noon")
+    } else{
+
+    this.state.hiddenComments=[];
+    this.setState({hiddenComments:_hiddenComments});
+      //console.warn(JSON.stringify(this.state.hiddenComments));
+    }
+  }
+
+  hideComments = () => {
+    var hide = [];
+    this.setState({hiddenComments:hide});
+  }
+
   renderAktifStripe = () => {
     if(this.state.expired)
     {
@@ -558,7 +605,7 @@ export default class SocialFal extends React.Component {
       if(this.state.fal){
         if(this.state.fal.status==3){
           return(
-            <View style={{justifyContent:'center',zIndex:5,position:'absolute',height:30,width:'100%',backgroundColor:'rgb( 236 ,196 ,75)'}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:16}}>Süper Fal🌟   2 Kat FalPuan Kazan!</Text></View>
+            <View style={{justifyContent:'center',zIndex:5,position:'absolute',height:50,width:'100%',backgroundColor:'rgb( 236 ,196 ,75)',padding:3}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',width:'100%',fontSize:14}}>Bu bir Süper Fal🌟{"\n"} Yorumlarından 2 Kat FalPuan Kazan!</Text></View>
           )
         }
       }
@@ -587,117 +634,264 @@ export default class SocialFal extends React.Component {
   }
 
   renderComments = () => {
-    if(this.state.comments.length>0){
+   //
+    this.parseComments(this.state.comments)
 
-      return(
-        <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
-        {
-          this.state.comments.map(function (comment,index) {
-            var liked = false;
-            var disliked = false;
-            var likecount=0;
-            var dislikecount=0;
-            var kolor='rgb(209,142,12)'
-            var id = Backend.getUid()
+      //this.state.comments.map(function (comment,index) {console.warn(JSON.stringify(comment.likesNew?(comment.likesNew.name+comment.likesNew):"hata"));console.warn(index)})
+      //this.state.comments.map(function (comment,index) {console.warn(JSON.stringify(comment.dislikesNew?(comment):"hata"));console.warn(index)})
+      //this.state.comments.map(x=>console.warn(x.dislikesNew))
 
-            switch(comment.seviye) {
-                case 2:
-                    kolor='rgb(60,179,113)'
-                    break;
-                case 3:
-                    kolor='rgb(114,0,218)'
-                    break;
-                case 4:
-                    kolor='rgb(0,185,241)'
-                    break;
-                case 5:
-                    kolor='rgb(249,50,12)'
-                    break;
-            }
-            if(comment.likes){
 
-              for (var i = 0; i < comment.likes.length; i++) {
-                if(comment.likes[i]==id){
-                  liked=true;
-                  break;
-                }
+      if(this.state.comments.length>0){
+
+        return(
+
+          <ScrollView style={{flex:1,backgroundColor:'#f8fff8'}}>
+          {
+
+            this.state.commentsList.map((comments,i)=>{
+
+
+              var __hiddenComments ;
+              var count = Object.keys(comments).length-1;
+              __hiddenComments = [];
+            return(
+
+              <View style={{flex:1}} key={i}>
+              {
+                comments.map(function (comment,index) {
+
+                  __hiddenComments.push(comment._id);
+                  var commentIndex ;
+                  this.state.comments.map((_comment,_index)=>{
+
+                  if(_comment._id==comment._id){
+                    commentIndex=_index;
+                  }
+
+                });
+
+
+
+      // var isHidden ;
+      // this.state.hiddenComments.map((x)=>x==comment._id?isHidden=false:isHidden=true);
+
+      var liked = false;
+      var disliked = false;
+      var likecount=0;
+              var dislikecount=0;
+              var kolor='rgb(209,142,12)'
+              var id = Backend.getUid()
+
+              //console.warn(comment)
+                //console.warn(comment.likesNew)
+                //console.warn(comment.dislikesNew)
+               // console.warn(comment.dislikesNew)
+
+               switch(comment.seviye) {
+                  case 2:
+                  kolor='rgb(60,179,113)'
+                      break;
+                      case 3:
+                      kolor='rgb(114,0,218)'
+                      break;
+                      case 4:
+                      kolor='rgb(0,185,241)'
+                      break;
+                      case 5:
+                      kolor='rgb(249,50,12)'
+                      break;
               }
-              likecount=comment.likes.length
-            }
-            if(comment.dislikes){
+              if(comment.likes){
 
-              for (var i = 0; i < comment.dislikes.length; i++) {
-                if(comment.dislikes[i]==id){
-                  disliked=true;
-                  break;
+                for (var i = 0; i < comment.likes.length; i++) {
+                  if(comment.likes[i]==id){
+                    liked=true;
+                    break;
+                  }
                 }
+                likecount=comment.likes.length
               }
-              dislikecount=comment.dislikes.length
-            }
+              if(comment.dislikes){
 
-              return (
-                <View key={index} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
-                  <View style={{marginLeft:comment.parentIndex?47:0}}>
+                for (var i = 0; i < comment.dislikes.length; i++) {
+                  if(comment.dislikes[i]==id){
+                    disliked=true;
+                    break;
+                  }
+                }
+                dislikecount=comment.dislikes.length
+              }
+
+              if(comment.parentIndex==false) {
+                return (
+
+
+                  <View key={commentIndex} id={comment._id}  style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:1,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'rgb(166, 158, 171)'}}>
+
+
+                    <View style={{marginLeft:comment.parentIndex?47:0}}>
                       <TouchableOpacity style={{marginTop:17}}
-                        onPress={() => {this.props.navigation.navigate('User',{fireid:comment.fireID,profPhotos:comment.photoURL})}}
-                        >
-                        {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
-                        <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
-                      </TouchableOpacity>
-                    <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?72:56,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
-                   </View>
-                  <View style={{padding:10,flex:2,marginTop:7,marginRight:5}}>
-                    <Text style={{  fontFamily: "SourceSansPro-Bold",
-                                    fontSize: 15,
-                                    fontWeight: "bold",
-                                    fontStyle: "normal",
-                                    letterSpacing: 0,
-                                    textAlign: "left",
-                                    color: "#000000",marginBottom:5}}>
-                      {comment.name} <Text style={{ fontFamily: "SourceSansPro-Regular",fontSize: 14,fontWeight: "normal",fontStyle: "normal",letterSpacing: 0,textAlign: "center",color: "#948b99"}}>
-                        -{" "}{capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
-                      </Text>
-                    </Text>
-                    <Text style={{ fontFamily: "SourceSansPro-Regular",
-                                    fontSize: 14,
-                                    fontWeight: "normal",
-                                    fontStyle: "normal",
-                                    letterSpacing: 0,
-                                    textAlign: "left",
-                                    color: "#000000"}}>
-                      {comment.comment}
-                    </Text>
-                    <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
-                      <TouchableOpacity onPress={()=>{this.setState({replyingTo:index+1}); this.refs.Input.focus(); }}>
-                        <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
+                      onPress={() => {this.props.navigation.navigate('User',{fireid:comment.fireID,profPhotos:comment.photoURL})}
+                      //  onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}
+                    }>
+                          {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
+                          <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                        </TouchableOpacity >
+                      <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?72:56,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                     </View>
+                    <View style={{padding:10,flex:2,marginTop:7,marginRight:5}}>
+                      <Text style={{  fontFamily: "SourceSansPro-Bold",
                                       fontSize: 15,
                                       fontWeight: "bold",
                                       fontStyle: "normal",
                                       letterSpacing: 0,
-                                      textAlign: "center",
-                                      color: "#241466"}}>
-                          Cevap Ver
+                                      textAlign: "left",
+                                      color: "#000000",marginBottom:5}}>{/*{JSON.stringify(comment.parentIndex)}*/}
+                        {comment.name} <Text style={{ fontFamily: "SourceSansPro-Regular",fontSize: 14,fontWeight: "normal",fontStyle: "normal",letterSpacing: 0,textAlign: "center",color: "#948b99"}}>
+                          -{" "}{capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
                         </Text>
-                      </TouchableOpacity>
-                       <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(index):null}}>
-                        {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
-                        <Text style={{marginLeft:4}}>{likecount}</Text>
-                      </TouchableOpacity>
+                      </Text>
+                      <Text style={{ fontFamily: "SourceSansPro-Regular",
+                                      fontSize: 14,
+                                      fontWeight: "normal",
+                                      fontStyle: "normal",
+                                      letterSpacing: 0,
+                                      textAlign: "left",
+                                      color: "#000000"}}>
+                        {comment.comment}
+                  {/*commentIndex*/}
+                        {/*this.state.fal.commentsNew*/}
+                        {/*JSON.stringify(this.state.comments.map((x,index1)=>{x._id}))*/}
 
-                      <TouchableOpacity style={{marginLeft:20,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.showLikesPopup(comment)}}>
 
-                        <Text style={{marginLeft:4,textDecorationLine:'underline'}}>{likecount>=1&& likecount+dislikecount+" kişi"}</Text>
-                      </TouchableOpacity>
+                      </Text>
+                      <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
+                        <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input.focus(); }}>
+                          <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
+                                        fontSize: 15,
+                                        fontWeight: "bold",
+                                        fontStyle: "normal",
+                                        letterSpacing: 0,
+                                        textAlign: "center",
+                                        color: "#241466"}}>
+                            Cevap Ver
+                          </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(commentIndex):null}}>
+                          {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
+                          <Text style={{marginLeft:4}}>{likecount}</Text>
+                        </TouchableOpacity>
 
+                        <TouchableOpacity style={{marginLeft:12,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.showLikesPopup(comment)}}>
+
+                          <Text style={{marginLeft:4,textDecorationLine:'underline'}}>Beğenenler</Text>
+                        </TouchableOpacity>
+
+                      </View>
+
+
+
+                      {count>1&&
+                        <View style={{}}>
+                        <TouchableOpacity style={{flexDirection:"row",marginTop:5,marginBottom:-8}}  onPress={()=>{__hiddenComments.length>1?this.showComments(__hiddenComments):null}}>
+                        {(__hiddenComments[0]&&this.state.hiddenComments[0])&&__hiddenComments[0]==this.state.hiddenComments[0]?<Icon name="angle-up" color={'grey'} size={24} />:<Icon name="angle-down" color={'#241466'} size={24} />}
+                       <Text style={{fontFamily: "SourceSansPro-Regular",fontSize: 16,color:"#241466",fontFamily:'SourceSansPro-Bold',fontStyle: "normal",letterSpacing: 0,textAlign: "left",}}>
+                        {" "+count+" cevap"} </Text>
+                          </TouchableOpacity>
+                         </View>
+                       }
                     </View>
+
+                    {this.renderCommentDelete(commentIndex)}
+
                   </View>
-                  {this.renderCommentDelete(index)}
-                </View>
-                );
+                  );
+                } else
+                 if(this.state.hiddenComments.includes(comment._id)==true)
+                {
+                  return (
 
 
-          }, this)
-        }
+                    <View key={commentIndex} id={comment._id} style={{flexDirection:'row',justifyContent:'space-between',borderBottomWidth:0,backgroundColor:comment.parentIndex?'#F9F8F9':'#F2F1F3',borderColor:'gray'}}>
+                     {/* <TouchableOpacity style={{position:"absolute",top:0,right:0}} onPress={()=>this.hideComments()}> */}
+                     {/* <Text>Sakla</Text> */}
+                     {/* </TouchableOpacity> */}
+
+                      <View style={{marginLeft:comment.parentIndex?47:0}}>
+                          <TouchableOpacity style={{marginTop:17}}
+                        onPress={() => {this.props.navigation.navigate('User',{fireid:comment.fireID,profPhotos:comment.photoURL})}
+                        //  onPress={()=>{this.showProfPopup(comment.fireID,comment.photoURL)}
+                      }>
+                            {comment.fireID==this.state.fal.fireID?<Text style={{fontSize:12,textAlign:'center',color:'#241466',fontStyle:'italic'}}>Fal Sahibi</Text>:null}
+                            <Image source={{uri:comment.photoURL}} style={styles.falciAvatar}></Image>
+                          </TouchableOpacity>
+                        <View style={{position:'absolute',top:comment.fireID==this.state.fal.fireID?72:56,elevation:2,left:45,backgroundColor:kolor,borderRadius:10,height:20,width:20}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold',backgroundColor:'transparent'}}>{comment.seviye?comment.seviye:1}</Text></View>
+                       </View>
+                      <View style={{padding:10,flex:2,marginTop:7,marginRight:5}}>
+                        <Text style={{  fontFamily: "SourceSansPro-Bold",
+                                        fontSize: 15,
+                                        fontWeight: "bold",
+                                        fontStyle: "normal",
+                                        letterSpacing: 0,
+                                        textAlign: "left",
+                                        color: "#000000",marginBottom:5}}>{/*{JSON.stringify(comment.parentIndex)}*/}
+                          {comment.name} <Text style={{ fontFamily: "SourceSansPro-Regular",fontSize: 14,fontWeight: "normal",fontStyle: "normal",letterSpacing: 0,textAlign: "center",color: "#948b99"}}>
+                            -{" "}{capitalizeFirstLetter(replaceGecenHafta(moment(comment.createdAt).calendar()))}
+                          </Text>
+                        </Text>
+                        <Text style={{ fontFamily: "SourceSansPro-Regular",
+                                        fontSize: 14,
+                                        fontWeight: "normal",
+                                        fontStyle: "normal",
+                                        letterSpacing: 0,
+                                        textAlign: "left",
+                                        color: "#000000"}}>
+                          {comment.comment+"asdasd"}
+                    {/*commentIndex*/}
+                          {/*this.state.fal.commentsNew*/}
+                          {/*JSON.stringify(this.state.comments.map((x,index1)=>{x._id}))*/}
+
+
+                        </Text>
+                        <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
+                          <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input.focus(); }}>
+                            <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
+                                          fontSize: 15,
+                                          fontWeight: "bold",
+                                          fontStyle: "normal",
+                                          letterSpacing: 0,
+                                          textAlign: "center",
+                                          color: "#241466"}}>
+                              Cevap Ver
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity style={{marginLeft:30,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{!liked&&comment.fireID!==Backend.getUid()?this.like(commentIndex):null}}>
+                            {liked?<Icon name="heart" color={'red'} size={20} />:<Icon name="heart-o" color={'gray'} size={20} />}
+                            <Text style={{marginLeft:4}}>{likecount}</Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity style={{marginLeft:12,flexDirection:'row',alignItems:'center',justifyContent:'center'}} onPress={()=>{this.showLikesPopup(comment)}}>
+
+                            <Text style={{marginLeft:4,textDecorationLine:'underline'}}>Beğenenler</Text>
+                          </TouchableOpacity>
+
+                        </View>
+
+                      </View>
+
+                      {this.renderCommentDelete(commentIndex)}
+                    </View>
+                    );
+                }
+
+              }, this)
+            }
+          </View>
+        )
+          })
+          }
+
         {this.renderYorumYap()}
 
         </ScrollView>
@@ -718,30 +912,31 @@ export default class SocialFal extends React.Component {
 
      {this.state.commentLikes.likesNew&&this.state.commentLikes.likesNew.map((x,index)=>{
        var _seviye = 1
-       var limit =20
+       var limit =25
        var gosterilenpuan=x.seviye
        var unvan = "Yeni Falsever"
        var kolor="#ffd967"
-       if (x.seviye>20&&x.seviye<51){
+
+       if (x.seviye>25&&x.seviye<76){
          _seviye = 2
-         limit = 30
-         gosterilenpuan=x.seviye-20
+         limit = 50
+         gosterilenpuan=x.seviye-25
          unvan = "Falsever"
          kolor='rgb(60,179,113)'
-       }else if (x.seviye>50&&x.seviye<101) {
+       }else if (x.seviye>75&&x.seviye<201) {
          _seviye = 3
-         limit = 50
-         gosterilenpuan=x.seviye-50
+         limit = 125
+         gosterilenpuan=x.seviye-75
          unvan = "Deneyimli Falsever"
          kolor='rgb(114,0,218)'
-       }else if (x.seviye>100&&x.seviye<176) {
+       }else if (x.seviye>200&&x.seviye<501) {
          _seviye = 4
-         limit = 75
-         gosterilenpuan=x.seviye-100
+         limit = 300
+         gosterilenpuan=x.seviye-200
          unvan = "Fal Uzmanı"
          kolor='rgb(0,185,241)'
        }
-       else if (x.seviye>175) {
+       else if (x.seviye>500) {
          _seviye = 5
          limit = 12500
          gosterilenpuan=x.seviye
@@ -855,31 +1050,22 @@ export default class SocialFal extends React.Component {
    if(this.state.commentLikes){
      var profile_picture=require('../static/images/maleAvatar.png')
      return(
-       <View>
-
        <View style={{flex:1,width:'100%'}}>
 
-           <ScrollableTabView
-             style={{flex:1,width:'100%',height:1500}}
-             tabBarActiveTextColor='rgb(250, 249, 255)'
-             tabBarBackgroundColor='#241466'
-             tabBarInactiveTextColor='rgb( 118, 109, 151)'
-             tabBarUnderlineStyle={{backgroundColor:'rgb( 236, 196, 75)', borderColor: 'rgb( 236, 196, 75)'}}
-             tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
-             initialPage={0}
-             renderTabBar={() => <DefaultTabBar />}
+           <View
+             style={{flex:1,width:'100%',height:50,justifyContent:'center',alignItems:'center',backgroundColor:'#241466',borderBottomWidth:5,borderColor:'rgb( 236, 196, 75)'}}
             >
-              <View      style={{flex:1,width:"100%"}}     tabLabel='Beğenenler' >
+            <Text style={{fontFamily:'SourceSansPro-Bold',fontSize:18,color:'rgb(250, 249, 255)'}}>Beğenenler</Text>
+              </View>
+              <View      style={{flex:1,width:"100%"}}  >
                {/* <Text>likes:{this.state.commentLikes.likesNew&&JSON.stringify(this.state.commentLikes.likesNew)}</Text>  */}
               {this.renderLike()}
 
              </View>
 
-            </ScrollableTabView>
-            <View style={{flex:1,backgroundColor:"black"}}></View>
-         </View>
 
-     </View>
+
+         </View>
    )}
    else {
      return(<ActivityIndicator/>)
@@ -893,7 +1079,10 @@ export default class SocialFal extends React.Component {
     if(this.state.falowner){
       var a = moment();
 
-       var b = moment(this.state.fal.time).add(2, 'days');;
+       var b = moment(this.state.fal.time).add(2, 'days');
+       if(this.state.fal.status==3){
+         b = moment(this.state.fal.time).add(3, 'days');
+       }
        var hours=b.diff(a, 'hours')
        var minutes=b.diff(a, 'minutes')
        minutes=minutes%60
@@ -1171,7 +1360,13 @@ export default class SocialFal extends React.Component {
 
        return(
          <View style={{flexDirection:'row',backgroundColor:'#f7f7f7',paddingBottom:10,paddingRight:50,paddingLeft:50}}>
-           <TouchableOpacity  onPress={() => {this.showSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:35,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+           <TouchableOpacity  onPress={() => {this.showSuper();}} style={{flex:1,alignItems:'center',shadowColor: "rgba(0, 0, 0, 0.2)",
+           shadowOffset: {
+             width: 3,
+             height: 6
+           },
+           shadowRadius: 1,
+           shadowOpacity: 1,flexDirection:'row',height:35,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
              <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>FALINI SÜPERLE 🌟 </Text>
            </TouchableOpacity>
 
@@ -1528,7 +1723,7 @@ export default class SocialFal extends React.Component {
     let paddingBottom = 58
     let paddingTop=0
     if(this.state.expired){paddingBottom:0}else {
-        if(this.state.fal){if(this.state.fal.status==3){paddingTop=30}}
+        if(this.state.fal){if(this.state.fal.status==3){paddingTop=50}}
     }
 
     return (

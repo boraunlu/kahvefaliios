@@ -28,19 +28,7 @@ export default class JoinTeam extends React.Component {
 
   static navigationOptions = {
       title: 'EKİBİMİZE KATILIN',
-      headerStyle: {
-        backgroundColor:'white',
-        height: 46
-
-      },headerRight:<View style={{width:70,height:10}}></View>,
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",alignSelf: 'center',
-        color: "#241466",
-  textAlign:'center'
-      },
-
+      headerRight:<View></View>,
     };
 
     sendBasvuru = () => {

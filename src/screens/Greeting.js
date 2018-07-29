@@ -34,10 +34,14 @@ import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
-import PopupDialog, { SlideAnimation, DialogTitle } from 'react-native-popup-dialog';
+import PopupDialog, { DialogTitle ,  SlideAnimation } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
 //import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
 //import Marquee from '@remobile/react-native-marquee';
+
+const slideAnimation = new SlideAnimation({
+slideFrom: 'left',
+});
 
 const { InAppUtils } = NativeModules
 require('../components/data/falcilar.js');
@@ -96,7 +100,8 @@ export default class Greeting extends React.Component {
       checkValidation:false,
       marquee:'',
       reklam:null,
-      appState: AppState.currentState
+      appState: AppState.currentState,
+      drawerVisible:false
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -105,6 +110,17 @@ export default class Greeting extends React.Component {
 
 static navigationOptions = ({ navigation }) => ({
     title: 'Kahve Falı Sohbeti',
+    headerLeft:<Icon
+    raised
+
+    name='navicon'
+    type='font-awesome'
+    color='#241466'
+    size={28}
+    style={{width:28,height:28,marginLeft:15,}}
+    onPress={()=>{navigation.state.params.openDrawer()} }/>
+    ,
+    headerRight:<View></View>,
     tabBarLabel: 'Ana Sayfa',
      tabBarIcon: ({ tintColor }) => (
        <Icon name="home" color={tintColor} size={25} />
@@ -193,6 +209,24 @@ static navigationOptions = ({ navigation }) => ({
     this.props.navigation.navigate('FalPaylas',{type:type})
   }
 
+  logout = () => {
+
+    Backend.logOut()
+  }
+  OpenDrawer =  () => {
+    if(this.state.drawerVisible===true){
+      this.popupDialog.dismiss()
+      this.setState({
+      drawerVisible: false
+      })
+          }else{
+
+            this.popupDialog.show();
+            this.setState({
+              drawerVisible: true
+            })
+          }
+        }
 
 
 
@@ -261,10 +295,10 @@ static navigationOptions = ({ navigation }) => ({
     if(saat>10&&saat<16){
       falcisayisi=5+gun
     }
-    if(saat>15&&saat<20){
+    if(saat>15&&saat<21){
       falcisayisi=6+gun
     }
-    if(saat>21&&saat<25){
+    if(saat>20&&saat<25){
       falcisayisi=7+gun
     }
     if(saat<3){
@@ -273,7 +307,7 @@ static navigationOptions = ({ navigation }) => ({
     if(saat>2&&saat<8){
       falcisayisi=2+gun
     }
-    return falcisayisi*40+dk+dk*5
+    return falcisayisi*40+dk+dk*4
   }
 
   componentDidUpdate(prevProps,prevState){
@@ -284,7 +318,7 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   componentDidMount() {
-
+    setTimeout(()=>{this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })},600)
     AppState.addEventListener('change', this._handleAppStateChange);
     //FCM.setBadgeNumber(0);
     axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
@@ -305,6 +339,9 @@ static navigationOptions = ({ navigation }) => ({
        this.props.socialStore.setAllFals(response)
     })
 
+    this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
+        
+    });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
        // Get the action triggered by the notification being opened
@@ -362,66 +399,6 @@ static navigationOptions = ({ navigation }) => ({
           }
         }
       });
-   /*
-     this.notificationListener = FCM.on(FCMEvent.Notification, async (notif) => {
-
-         if(notif.deeplink){
-           var deeplink=JSON.parse(notif.deeplink)
-           //alert(deeplink.type)
-           if(deeplink.type=='gunluk'){
-             //alert("asd")
-             Backend.getGunluk(deeplink.value).then( (response) => {
-                this.props.socialStore.setTek(response)
-             })
-             //this.props.navigation.navigate('GunlukFal',{falId:notif.deeplink_value})
-           }
-           else if (deeplink.type=='sosyal') {
-             Backend.getSosyal(deeplink.value).then( (response) => {
-                this.props.socialStore.setTek(response)
-             })
-           }
-         }
-         // there are two parts of notif. notif.notification contains the notification payload, notif.data contains data payload
-         if(notif.local_notification){
-           //this is a local notification
-           //alert("local")
-         }
-         if(notif.opened_from_tray){
-           //alert("tray")
-           if(notif.deeplink){
-             var deeplink=JSON.parse(notif.deeplink)
-             //alert(deeplink.type)
-             if(deeplink.type=='falId'){
-               //alert("asd")
-               this.props.navigation.navigate('SocialFal',{falId:deeplink.value})
-             }
-             else if(deeplink.type=='gunluk'){
-               //alert("asd")
-               this.props.navigation.navigate('GunlukFal',{falId:deeplink.value})
-             }
-           }
-         }
-
-         if(Platform.OS ==='ios'){
-           //FCM.setBadgeNumber(1);
-           //optional
-           //iOS requires developers to call completionHandler to end notification process. If you do not call it your background remote notifications could be throttled, to read more about it see the above documentation link.
-           //This library handles it for you automatically with default behavior (for remote notification, finish with NoData; for WillPresent, finish depend on "show_in_foreground"). However if you want to return different result, follow the following code to override
-           //notif._notificationType is available for iOS platfrom
-           /*
-           switch(notif._notificationType){
-             case NotificationType.Remote:
-               notif.finish(RemoteNotificationResult.NewData) //other types available: RemoteNotificationResult.NewData, RemoteNotificationResult.ResultFailed
-               break;
-             case NotificationType.NotificationResponse:
-               notif.finish();
-               break;
-             case NotificationType.WillPresent:
-               notif.finish(WillPresentNotificationResult.None) //other types available: WillPresentNotificationResult.None
-               break;
-           }
-         }
-     });*/
   }
 
   componentWillUnmount() {
@@ -833,7 +810,40 @@ static navigationOptions = ({ navigation }) => ({
 
 
         </ScrollView>
-          {/* End of page */}
+        <PopupDialog
+          //dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title=" " />}
+          dialogStyle={{alignSelf:"flex-start",borderRadius:0}}
+          width={0.7}
+          height={1}
+          ref={(popupDialog) => { this.popupDialog = popupDialog; }}
+          dialogAnimation={slideAnimation}
+        >
+        <View style={{flex:1}}>
+        <View style={{flex:1,marginBottom:10,marginTop:15,paddingRight:23,paddingLeft:23}}>
+          <Image style={{alignSelf:'center',height:80,width:80, borderRadius:0,marginTop:0,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
+          <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('Oneri')}}>
+            <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FİKİR VER, KAZAN"}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FAL PUAN"}</Text>
+          </TouchableOpacity>
+           <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('Kimiz')}}>
+             <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"BİZ KİMİZ?"}</Text>
+           </TouchableOpacity>
+           <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('JoinTeam')}}>
+             <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"EKİBİMİZE KATIL"}</Text>
+           </TouchableOpacity>
+           <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('TermsofUse')}}>
+             <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"KULLANIM KOŞULLARI"}</Text>
+           </TouchableOpacity>
+           <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30,marginBottom:14}}  onPress={() => {this.logout()}}>
+             <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÇIKIŞ YAP"}</Text>
+           </TouchableOpacity>
+          <Text style={{paddingTop:15,fontSize:12,flex:1,color: 'gray',textAlign: 'center',fontFamily:'SourceSansPro-Italic'}}>Uygulamada yaşadığınız her türlü problemi <Text style={{textDecorationLine:'underline'}}>info@kahvefalisohbeti.com</Text> adresine e-mail yoluyla iletebilirsiniz</Text>
+
+         </View>
+        </View>
+       </PopupDialog>
 
         {this.renderReklam()}
       </ImageBackground>

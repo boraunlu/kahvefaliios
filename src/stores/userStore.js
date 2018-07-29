@@ -5,6 +5,7 @@ import {AppState} from 'react-native';
 export default class UserStore {
   @observable user = null;
   @observable userName = ' ';
+  @observable profilePic = ' ';
   @observable userCredit= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
@@ -216,12 +217,15 @@ export default class UserStore {
     this.bio=name.nametext
   }
 
-
+  @action setProfilePic(url) {
+    this.profilePic=url
+  }
 
   @action setUser(user) {
     this.user = user;
     this.userCredit=user.credit
     this.userName=user.name
+    this.profilePic=user.profile_pic
     this.bio=user.bio
     this.age=user.age
     this.city=user.city

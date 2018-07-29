@@ -340,6 +340,7 @@ export default class GunlukFal extends React.Component {
   }
 
   sendtoSuper = () =>{
+    firebase.analytics().logEvent("gunluktenSosyale")
     const { navigate } = this.props.navigation;
     navigate( "FalPaylas",{type:1,photos:this.state.fal.photos} )
   }
@@ -358,14 +359,14 @@ export default class GunlukFal extends React.Component {
         this.setState({commentInput:''})
         var falPuan =this.props.userStore.user.falPuan
         var seviye = 1
-        if (falPuan>20&&falPuan<51){
+        if (falPuan>25&&falPuan<76){
           seviye = 2
-        }else if (falPuan>50&&falPuan<101) {
+        }else if (falPuan>75&&falPuan<201) {
           seviye = 3
-        }else if (falPuan>100&&falPuan<176) {
+        }else if (falPuan>200&&falPuan<501) {
           seviye = 4
         }
-        else if (falPuan>175) {
+        else if (falPuan>500) {
           seviye = 5
         }
         var comment={comment:this.state.commentInput,parentIndex:this.state.replyingTo,createdAt: new Date(),name:this.props.userStore.userName,fireID:Backend.getUid(),seviye:seviye,photoURL:firebase.auth().currentUser.photoURL}
@@ -496,7 +497,7 @@ export default class GunlukFal extends React.Component {
 
             }, this)
           }
-            <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>Günlük falınız tamamlanmıştır...{"\n"}Dilerseniz falınızı <Text style={{textDecorationLine:'underline'}} onPress={()=>{this.showpopup()}}>buradan</Text> değerlendirebilirsiniz</Text>
+
           <View style={{backgroundColor:'#241466',padding:20}}>
 
             <TouchableOpacity  onPress={() => {this.sendtoSuper();}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
@@ -505,6 +506,7 @@ export default class GunlukFal extends React.Component {
             </TouchableOpacity>
 
           </View>
+          <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>Günlük falınız tamamlanmıştır...{"\n"}Dilerseniz falınızı <Text style={{textDecorationLine:'underline'}} onPress={()=>{this.showpopup()}}>buradan</Text> değerlendirebilirsiniz</Text>
 
         </ScrollView>
       )
@@ -825,7 +827,7 @@ export default class GunlukFal extends React.Component {
 
 
               <View style={{alignItems:'flex-start',flexDirection:'row',backgroundColor:'#f7f7f7',justifyContent:'flex-start',borderColor:'gray',borderBottomWidth:0,paddingTop:8, height: 78}}>
-                <TouchableOpacity style={{}} onPress={()=>{this.showProfPopup(this.state.fal.fireID,this.state.fal.profile_pic)}}>
+                <TouchableOpacity style={{}} onPress={()=>{this.props.navigation.navigate('User',{fireid:this.state.fal.fireID,profPhotos:this.state.fal.profile_pic})}}>
                   <Image source={profile_pic} style={styles.falciAvatar}></Image>
                 </TouchableOpacity>
                 <View style={{paddingTop:10,paddingLeft:2}}>

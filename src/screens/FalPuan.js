@@ -76,12 +76,12 @@ export default class FalPuan extends React.Component {
             </View>
             <View style={{flexDirection:'row'}}>
                <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Aşk Falı Baktırmak: </Text>
+              <Text style={styles.textKey}>Sosyal Fal Baktırmak: </Text>
               <Text style={styles.textValue}>5 Puan</Text>
             </View>
             <View style={{flexDirection:'row'}}>
                <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Detaylı Fal Baktırmak: </Text>
+              <Text style={styles.textKey}>Süper Sosyal Fal Baktırmak: </Text>
               <Text style={styles.textValue}>10 Puan</Text>
             </View>
           </View>

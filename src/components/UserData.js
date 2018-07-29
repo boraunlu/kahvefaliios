@@ -31,33 +31,33 @@ export default class UserData extends Component {
     if (this.props.userStore.user) {
       var falPuan =this.props.userStore.user.falPuan
       var seviye = 1
-      var limit =20
+      var limit =25
       var gosterilenpuan=falPuan
       var unvan = "Yeni Falsever"
-      var kolor='rgb(255,217,103)'
-      if (falPuan>20&&falPuan<51){
+      var kolor="#ffd967"
+      if (falPuan>25&&falPuan<76){
         seviye = 2
-        limit = 30
-        gosterilenpuan=falPuan-20
+        limit = 50
+        gosterilenpuan=falPuan-25
         unvan = "Falsever"
         kolor='rgb(60,179,113)'
-      }else if (falPuan>50&&falPuan<101) {
+      }else if (falPuan>75&&falPuan<201) {
         seviye = 3
-        limit = 50
-        gosterilenpuan=falPuan-50
+        limit = 125
+        gosterilenpuan=falPuan-75
         unvan = "Deneyimli Falsever"
         kolor='rgb(114,0,218)'
-      }else if (falPuan>100&&falPuan<176) {
+      }else if (falPuan>200&&falPuan<501) {
         seviye = 4
-        limit = 75
-        gosterilenpuan=falPuan-100
+        limit = 300
+        gosterilenpuan=falPuan-200
         unvan = "Fal Uzmanı"
         kolor='rgb(0,185,241)'
       }
-      else if (falPuan>175&&falPuan<301) {
+      else if (falPuan>500) {
         seviye = 5
-        limit = 125
-        gosterilenpuan=falPuan-175
+        limit = 12500
+        gosterilenpuan=falPuan
         unvan = "Fal Profesörü"
         kolor='rgb(249,50,12)'
       }

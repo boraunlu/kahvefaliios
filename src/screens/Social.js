@@ -62,10 +62,10 @@ function generatefalcisayisi(){
   if(saat>10&&saat<16){
     falcisayisi=5+gun
   }
-  if(saat>15&&saat<20){
+  if(saat>15&&saat<21){
     falcisayisi=6+gun
   }
-  if(saat>21&&saat<25){
+  if(saat>20&&saat<25){
     falcisayisi=7+gun
   }
   if(saat<3){
@@ -74,7 +74,7 @@ function generatefalcisayisi(){
   if(saat>2&&saat<8){
     falcisayisi=2+gun
   }
-  return falcisayisi*40+dk+dk*5
+  return falcisayisi*40+dk+dk*4
 }
 
 import { observable } from 'mobx';
@@ -251,102 +251,6 @@ export default class Social extends React.Component {
   }
 
 
-    renderInfo = () => {
-      if(this.props.userStore.user){
-        var falPuan =this.props.userStore.user.falPuan
-        var seviye = 1
-        var limit =20
-        var gosterilenpuan=falPuan
-        var unvan = "Yeni Falsever"
-        var kolor='#ffd967'
-        if (falPuan>20&&falPuan<51){
-          seviye = 2
-          limit = 30
-          gosterilenpuan=falPuan-20
-          unvan = "Falsever"
-          kolor='rgb(60,179,113)'
-        }else if (falPuan>50&&falPuan<101) {
-          seviye = 3
-          limit = 50
-          gosterilenpuan=falPuan-50
-          unvan = "Deneyimli Falsever"
-          kolor='rgb(114,0,218)'
-        }else if (falPuan>100&&falPuan<176) {
-          seviye = 4
-          limit = 75
-          gosterilenpuan=falPuan-100
-          unvan = "Fal Uzmanı"
-          kolor='rgb(0,185,241)'
-        }
-        else if (falPuan>175) {
-          seviye = 5
-          limit = 12500
-          gosterilenpuan=falPuan
-          unvan = "Fal Profesörü"
-          kolor='rgb(249,50,12)'
-        }
-        return(
-          <View style={{flexDirection:'row',height:65,marginBottom:20,marginTop:20,
-          borderRadius: 4,
-          backgroundColor: "rgba(216, 216, 216, 0.7)",marginLeft:15,marginRight:15,alignItems:'center',
-          justifyContent:'center'}}>
-
-  {/* asdas */}
-
-            <TouchableOpacity style={{padding:15,backgroundColor:'transparent',height:70,flex:2,borderColor:"#37208e",borderRightWidth:1,}} onPress={() => {this.props.setDestination('FalPuan')}}>
-              <View style={{alignSelf:'center',alignItems:'center',flexDirection:'row',marginTop:-5}}>
-                <Text style={{  fontFamily: "SourceSansPro-Bold",
-    fontSize: 14,
-    fontWeight: "bold",
-    fontStyle: "normal",
-    letterSpacing: 0,
-    textAlign: "center",
-    color: "#ffffff"}}>{unvan}</Text>
-
-              </View>
-
-              <View style={{alignSelf:'center',alignItems:'center',marginTop:5,marginBottom:5,flexDirection:'row'}}>
-                <View style={{justifyContent:'center'}}>
-                  <View style={{position:'absolute',zIndex: 3,left:-12,elevation:3,justifyContent:'center',height:26,width:26,borderRadius:13,backgroundColor:kolor}}><Text style={{fontSize:14,backgroundColor:'transparent',color:'rgb(227,159,47)',fontWeight:'bold',textAlign:'center'}}>{seviye}</Text></View>
-                  <View   style={{height:16,width:200,borderRadius:8,elevation:1,backgroundColor:"#ffffff"}}>
-
-                    <View style={{height:16,width:200*(gosterilenpuan/limit),backgroundColor:kolor,borderRadius:8}}>
-
-                    </View>
-                    <Text style={{position:'absolute',bottom:0,elevation:2,backgroundColor:'rgba(0,0,0,0)',fontSize:12,alignSelf:'center',fontWeight:'bold',color:'rgb(55,32,142)'}}>{gosterilenpuan+"/"+limit}</Text>
-                  </View>
-
-
-                  </View>
-
-              </View>
-
-            </TouchableOpacity>
-
-          {/*    asd */}
-          {/* <View style={{ width: 1,
-    height: 65,
-    backgroundColor: "#37208e"}}></View> */}
-
-            <TouchableOpacity style={{height: 65,padding: 15,
-
-    backgroundColor: "transparent",justifyContent:"center",alignItems:"center"}} onPress={() => {this.props.navigation.navigate('Leader')}}>
-              <Text style={{  fontFamily: "SourceSansPro-Bold",marginTop:-5,
-    fontSize: 14,
-    fontWeight: "bold",
-    fontStyle: "normal",
-    letterSpacing: 0,
-    textAlign: "center",paddingBottom:5,
-    color: "#faf9ff"}}>Puan Tablosu</Text>
-              <Image source={require("../static/images/sosyal/group.png")} size={30} />
-            </TouchableOpacity>
-          </View>
-        )
-      }
-      else{
-        return(null)
-      }
-    }
 
 
     renderTek = () => {

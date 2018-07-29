@@ -280,6 +280,7 @@ _keyboardDidShow = (event) => {
                uid: user.uid,
                name: this.state.name,
                gender:this.state.gender,
+               profile_pic:user.photoURL,
                dynamiclink:dynamiclink
              })
              .then( (response) => {

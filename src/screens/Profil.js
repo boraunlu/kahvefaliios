@@ -76,18 +76,7 @@ static navigationOptions =({ navigation }) =>  ({
    onPress={()=>{navigation.state.params.openDrawer()} }/>
    ,
    headerRight:<View></View>,
-   headerStyle: {
-     backgroundColor:'white',
-     height: 46
 
-   },
-   headerTitleStyle: {
-     position:"absolute",fontWeight: 'bold',
-     fontSize:18,
-     textAlign: "center",
-     color: "#241466",
- textAlign:'center',alignSelf: 'center'
-   },
    tabBarLabel: 'Profil',
     tabBarIcon: ({ tintColor }) => (
       <Icon name="user" color={tintColor} size={25} />
@@ -252,7 +241,8 @@ static navigationOptions =({ navigation }) =>  ({
     .then(({uri}) => {
       console.log("uri "+uri)
       Backend.uploadProfilePic(uri).then((url) => {
-        this.setState({profPhoto:url,spinnerVisible:false})
+        this.setState({spinnerVisible:false})
+        this.props.userStore.setProfilePic(url)
       })
       .catch((error) => {
               console.log(err);
@@ -368,16 +358,7 @@ static navigationOptions =({ navigation }) =>  ({
 
   componentDidMount() {
      this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })
-    var user = firebase.auth().currentUser;
 
-    if(user.photoURL){
-
-      this.setState({profPhoto:user.photoURL})
-
-    }
-    if(user.displayName){
-        this.setState({userName:user.displayName})
-    }
 
   }
   logout = () => {
@@ -405,7 +386,7 @@ static navigationOptions =({ navigation }) =>  ({
          onSubmitEditing={()=>{this.setBio()}}
          placeholder={'Profil cümlenizi yazınız'}
          placeholderTextColor={'rgb(215,214,214)'}
-         maxLength={300}
+         maxLength={80}
          value={this.props.userStore.bio}
        />)
 
@@ -463,7 +444,7 @@ static navigationOptions =({ navigation }) =>  ({
        },
        shadowRadius: 1,
        shadowOpacity: 1,elevation:2, backgroundColor:'transparent',alignSelf:'center',left:12,position:'relative',width:80,height:80,borderRadius:40,alignItems:'center'}}>
-              <Image style={{backgroundColor:'transparent',height:80,width:80, borderRadius:40}} source={{uri:this.state.profPhoto}}></Image>
+              <Image style={{backgroundColor:'transparent',height:80,width:80, borderRadius:40}} source={{uri:this.props.userStore.profilePic}}></Image>
 
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{shadowColor: "rgba(0, 0, 0, 0.2)",
@@ -481,7 +462,7 @@ static navigationOptions =({ navigation }) =>  ({
 
 
 
-            <Text style={{alignSelf:'center',marginBottom:-13,fontWeight:'bold',color:'rgb(36,20,102)',fontFamily:'SourceSansPro-Bold',fontSize:18}}>{this.state.userName}</Text>
+            <Text style={{alignSelf:'center',marginBottom:-13,fontWeight:'bold',color:'rgb(36,20,102)',fontFamily:'SourceSansPro-Bold',fontSize:18}}>{this.props.userStore.userName}</Text>
 
 
             <View style={{alignItems:'center'}}>
@@ -516,7 +497,7 @@ static navigationOptions =({ navigation }) =>  ({
 
           {/* Profile Page Buttons */}
 
-      
+
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <Modal
             animationType={'slide'}

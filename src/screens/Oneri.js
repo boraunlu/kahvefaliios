@@ -26,18 +26,7 @@ export default class Oneri extends React.Component {
 
   static navigationOptions = {
       title: 'Öneri Ve Şikayet',
-      headerStyle: {
-        backgroundColor:'white',
-        height: 46
-
-      },headerRight:<View style={{width:70,height:10}}></View>,
-      headerTitleStyle: {
-        fontWeight: 'bold',
-        fontSize:18,
-        textAlign: "center",alignSelf: 'center',
-        color: "#241466",
-  textAlign:'center'
-      },
+      headerRight:<View></View>,
 
     };
 
@@ -65,7 +54,7 @@ export default class Oneri extends React.Component {
             })
           })
           .then((response) => {
-            this.props.navigation.navigate('Profil')
+            this.props.navigation.goBack()
           })
         }
       }
