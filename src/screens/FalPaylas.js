@@ -386,44 +386,67 @@ export default class FalPaylas extends React.Component {
     }
 
     renderFalInfo = () => {
-      if(this.state.super===2){
-        return(
-          <View style={styles.box}>
-            <Text style={styles.faltypeyazipopup}>
-              Maksimum yorum, maksimum sohbet!
-            </Text>
-            <Animatable.Text   animation="pulse" easing="ease-out" iterationCount="infinite" style={[styles.faltypeyazikucukpopup]}>
-              {'\u2022'} Falınız 3 gün süre ile panoda kalır
-              {'\u2022'} Minimum 20 yorum gelmezse krediniz iade{"\n"}
-              {'\u2022'} Falınız panonun hep en üst bölümünde kalır{"\n"}
-            </Animatable.Text>
-          </View>
-        )
-      }
-      else if(this.state.super===1){
-        return(
-          <View style={styles.box}>
-            <Text style={styles.faltypeyazipopup}>
-              Falınızı sosyal panoda tüm deneyimli falcıların yorumuna açın!
-            </Text>
-            <Animatable.Text   animation="pulse" easing="ease-out" iterationCount="infinite" style={[styles.faltypeyazikucukpopup]}>
-              {'\u2022'} Falınız 2 gün süre ile panoda kalır{"\n"}
-              {'\u2022'} Minimum 10 yorum gelmezse krediniz iade
-            </Animatable.Text>
-          </View>
-        )
+      if(this.state.super===2||this.state.super===1){
+        if(this.state.super===1){
+          var normal= styles.innerwrapselected;
+          var normalyazi= styles.yaziselected;
+          var normalboldyazi=styles.yaziselectedBold
+          var superolan=styles.innerwrap
+          var superyazi=styles.yazinotselected
+          var superboldyazi=styles.yazinotselectedBold
+        }
+        else {
+          var normal= styles.innerwrap;
+          var normalyazi= styles.yazinotselected
+          var normalboldyazi=styles.yazinotselectedBold
+          var superolan=styles.innerwrapselected
+          var superyazi=styles.yaziselected;
+          var superboldyazi=styles.yaziselectedBold
+        }
 
+        return(
+          <View style={styles.box2}>
+            <TouchableOpacity onPress={() => {this.setState({super:1});}} style={normal}>
+              <Text style={normalboldyazi}>
+                Normal
+              </Text>
+              <Text   style={normalyazi}>
+                {'\u2022'} 2 gün pano süresi{"\n"}
+                {'\u2022'} 10 yorum gelmezse kredi iade
+              </Text>
+              <View style={{padding:5,position:'absolute',bottom:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
+                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                <Text style={[styles.label]}>
+                  100
+                </Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => {this.setState({super:2});magic.play();}} style={superolan}>
+              <Text style={superboldyazi}>
+                Süper 🌟
+              </Text>
+              <Text  style={superyazi}>
+                {'\u2022'} 3 gün pano süresi{"\n"}
+                {'\u2022'} 20 yorum gelmezse kredi iade{"\n"}
+                {'\u2022'} Falınız panonun üstünde kalsın
+              </Text>
+              <View style={{padding:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
+                <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                <Text style={[styles.label]}>
+                  150
+                </Text>
+              </View>
+            </TouchableOpacity>
+
+          </View>
+        )
       }
       else {
         return(
-          <View style={styles.box}>
-            <Text style={styles.faltypeyazipopup}>
-              Falınıza BİR deneyimli yorumcudan yorum gelir.
+          <View style={[styles.box,{marginTop:0,marginBottom:15}]}>
+            <Text style={[styles.faltypeyazipopup,{textAlign:'center'}]}>
+              Falınıza BİR deneyimli yorumcu bakar  <Icon name="user" color={'white'} size={20}/>
             </Text>
-            <Text style={styles.faltypeyazikucukpopup}>
-              Falınız sosyal panoda yer almaz. Falınızı sadece tek bir falcı görür.
-            </Text>
-
           </View>
         )
       }
@@ -593,25 +616,13 @@ export default class FalPaylas extends React.Component {
     if(this.props.userStore.user){
       if(this.state.super==1){
         return(
-          <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
-            <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-            <Text style={[styles.label]}>
-              100
-            </Text>
-
-          </View>
+        null
 
         )
       }
       else if (this.state.super==2) {
         return(
-          <View style={{padding:5,flexDirection:'row',zIndex:1001,position:'absolute',top:0,left:0}}>
-            <Image source={require('../static/images/coins.png')} style={styles.coin}/>
-            <Text style={[styles.label]}>
-              150
-            </Text>
-
-          </View>
+        null
         )
       }
       else if (this.state.super==3) {
@@ -679,45 +690,43 @@ export default class FalPaylas extends React.Component {
 
     return (
 
-      <ImageBackground source={backgroundImage} style={styles.container}>
-        <View style={{
-          elevation:4,
-          position:'absolute',
-          top:-77,
-          left:-75,
+      <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
+        {
+          this.state.super===0||this.state.super===3?
+          <View style={{
+            elevation:4,
+            position:'absolute',
+            top:-77,
+            left:-75,
 
-          width: 120,
-          height: 120,
-          backgroundColor: "rgb(89, 70, 159)",
-          shadowColor: "rgba(0, 0, 0, 0.2)",
-          shadowOffset: {
-            width: 0,
-            height: 2
-          },
-          shadowRadius: 1,
-          shadowOpacity: 1,
-          borderRadius: 50,
-          zIndex:10,
-          transform: [
-            {scaleX: 2}]}}>
+            width: 120,
+            height: 120,
+            backgroundColor: 'rgb( 236 ,196 ,75)',
+            shadowColor: "rgba(0, 0, 0, 0.2)",
+            shadowOffset: {
+              width: 0,
+              height: 2
+            },
+            shadowRadius: 1,
+            shadowOpacity: 1,
+            borderRadius: 50,
+            zIndex:10,
+            transform: [
+              {scaleX: 2}]}}>
 
-        </View>
+          </View>:null
+        }
+
         {this.renderPrice()}
         <KeyboardAwareScrollView  style={{flex:1}} >
           <View style={{flex:1,alignItems:'center',paddingBottom:40,paddingLeft:15,paddingRight:15}}>
             <View style={{flex:1,marginLeft:-15,marginRight:-15,paddingLeft:15,paddingRight:15,alignSelf: 'stretch'}}>
 
-
-
-
-
-
-
             </View>
 
             {this.props.navigation.state.params.type==1?
-              <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
-                <SwitchSelector  options={options2} buttonColor={'rgb(236,196,75)'} initial={0} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+              <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:30,width:'100%'}}>
+                <Text style={{textAlign:'center',color:'white',fontSize:20,fontFamily:'SourceSansPro-Bold'}}>Sosyal Kahve Falı</Text>
               </View>:
               this.props.navigation.state.params.type==3?
               <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
@@ -728,12 +737,9 @@ export default class FalPaylas extends React.Component {
                 <SwitchSelector  options={options2} buttonColor={'rgb(236,196,75)'} initial={1} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
               </View>:
               <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
-                <SwitchSelector  options={options} buttonColor={'rgb(236,196,75)'} initial={0} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+                <Text style={{textAlign:'center',color:'white',fontSize:24,fontFamily:'SourceSansPro-Bold'}}>Günlük Kahve Falı</Text>
               </View>
             }
-
-
-
 
             {this.renderFalInfo()}
 
@@ -833,7 +839,7 @@ faltypeyazi:{
   textAlign: 'left',color:'white',fontWeight:'bold',fontSize:22
 },
 faltypeyazipopup:{
-  textAlign: 'left',color:'white',fontFamily:'SourceSansPro-Bold',fontSize:16,marginTop:5,marginBottom:5
+  textAlign: 'center',color:'white',fontFamily:'SourceSansPro-Bold',fontSize:16,marginTop:5,marginBottom:5
 },
 faltypeyazikucuk:{
   textAlign: 'left',color:'white',fontSize:14
@@ -841,10 +847,25 @@ faltypeyazikucuk:{
 faltypeyazikucukpopup:{
   color:'white',textAlign: 'left',fontSize:14,fontFamily:'SourceSansPro-Regular'
 },
+yaziselected:{
+  color:'white',textAlign: 'left',fontSize:14,fontFamily:'SourceSansPro-Regular'
+},
+yaziselectedBold:{
+  textAlign: "center",color: 'white',fontFamily:'SourceSansPro-Bold',fontSize:16,marginTop:5,marginBottom:5
+},
+yazinotselected:{
+  color:"#241466",textAlign: 'left',fontSize:14,fontFamily:'SourceSansPro-Regular'
+},
+yazinotselectedBold:{
+  textAlign: 'center',color:"#241466",fontFamily:'SourceSansPro-Bold',fontSize:16,marginTop:5,marginBottom:5
+},
 faltypeyazikucukpopup2:{
   flex:1,color:'white',fontSize:14,fontWeight:'bold',alignSelf:'stretch',textAlign:'center'
 },
-box:{flex:1,borderColor:'white',borderRadius:5,paddingTop:10,marginTop:10,paddingLeft:20,paddingRight:20,width:'100%'}
+box:{flex:1,borderColor:'white',borderRadius:5,paddingTop:10,marginTop:10,paddingLeft:20,paddingRight:20,width:'100%'},
+box2:{flexDirection:'row',justifyContent:'center',flex:1,borderColor:'white',borderRadius:5,padding:0,marginTop:10,width:'100%'},
+innerwrap:{backgroundColor:'rgba(255,255,255,0.4)',flex:1,borderColor:'white',borderRadius:5,padding:10,margin:5,marginTop:15,marginBottom:15},
+innerwrapselected:{backgroundColor:'rgba( 255,255,255,0.4)',flex:1,borderColor:'rgb( 236 ,196 ,75)',borderRadius:5,borderWidth:4,padding:10,margin:5,marginTop:5,marginBottom:5}
 
 
 });

@@ -16,7 +16,11 @@ import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import PropTypes from 'prop-types';
+import { observable } from 'mobx';
+import { observer, inject } from 'mobx-react';
 
+@inject("userStore")
+@observer
 export default class FalPuan extends React.Component {
   constructor(props) {
     super(props);
@@ -54,6 +58,9 @@ export default class FalPuan extends React.Component {
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
         <ScrollView>
           <Image style={{alignSelf:'center',height:60,width:60, borderRadius:30,marginTop:20,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
+          <Text style={styles.falPuan}>
+              Fal Puanın: {this.props.userStore.falPuan}{"\n"}
+            </Text>
           <View style={styles.containers}>
             <Text style={styles.textTitle}>
               Fal Puan Nasıl Kazanılır?{"\n"}
@@ -182,6 +189,12 @@ const styles = StyleSheet.create({
     position:"relative",
     top:3,
     marginRight:9
+  },
+  falPuan:{
+    fontSize:20,
+    fontFamily:'SourceSansPro-Bold',
+    color:'white',
+    textAlign:'center'
   }
 
 });

@@ -361,6 +361,11 @@ static navigationOptions =({ navigation }) =>  ({
 
 
   }
+
+  onImageError = (error) => {
+    this.props.userStore.checkProfPic()
+  }
+
   logout = () => {
 
     Backend.logOut()
@@ -444,7 +449,7 @@ static navigationOptions =({ navigation }) =>  ({
        },
        shadowRadius: 1,
        shadowOpacity: 1,elevation:2, backgroundColor:'transparent',alignSelf:'center',left:12,position:'relative',width:80,height:80,borderRadius:40,alignItems:'center'}}>
-              <Image style={{backgroundColor:'transparent',height:80,width:80, borderRadius:40}} source={{uri:this.props.userStore.profilePic}}></Image>
+              <Image style={{backgroundColor:'transparent',height:80,width:80, borderRadius:40}} onError={(error) => this.onImageError(error)} source={{uri:this.props.userStore.profilePic}}></Image>
 
             </TouchableOpacity>
             <TouchableOpacity onPress={()=>{this.changePhoto()}} style={{shadowColor: "rgba(0, 0, 0, 0.2)",

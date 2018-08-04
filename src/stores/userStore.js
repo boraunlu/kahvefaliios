@@ -2,11 +2,39 @@ import { observable,action,computed } from 'mobx';
 import Backend from '../Backend';
 import {AppState} from 'react-native';
 
+
+getProfPicFromName = (name,gender) => {
+  if(gender=='female'){
+    var firststr='kadinharfler'
+    var secondstr='K'
+  }
+  else {
+    var firststr='erkekharfler'
+    var secondstr='E'
+  }
+  var firstchar=name.charAt(0).toUpperCase()
+  var isLetter = firstchar.match(/[A-Z]/i);
+  if(!isLetter){
+    if(firstchar=="İ"){firstchar='AI'}
+    else if(firstchar=="Ö"){firstchar='AO'}
+    else if(firstchar=="Ü"){firstchar='AU'}
+    else if(firstchar=="Ç"){firstchar='AC'}
+    else if(firstchar=="Ş"){firstchar='AS'}
+    else {
+      firstchar='K'
+    }
+  }
+
+  var urlBase= 'https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/'+firststr+'%2F'+firstchar+secondstr+'.jpg?alt=media'
+  return urlBase
+}
+
 export default class UserStore {
   @observable user = null;
   @observable userName = ' ';
-  @observable profilePic = ' ';
+  @observable profilePic = 'https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/erkekharfler%2FKE.jpg?alt=media';
   @observable userCredit= 0;
+  @observable falPuan= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
   @observable gunlukUnread= 0;
@@ -221,11 +249,29 @@ export default class UserStore {
     this.profilePic=url
   }
 
+  @action checkProfPic() {
+
+    if(this.profilePic.length>5){
+      var profilePic=getProfPicFromName(this.userName,this.user.gender)
+      this.profilePic=profilePic
+      Backend.setProfilePic(profilePic)
+    }
+  }
+
+
   @action setUser(user) {
     this.user = user;
     this.userCredit=user.credit
     this.userName=user.name
-    this.profilePic=user.profile_pic
+    if(user.profile_pic){
+      this.profilePic=user.profile_pic
+    }
+    else {
+      var profilePic=getProfPicFromName(user.name,user.gender)
+      this.profilePic=profilePic
+      Backend.setProfilePic(profilePic)
+    }
+    this.falPuan=user.falPuan
     this.bio=user.bio
     this.age=user.age
     this.city=user.city

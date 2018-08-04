@@ -847,7 +847,7 @@ export default class SocialFal extends React.Component {
                                         letterSpacing: 0,
                                         textAlign: "left",
                                         color: "#000000"}}>
-                          {comment.comment+"asdasd"}
+                          {comment.comment}
                     {/*commentIndex*/}
                           {/*this.state.fal.commentsNew*/}
                           {/*JSON.stringify(this.state.comments.map((x,index1)=>{x._id}))*/}

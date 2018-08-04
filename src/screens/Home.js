@@ -43,7 +43,7 @@ export default class Home extends React.Component {
     }
 
   componentDidMount() {
-    console.log(firebase.database().app.name);
+    firebase.analytics().setAnalyticsCollectionEnabled(true)
     const { navigate } = this.props.navigation;
 
     var init = false;

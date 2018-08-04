@@ -142,7 +142,7 @@ export default class Social extends React.Component {
   }
 
   navigateToTekFal = () => {
-    if(this.props.userStore.user.lastFalType==2){
+    if(this.props.socialStore.lastFalType=='sosyal'){
       this.props.navigation.navigate('SocialFal',{fal:this.props.socialStore.tek})
     }
     else {

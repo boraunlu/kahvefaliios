@@ -22,6 +22,7 @@ import {
 
 
 import PropTypes from 'prop-types';
+import type { RemoteMessage } from 'react-native-firebase';
 import firebase from 'react-native-firebase';
 import axios from 'axios';
 import UserData from '../components/UserData';
@@ -173,7 +174,7 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   navigateToFal = () => {
-    if(this.props.userStore.user.lastFalType==2){
+    if(this.props.socialStore.lastFalType=='sosyal'){
       this.props.navigation.navigate('SocialFal',{fal:this.props.socialStore.tek})
     }
     else {
@@ -263,21 +264,21 @@ static navigationOptions = ({ navigation }) => ({
     ).start()
   }
 
-  showReklamPopup = () => {
-    if(this.state.reklam){
+  showReklamPopup = (reklam) => {
+    if(reklam){
       AsyncStorage.getItem('reklam', (err, result) => {
 
           if(result){
             result=JSON.parse(result)
-            if(result.url!==this.state.reklam.url){
+            if(result.url!==reklam.url){
 
               this.popupReklam.show()
-              AsyncStorage.setItem('reklam', JSON.stringify(this.state.reklam), () => {});
+              AsyncStorage.setItem('reklam', JSON.stringify(reklam), () => {});
             }
           }
           else {
             this.popupReklam.show()
-            AsyncStorage.setItem('reklam', JSON.stringify(this.state.reklam), () => {});
+            AsyncStorage.setItem('reklam', JSON.stringify(reklam), () => {});
           }
       });
     }
@@ -326,8 +327,9 @@ static navigationOptions = ({ navigation }) => ({
     })
     .then( (response) => {
       var responseJson=response.data
-      this.setState({userData:responseJson,credit:responseJson.credit});
-       //alert(JSON.stringify(responseJson))
+      this.setState({userData:responseJson,credit:responseJson.credit,reklam:responseJson.reklam});
+        this.showReklamPopup(responseJson.reklam)
+
        this.props.userStore.setUser(responseJson)
 
     })
@@ -340,7 +342,9 @@ static navigationOptions = ({ navigation }) => ({
     })
 
     this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
-        
+      console.log("asdf")
+        console.log(message)
+        alert("asd")
     });
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
@@ -403,6 +407,7 @@ static navigationOptions = ({ navigation }) => ({
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this._handleAppStateChange);
+    this.messageListener();
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -531,7 +536,7 @@ static navigationOptions = ({ navigation }) => ({
 
                 width: 100,
                 height: 100,
-                backgroundColor: 'rgb(209, 190, 142)',
+                backgroundColor: "#d4993a",
                 shadowColor: "rgba(0, 0, 0, 0.2)",
                 shadowOffset: {
                   width: 0,
@@ -559,13 +564,13 @@ static navigationOptions = ({ navigation }) => ({
                   </View>
                   )}
 
-                <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(230,213,160)'}}>
+                <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(228,176,92)'}}>
 
                   <Text style={styles.faltypeyazi}>
-                    Günlük Fal
+                    Günlük Kahve Falı
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                    Falınıza bir falcımızdan yorum alın
+                    Tek yorumcu bakar  <Icon name="user" color={'white'} size={20}/>
                   </Text>
                 <View style={{position:'absolute',left:-15,bottom:-10,backgroundColor:'transparent'}}>
                     <Image source={require('../static/images/anasayfa/noun1410215Cc.png')} style={{}}/>
@@ -579,59 +584,6 @@ static navigationOptions = ({ navigation }) => ({
           <View style={{flexDirection:'row',borderRadius:4}}>
             <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(1)}}>
               <View  style={styles.faltypeimage}>
-                <View style={{
-
-                  position:'absolute',
-                  top:-57,
-                  right:-65,
-                  overflow:'hidden',
-                  width: 100,
-                  height: 100,
-                  backgroundColor: "#d4993a",
-                  shadowColor: "rgba(0, 0, 0, 0.2)",
-                  shadowOffset: {
-                    width: 0,
-                    height: 2
-                  },
-                  shadowRadius: 1,
-                  shadowOpacity: 1,
-                  borderRadius: 50,
-                  borderRadius: 50,
-                  zIndex:1,
-                  transform: [
-                    {scaleX: 2}]}}>
-
-                </View>
-                <View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
-                  <Text style={[styles.label]}>
-                    100
-                  </Text>
-                  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
-                </View>
-                <View style={{flex:1,alignSelf: 'stretch',borderRadius:4,alignItems:'center',justifyContent:'center',backgroundColor:'rgb(228,176,92)'}}>
-
-                  <Text style={styles.faltypeyazi}>
-                    Sosyal Fal
-                  </Text>
-                  <Text style={styles.faltypeyazikucuk}>
-                    Falınıza bir çok farklı falcıdan yorum alın!
-                  </Text>
-                <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
-                    <Image source={require('../static/images/anasayfa/page1.png')} style={{}}/>
-                </View>
-                </View>
-
-
-
-              </View>
-            </TouchableOpacity>
-
-          </View>
-
-          <View style={{flexDirection:'row'}}>
-            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(2)}}>
-              <View  style={styles.faltypeimage}>
-
                 <View style={{
 
                   position:'absolute',
@@ -657,33 +609,29 @@ static navigationOptions = ({ navigation }) => ({
                 </View>
                 <View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
                   <Text style={[styles.label]}>
-                    150
+                    100
                   </Text>
                   <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
                 </View>
-
-                <View style={{flex:1,borderRadius:4,alignSelf: 'stretch',alignItems:'center',justifyContent:'center',backgroundColor:'rgb(188,69,118)'}}>
-
+                <View style={{flex:1,alignSelf: 'stretch',borderRadius:4,alignItems:'center',justifyContent:'center',backgroundColor:'rgb(188,69,118)'}}>
 
                   <Text style={styles.faltypeyazi}>
-                    Süper Sosyal Fal
+                    Sosyal Kahve Falı
                   </Text>
                   <Text style={styles.faltypeyazikucuk}>
-                  Maksimum yorum, maksimum sohbet!{"\n"}
-                  20 farklı falcıdan yorum gelmezse krediniz iade
+                    Çok yorumcu bakar  <Icon name="group" color={'white'} size={20}/>
                   </Text>
-                <View style={{position:'absolute',zIndex:-100,left:0,bottom:0,backgroundColor:'transparent'}}>
-                    <Image source={require('../static/images/anasayfa/coffee.png')} style={{}}/>
+                <View style={{position:'absolute',left:0,bottom:0,backgroundColor:'transparent'}}>
+                    <Image source={require('../static/images/anasayfa/page1.png')} style={{}}/>
                 </View>
                 </View>
+
+
 
               </View>
             </TouchableOpacity>
 
-
           </View>
-
-
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={[styles.faltypecontainer,{borderRadius:4,backgroundColor:"#8975cd"}]} onPress={() => {this.navigateToFalPaylas(3)}}>
               <View  style={styles.faltypeimage}>
@@ -777,7 +725,7 @@ static navigationOptions = ({ navigation }) => ({
               <View style={{height:24,position:'relative',right:29,top:3,paddingRight:20,paddingLeft:30,paddingBottom:2,borderRadius:12,backgroundColor:'rgba(0,0,0,0.18)',flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
 
                     <Text style={{textAlign:'left',fontWeight:'bold',position:'relative',left:5,fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',fontSize:12}}>
-                    Çevrimiçi Kullanıcı Sayısı:</Text>
+                    Çevrimiçi Falsever Sayısı:</Text>
                     <Text style={{fontSize:14,fontWeight:'bold',fontFamily:'SourceSansPro-Bold',color:'rgb(255,255,255)',position:'relative',left:7}}>
 
                     &nbsp;
@@ -789,22 +737,18 @@ static navigationOptions = ({ navigation }) => ({
 
           </View>
 
-            {/* Bizimle ilgli görüşler
+            {
 
-          <View style={{height: 70,borderRadius: 15,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',paddingBottom:40}}>
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Social')}} style={{backgroundColor:'rgb(230,213,160)',borderRadius: 4,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',padding:5,paddingLeft:8,}}>
 
-               <Text style={{textAlign:'right',fontWeight:'normal',fontFamily:'SourceSansPro-Bold',color: "#a48bff",fontSize:10,paddingRight:5}}>
-                   Bizimle ilgili görüşlerinizi{'\n'}profil sayfanızdan iletebilirsiniz</Text>
-              <Image source={require('../static/images/anasayfa/noun1616273Cc.png')} style={{height:25,width:25,position:'relative',top:3}}/>
-          </View>*/}
+               <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',color:"#241466",fontSize:14,paddingRight:5}}>
+                Fal bak{'\n'}Kazan</Text>
 
-
-
+          </TouchableOpacity>}
 
             {this.renderTek()}
 
             {this.renderFalTypes()}
-
 
           </View>
 
@@ -925,7 +869,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',color:'white',fontWeight:'bold',fontSize:19,marginTop:20
   },
   faltypeyazikucuk:{
-    textAlign: 'center',color:'white',fontSize:14,zIndex:1000,fontFamily:'SourceSansPro-Regular'
+    textAlign: 'center',color:'white',fontSize:16,zIndex:1000,fontFamily:'SourceSansPro-Regular'
   },
   faltypeyazikucukpopup:{
     color:'white',fontSize:15,marginLeft:25,marginRight:5,marginTop:20

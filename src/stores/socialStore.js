@@ -11,6 +11,7 @@ export default class SocialStore {
   @observable tek = null;
   @observable falPhotos = [];
   @observable tekUnread = 0;
+  @observable lastFalType= null;
   @observable falseverUnread= 0;
   @observable sosyalUnread = 0;
   @observable gunlukUnread = 0;
@@ -82,12 +83,14 @@ export default class SocialStore {
       if(sosyal.status===1){
         if(simdi.diff(moment(sosyal.time),"days")<2){
               this.tek=sosyal
+                  this.lastFalType='sosyal'
 
         }
       }
       else if (sosyal.status===3) {
         if(simdi.diff(moment(sosyal.time),"days")<3){
               this.tek=sosyal
+                  this.lastFalType='sosyal'
 
         }
       }
@@ -99,6 +102,7 @@ export default class SocialStore {
       if(gunluk.status===1){
         if(simdi.diff(moment(gunluk.time),"days")<1){
               this.tek=gunluk
+                  this.lastFalType='gunluk'
         }
       }
     }

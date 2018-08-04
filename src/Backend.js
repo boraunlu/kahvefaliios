@@ -989,6 +989,20 @@ loadMessages = (callback) => {
 
   }
 
+  setProfilePic = (url) => {
+    fetch('https://eventfluxbot.herokuapp.com/appapi/setProfilePic', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        url: url,
+        uid:this.getUid()
+      })
+    })
+  }
+
   uploadImages = (images) => {
     let urls = [];
     return new Promise((resolve, reject) => {

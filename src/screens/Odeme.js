@@ -113,26 +113,14 @@ export default class Odeme extends React.Component {
 
     }
     shareWithFriends = () => {
-      if(this.state.dynamiclink){
-        Share.share({
-          message: this.state.dynamiclink,
-          url: this.state.dynamiclink,
-          title: 'Kahve Falı Sohbeti'
-        }, {
-          // Android only:
-          dialogTitle: 'Kahve Falı Sohbeti',
-          // iOS only:
-
-        })
-      }
-
-      else {
-        firebase.links()
-          .createShortDynamicLink(link,'SHORT')
-          .then((url) => {
+      Alert.alert(
+        'Arkadaşınla Paylaş',
+        'Senin davetinle uygulamayı indiren her arkadaşından 20 kredi kazan!',
+        [
+          {text: 'Tamam', onPress: () => {
             Share.share({
-              message: url,
-              url: url,
+              message: this.state.dynamiclink,
+              url: this.state.dynamiclink,
               title: 'Kahve Falı Sohbeti'
             }, {
               // Android only:
@@ -140,8 +128,10 @@ export default class Odeme extends React.Component {
               // iOS only:
 
             })
-        });
-      }
+          }},
+        ],
+      )
+
     }
 
     shareLinkWithShareDialog = () => {
