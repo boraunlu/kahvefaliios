@@ -113,24 +113,56 @@ export default class Odeme extends React.Component {
 
     }
     shareWithFriends = () => {
-      Alert.alert(
-        'Arkadaşınla Paylaş',
-        'Senin davetinle uygulamayı indiren her arkadaşından 20 kredi kazan!',
-        [
-          {text: 'Tamam', onPress: () => {
-            Share.share({
-              message: this.state.dynamiclink,
-              url: this.state.dynamiclink,
-              title: 'Kahve Falı Sohbeti'
-            }, {
-              // Android only:
-              dialogTitle: 'Kahve Falı Sohbeti',
-              // iOS only:
+      if(this.state.dynamiclink){
+        Alert.alert(
+          'Arkadaşınla Paylaş',
+          'Senin davetinle uygulamayı indiren her arkadaşından 20 kredi kazan!',
+          [
+            {text: 'Tamam', onPress: () => {
+              Share.share({
+                message: this.state.dynamiclink,
+                url: this.state.dynamiclink,
+                title: 'Kahve Falı Sohbeti'
+              }, {
+                // Android only:
+                dialogTitle: 'Kahve Falı Sohbeti',
+                // iOS only:
 
-            })
-          }},
-        ],
-      )
+              })
+            }},
+          ],
+        )
+      }
+      else {
+        const link =
+        new firebase.links.DynamicLink('http://www.falsohbeti.com/indir?senderID='+Backend.getUid(), 'qwue3.app.goo.gl')
+        .android.setPackageName('com.kahvefaliapp')
+          .ios.setBundleId('com.grepsi.kahvefaliios');
+
+
+        firebase.links()
+          .createShortDynamicLink(link,'SHORT')
+          .then((url) => {
+            Alert.alert(
+              'Arkadaşınla Paylaş',
+              'Senin davetinle uygulamayı indiren her arkadaşından 20 kredi kazan!',
+              [
+                {text: 'Tamam', onPress: () => {
+                  Share.share({
+                    message: url,
+                    url: url,
+                    title: 'Kahve Falı Sohbeti'
+                  }, {
+                    // Android only:
+                    dialogTitle: 'Kahve Falı Sohbeti',
+                    // iOS only:
+
+                  })
+                }},
+              ],
+            )
+        });
+      }
 
     }
 
@@ -668,7 +700,7 @@ export default class Odeme extends React.Component {
           </View>
           </View>
         </View>
-
+         <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
 
         </ScrollView>
       </ImageBackground>

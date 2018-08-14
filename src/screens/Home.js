@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import { NavigationActions } from 'react-navigation'
 import firebase from 'react-native-firebase';
 import Backend from '../Backend';
+import codePush from 'react-native-code-push'
 import { Client } from 'bugsnag-react-native';
 
 const bugsnag = new Client();
@@ -47,10 +48,12 @@ export default class Home extends React.Component {
     const { navigate } = this.props.navigation;
 
     var init = false;
+
+    codePush.sync({ installMode: codePush.InstallMode.ON_NEXT_RESUME });
     firebase.auth().onAuthStateChanged(function(user) {
 
       if (user) {
-
+        firebase.analytics().setUserId(user.uid)
         if(!init){
 
           this._navigateTo('Greeting')
@@ -147,7 +150,7 @@ componentWillUnmount() {
 
   render() {
     return (
-      <Image source={require('../static/images/splashscreenfinal.jpg')} style={styles.container}>
+      <Image source={require('../static/images/background.png')} style={styles.container}>
       </Image>
     );
   }

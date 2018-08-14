@@ -69,7 +69,7 @@ export default class ProfilePicker extends Component {
   initAgePicker = () => {
 
     let agedata = [];
-    for(var i=12;i<70;i++){
+    for(var i=18;i<70;i++){
         agedata.push(i);
     }
 
@@ -107,7 +107,7 @@ export default class ProfilePicker extends Component {
         this.meslekPicker.shake()
       }
       if(this.props.userStore.userName.length<3){
-        this.namePicker.shake()
+      //  this.namePicker.shake()
       }
 
       this.props.changeValidation()

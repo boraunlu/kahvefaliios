@@ -626,6 +626,16 @@ export default class Leader extends React.Component {
 
   render() {
 
+    var a = moment();
+
+     var b = moment().day(8);
+     b.hour(0)
+     var hours=b.diff(a, 'hours')
+     var days=b.diff(a, 'days')
+     days=days%7
+     hours=hours%24
+     hours<0?hours=0:null
+     days<0?days=0:null
 
     return (
 
@@ -637,6 +647,12 @@ export default class Leader extends React.Component {
          tabBarPosition='overlayTop'
          >
          <ScrollView tabLabel='HAFTALIK YARIŞMA' style={{flex:1,width:"100%"}}>
+           <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
+             <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
+               {"Yarışma bitimine kalan süre: "+days+" gün, "+hours+" saat"}
+             </Text>
+           </View>
+
           {this.renderWeeks()}
          </ScrollView>
          <ScrollView  tabLabel='GEÇEN HAFTA'  style={{flex:1,width:"100%"}}>

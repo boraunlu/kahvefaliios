@@ -232,6 +232,12 @@ export default class FalPaylas extends React.Component {
         }
 
         if(valid){
+          const { params } = this.props.navigation.state;
+          if(params.photos){
+            firebase.analytics().logEvent("gunluktenSosyaleSuccess")
+          }else {
+            firebase.analytics().logEvent("falPaylas"+supertype)
+          }
           this.setState({spinnerVisible:true})
 
           Backend.uploadImages(this.state.falPhotos).then((urls) => {
@@ -289,10 +295,12 @@ export default class FalPaylas extends React.Component {
       Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn,this.state.pollInput1,this.state.pollInput2,this.state.super)
       var alertMessage="Falınız diğer falseverlerle paylaşıldı. Sosyal sayfasında falınıza gelen yorumlarını takip edebilirsiniz!"
       if(this.state.super===0){this.props.userStore.setGunlukUsedTrue();alertMessage="Günlük falınız gönderildi! Kısa süre içinde falınıza bakılacak"}
+      if(this.state.super===3){alertMessage="El falınız gönderildi! Kısa süre içinde falınıza bakılacak"}
       Keyboard.dismiss()
       this.setState({sosyalInput:'',falPhotos:[]})
        setTimeout(()=>{Alert.alert("Teşekkürler",alertMessage);},550)
        setTimeout(()=>{
+
 
          const resetAction = NavigationActions.reset({
             index: 0,
@@ -303,16 +311,16 @@ export default class FalPaylas extends React.Component {
           })
           this.props.navigation.dispatch(resetAction)
           /*
-         axios.post('https://eventfluxbot.herokuapp.com/appapi/getTek', {
-           uid: Backend.getUid(),
-         })
-         .then((response) => {
-           var responseJson=response.data
-           this.props.socialStore.setTek(responseJson)
-         })
-         .catch(function (error) {
+          this.props.navigation.goBack()
 
-         });*/
+              Backend.getAllFals().then( (response) => {
+                 this.props.socialStore.setAllFals(response)
+              })
+              Backend.getSocials().then((socials)=>{
+                this.props.socialStore.setSocials(socials)
+              })*/
+
+
       },850)
     }
 
@@ -347,7 +355,7 @@ export default class FalPaylas extends React.Component {
                }
                else{
                  if(response && response.productIdentifier) {
-                   postSosyal(urls)
+                   this.postSosyal(urls)
 
                  }
                }
@@ -428,7 +436,7 @@ export default class FalPaylas extends React.Component {
               <Text  style={superyazi}>
                 {'\u2022'} 3 gün pano süresi{"\n"}
                 {'\u2022'} 20 yorum gelmezse kredi iade{"\n"}
-                {'\u2022'} Falınız panonun üstünde kalsın
+                {'\u2022'} Falınız 1 gün boyunca panonun üst kısmına sabitlenir
               </Text>
               <View style={{padding:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
                 <Image source={require('../static/images/coins.png')} style={styles.coin}/>
@@ -446,6 +454,9 @@ export default class FalPaylas extends React.Component {
           <View style={[styles.box,{marginTop:0,marginBottom:15}]}>
             <Text style={[styles.faltypeyazipopup,{textAlign:'center'}]}>
               Falınıza BİR deneyimli yorumcu bakar  <Icon name="user" color={'white'} size={20}/>
+            </Text>
+            <Text style={[styles.faltypeyazikucukpopup,{textAlign:'center'}]}>
+              Falınız sosyal panoda yer almaz
             </Text>
           </View>
         )
@@ -764,7 +775,7 @@ export default class FalPaylas extends React.Component {
             {this.renderSosyalInput()}
 
            <TouchableOpacity  onPress={() => {this.sendSosyal(this.state.super);}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
-             <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>PAYLAŞ</Text>
+             <Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>GÖNDER</Text>
            </TouchableOpacity>
 
            <Modal

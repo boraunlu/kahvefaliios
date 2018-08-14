@@ -115,21 +115,13 @@ export default class Social extends React.Component {
       textAlign: "center",
       color: "#000000"}}>Puan Tablosu</Text><Image style={{marginRight:10,height:18,width:18}}source={require("../static/images/sosyal/group.png")}></Image></TouchableOpacity>,
 
-      headerLeft:<View style={{flexDirection:'row',alignItems:'center',paddingLeft:5}}>
-        <View style={{backgroundColor:"#7ed321",height:10,width:10,borderRadius:5,marginLeft:15,marginRight:5}}></View>
-        <Text style={{  fontFamily: "SourceSansPro-Italic",
-        fontSize: 12,
-        fontWeight: "600",
-        fontStyle: "italic",
-        letterSpacing: 0,
-        textAlign: "left",
-        color: "#000000"}}>Online:</Text><Text style={{  fontFamily: "SourceSansPro-Regular",
-        fontSize: 14,
-        fontWeight: "600",
-        fontStyle: "normal",
-        letterSpacing: 0,
-        textAlign: "left",
-        color: "#000000"}}>{generatefalcisayisi()}</Text></View>  ,
+      headerLeft:<TouchableOpacity style={{flexDirection:"row",alignItems:"center",marginLeft:7}} onPress={() => {navigation.state.params.toOduller()}}><Text style={{textDecorationLine:"underline",textDecorationColor:"black",textDecorationStyle:"solid",padding:5,fontFamily: "SourceSansPro-Regular",
+      fontSize: 13,
+      fontWeight: "normal",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      textAlign: "center",
+      color: "#000000"}}>🎁 Ödüller</Text></TouchableOpacity>,
 
 
     })
@@ -161,32 +153,27 @@ export default class Social extends React.Component {
         this.props.navigation.navigate('Leader')
 
   }
+  toOduller = () => {
+
+        this.props.navigation.navigate('FalPuan')
+
+  }
 
 
 
 
   componentDidMount() {
+
     AppState.addEventListener('change', this._handleAppStateChange);
-    this.props.navigation.setParams({ showpopup: this.showpopup  })
+    this.props.navigation.setParams({ showpopup: this.showpopup ,toOduller:this.toOduller })
 
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
-      uid: Backend.getUid(),
+    Backend.getSocials().then((socials)=>{
+      this.props.socialStore.setSocials(socials)
     })
-    .then( (response) => {
-
-      var responseJson=response.data
-      //this.props.socialStore.setTek(responseJson.tek)
-      var sosyals=Array.from(responseJson.sosyals)
-      this.props.socialStore.setSocials(sosyals)
-
-      var commenteds=Array.from(responseJson.commenteds)
-      this.props.socialStore.setCommenteds(commenteds)
-
-
+    Backend.getCommenteds().then((socials)=>{
+      this.props.socialStore.setCommenteds(socials)
     })
-    .catch(function (error) {
 
-    });
 
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
      this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
@@ -255,8 +242,6 @@ export default class Social extends React.Component {
 
     renderTek = () => {
       if(this.props.socialStore.tek){
-        var falType=this.props.userStore.user.lastFalType
-
         var tek = this.props.socialStore.tek
         var bakildi= false
         if(tek.comments.length>0){bakildi=true; var lastComment=tek.comments[tek.comments.length-1];}
@@ -273,10 +258,10 @@ export default class Social extends React.Component {
                    {bakildi?
                      <View style={{padding:10,flex:2,justifyContent:'center'}}>
                      <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
-                       {tek.comments[0].name}
+                       {lastComment.name}
                       </Text>
                       <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
-                      {capitalizeFirstLetter(tek.comments[0].comment)}
+                      {capitalizeFirstLetter(lastComment.comment)}
                      </Text>
                      </View>
                      :
@@ -453,36 +438,13 @@ export default class Social extends React.Component {
   _onRefresh = () => {
     this.setState({refreshing: true});
 
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
-      uid: Backend.getUid(),
-    })
-    .then( (response) => {
-
-      var responseJson=response.data
-      var sosyals=Array.from(responseJson.sosyals)
-      this.props.socialStore.setSocials(sosyals)
-      /*
-      var commenteds=[]
-      var id = Backend.getUid()
-      for (var i = 0; i < sosyals.length; i++) {
-        var sosyal = sosyals[i]
-        var comments=sosyal.comments
-        if(comments.length>0){
-
-          for (var x = 0; x < comments.length; x++) {
-            if(comments[x].fireID==id){
-              commenteds.push(sosyal)
-              break;
-            }
-          }
-        }
-      }
-      this.props.socialStore.setCommenteds(commenteds)*/
+    Backend.getSocials().then((socials)=>{
+      this.props.socialStore.setSocials(socials)
       this.setState({refreshing: false});
     })
-    .catch(function (error) {
-
-    });
+    Backend.getCommenteds().then((socials)=>{
+      this.props.socialStore.setCommenteds(socials)
+    })
 
   }
 

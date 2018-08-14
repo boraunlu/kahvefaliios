@@ -1160,11 +1160,25 @@ loadMessages = (callback) => {
 
   getSocials = () => {
     return new Promise((resolve, reject) => {
-      axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals2', {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getSosyals3', {
         uid: this.getUid(),
       })
       .then((response) => {
-        resolve(Array.from(response.data.sosyals))
+        resolve(response.data)
+      })
+      .catch(function (error) {
+        reject(error)
+      });
+    })
+  }
+
+  getCommenteds = () => {
+    return new Promise((resolve, reject) => {
+      axios.post('https://eventfluxbot.herokuapp.com/appapi/getCommenteds', {
+        uid: this.getUid(),
+      })
+      .then((response) => {
+        resolve(response.data)
       })
       .catch(function (error) {
         reject(error)

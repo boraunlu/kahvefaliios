@@ -252,7 +252,9 @@ export default class UserStore {
   @action checkProfPic() {
 
     if(this.profilePic.length>5){
-      var profilePic=getProfPicFromName(this.userName,this.user.gender)
+      var gender='male'
+      this.user?this.user.gender=='female'?gender='female':null:null
+      var profilePic=getProfPicFromName(this.userName,gender)
       this.profilePic=profilePic
       Backend.setProfilePic(profilePic)
     }

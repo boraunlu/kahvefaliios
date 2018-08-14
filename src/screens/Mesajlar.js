@@ -79,8 +79,12 @@ export default class Mesajlar extends React.Component {
       navigate( 'SocialFal',{fal:sosyal} )
     }
     navigateToGunlukFal = (sosyal) => {
-      const { navigate } = this.props.navigation;
-      navigate( 'GunlukFal',{fal:sosyal} )
+      if(sosyal.comments.length>0){
+        const { navigate } = this.props.navigation;
+        navigate( 'GunlukFal',{fal:sosyal} )
+      }  else {
+          Alert.alert("Falınız kısa süre içinde yorumlanacak :)")
+        }
     }
     navigateToAktif = (falciNo) => {
       const { navigate } = this.props.navigation;
@@ -698,8 +702,6 @@ export default class Mesajlar extends React.Component {
             </View>
             {this.renderAllGunluks()}
           </View>
-
-
          </ScrollView>
          <ScrollView tabLabel={'SOHBETLERİN ('+this.props.socialStore.falseverUnread+")"} style={{flex:1,width:'100%'}}>
           {this.renderFalsevers()}

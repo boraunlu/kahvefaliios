@@ -123,7 +123,7 @@ export default class User extends React.Component {
             if(this.props.userStore.userCredit<creditNeeded){
               Alert.alert(
                 'Kredi Gerekli',
-                'Sohbet başlatmak için kredi gerekiyor. Fal Puanlarınızı krediye çevirerek veya kredi satın alarak devam edebilirsiniz',
+                'Sohbet başlatmak için kredi gerekiyor. Kredi satın alarak devam edebilirsiniz',
                 [
                   {text: 'İstemiyorum', onPress: () => {}},
                   {text: 'Tamam', onPress: () => {

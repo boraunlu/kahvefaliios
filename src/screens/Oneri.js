@@ -84,13 +84,10 @@ export default class Oneri extends React.Component {
         <View style={{width:"100%",height:Dimensions.get('window').height*0.3}}>
 
             <TextInput
-
-multiline = {true}
-
-style={{flex:1,position:"relative",width:"100%",top:0,padding:15,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
-onChangeText={(text) => this.setState({text})}
-
-placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
+              multiline = {true}
+              style={{flex:1,position:"relative",width:"100%",top:0,padding:15,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
+              onChangeText={(text) => this.setState({text})}
+              placeholder={'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'}
               editable = {true}
               />
               </View>

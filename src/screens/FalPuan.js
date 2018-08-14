@@ -57,13 +57,98 @@ export default class FalPuan extends React.Component {
 
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
         <ScrollView>
-          <Image style={{alignSelf:'center',height:60,width:60, borderRadius:30,marginTop:20,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
-          <Text style={styles.falPuan}>
-              Fal Puanın: {this.props.userStore.falPuan}{"\n"}
-            </Text>
+          <Text style={{fontSize:22,color:'white',marginTop:10,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>🎁 ÖDÜLLER 🎁</Text>
+          
+
+          <Text style={{textAlign:'left',color:'white',fontFamily:'SourceSansPro-Bold',marginTop:10}}>      Haftalık</Text>
+          <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
+            <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>150{"\n"}FalPuan</Text> <Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              </View>
+                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+
+                     <Text style={styles.textTitle}>
+                       {'\u2022'} 150 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
+                       {'\u2022'} 150 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+                     </Text>
+                   </View>
+                 </View>
+                 <View style={{
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                   backgroundColor: "#bc4576"
+                 }}>
+                 </View>
+                 <View style={{
+                   flex: 2, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                   backgroundColor: "transparent"
+                 }}>
+                 </View>
+          </View>
+          <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
+            <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>100{"\n"}FalPuan</Text><Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              </View>
+                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+
+                     <Text style={styles.textTitle}>
+                       {'\u2022'} 100 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
+                       {'\u2022'} 100 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+                     </Text>
+                   </View>
+                 </View>
+                 <View style={{
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                   backgroundColor: "#e4b05c"
+
+                 }}>
+                 </View>
+                 <View style={{
+                   flex: 2, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                   backgroundColor: "transparent"
+                 }}>
+                 </View>
+          </View>
+          <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
+            <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
+              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>50{"\n"}FalPuan</Text><Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              </View>
+                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+
+                     <Text style={styles.textTitle}>
+                       {'\u2022'} 50 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
+                       {'\u2022'} 50 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+                     </Text>
+                   </View>
+                 </View>
+                 <View style={{
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                    backgroundColor: "#C0C0C0"
+                 }}>
+                 </View>
+                 <View style={{
+                   flex: 2, position: 'relative', alignItems: 'center', justifyContent: 'center', height: 80,
+                   borderRadius: 4,
+                   backgroundColor: "transparent"
+                 }}>
+                 </View>
+          </View>
+          <Text style={styles.infotext}>
+            {'\u2022'} Haftalık Fal Puanınınızın sayımı Pazar 23:59'da sonlanmaktadır.{'\n'}
+            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 50 krediniz yüklenir.{'\n'}
+            {'\u2022'} Migros Alışveriş Kartı çekilişi her hafta Pazartesi veya Salı günü Instagramdaki 'kahvefalisohbeti' hesabımızda hikaye olarak yayınlanacaktır.
+          </Text>
+
           <View style={styles.containers}>
-            <Text style={styles.textTitle}>
-              Fal Puan Nasıl Kazanılır?{"\n"}
+            <Text style={styles.textTitle2}>
+              Fal Puan Nasıl Kazanılır?
             </Text>
             <View style={{flexDirection:'row'}}>
 
@@ -92,36 +177,6 @@ export default class FalPuan extends React.Component {
               <Text style={styles.textValue}>10 Puan</Text>
             </View>
           </View>
-          <View style={styles.containers}>
-            <Text style={styles.textTitle}>
-              Seviyeler{"\n"}
-            </Text>
-            <View style={{flexDirection:'row'}}>
-               <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Seviye 1: </Text>
-              <Text style={styles.textValue}>Yeni Falsever</Text>
-            </View>
-            <View style={{flexDirection:'row'}}>
-               <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Seviye 2:</Text>
-              <Text style={styles.textValue}>Falsever</Text>
-            </View>
-            <View style={{flexDirection:'row'}}>
-             <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-            <Text style={styles.textKey}>Seviye 3:</Text>
-            <Text style={styles.textValue}>Deneyimli Falsever</Text>
-            </View>
-            <View style={{flexDirection:'row'}}>
-             <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-            <Text style={styles.textKey}>Seviye 4:</Text>
-            <Text style={styles.textValue}>Fal Uzmanı</Text>
-            </View>
-            <View style={{flexDirection:'row'}}>
-               <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Seviye 5:</Text>
-              <Text style={styles.textValue}>Fal Profesörü</Text>
-            </View>
-          </View>
         </ScrollView>
       </ImageBackground>
 
@@ -138,12 +193,23 @@ const styles = StyleSheet.create({
     alignSelf: 'stretch',
     width: null,
     alignItems:'center',
-    paddingRight:10,
-    paddingLeft:10,
+    padding:10,
+    paddingBottom:0,
+    paddingTop:0
 
   },
   textKey:{
     fontFamily: "SourceSansPro-Regular",
+    fontSize: 14,
+    fontWeight: "500",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign: "left",
+    color: "#241466",
+    paddingBottom:10
+  },
+  textKey2:{
+    fontFamily: "SourceSansPro-Bold",
     fontSize: 14,
     fontWeight: "500",
     fontStyle: "normal",
@@ -161,25 +227,43 @@ const styles = StyleSheet.create({
     textAlign: "left",
     color: "#241466",
     textAlign:'right',
-    paddingBottom:10,
+    paddingBottom:7,
     alignSelf:"flex-end",
     position:"absolute",
     right:0
   },
   textTitle:{
     fontFamily: "SourceSansPro-Bold",
-    textAlign:'justify',
-    fontSize: 18,
+    textAlign:'left',
+    fontSize: 16,
     fontWeight: "bold",
     fontStyle: "normal",
     letterSpacing: 0,
-    textAlign: "center",
+
     marginBottom:5,
-    color: "#241466"
+    color: "white"
+  },textTitle2:{
+    fontFamily: "SourceSansPro-Bold",
+    textAlign:'left',
+    fontSize: 16,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign:'center',
+    marginBottom:5,
+    color:"#241466"
   },containers:{
     width:deviceWidth*0.9,
     flex:1,
     height: 205,
+    opacity: 0.9,
+    borderRadius: 4,
+    backgroundColor: "#ffffff",
+    marginTop:20,
+    padding:15
+  },containers2:{
+    width:deviceWidth*0.9,
+    flex:1,
     opacity: 0.9,
     borderRadius: 4,
     backgroundColor: "#ffffff",
@@ -190,11 +274,54 @@ const styles = StyleSheet.create({
     top:3,
     marginRight:9
   },
+  Icon2:{
+    position:"relative",
+  },
   falPuan:{
     fontSize:20,
     fontFamily:'SourceSansPro-Bold',
     color:'white',
     textAlign:'center'
-  }
+  },
+  faltypeyazi:{
+    textAlign: 'center',color:'white',fontWeight:'bold', fontFamily: "SourceSansPro-Regular",
+    fontSize: 22,
+    fontWeight: "bold",
+    fontStyle: "normal",
+    letterSpacing: 0,
+  },
+  faltypeyazikucuk:{
+    textAlign: 'center',color:'white',fontSize:14
+  },
+  faltypecontainer:{
+    flex:1,
+    height: 80,
+  borderRadius: 4,
+  backgroundColor: "#ffffff",
+  marginBottom :15
+  },
+  faltypeimage:{
+    alignItems:'center',
+    alignSelf: 'stretch',
+    width: null,
+    height:123,
+    flexDirection:'column-reverse'
+  },
+  corner:{ width: 78,
+    margin:-10,
+    borderRadius: 6,
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
+    padding:8,alignItems:'center',
 
+    justifyContent:'center'}
+,coin:{
+  height:15,
+  width:15,
+  marginLeft:5,
+},
+infotext:{
+  color:'white',
+  fontSize:12,
+  fontFamily:'SourceSansPro-Regular'
+}
 });

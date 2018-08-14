@@ -242,6 +242,7 @@ export default class SocialFal extends React.Component {
   }
 
   like = (index) => {
+    firebase.analytics().logEvent("like")
     var newcomments=this.state.comments
     if(newcomments[index].likes){
       newcomments[index].likes.push(Backend.getUid())
@@ -421,14 +422,15 @@ export default class SocialFal extends React.Component {
   addComment = () => {
     const { params } = this.props.navigation.state;
     var index = params.index
-    if(this.state.commentInput.length<40&&!this.state.replyingTo){
+    if(this.state.commentInput.length<30&&!this.state.replyingTo){
       Alert.alert("Kısa Yorum","Lütfen daha uzun ve detaylı yorumlayın.")
     }
     else {
-      if(this.state.commentInput.length>800){
+      if(this.state.commentInput.length>1000){
         Alert.alert("Çok Uzun Yorum","Lütfen yorumunuzu biraz daha kısa tutun.")
       }
       else{
+        firebase.analytics().logEvent("comment")
         this.setState({commentInput:''})
         var falPuan =this.props.userStore.user.falPuan
         var seviye = 1
@@ -446,14 +448,17 @@ export default class SocialFal extends React.Component {
         var newcomments=this.state.comments
         if(this.state.replyingTo){
           newcomments.splice(this.state.replyingTo, 0, comment);
+          this.setState({comments:newcomments})
+          this.hideComments();
           //console.log(newcomments[this.state.replyingTo].name)
         }
         else {
           newcomments.push(comment)
           this.setState({comments:newcomments})
+          //this.parseComments(this.state.comments)
         }
         Keyboard.dismiss()
-        Backend.addComment(this.state.fal._id,comment,this.props.userStore.user.commented)
+        Backend.addComment(this.state.fal._id,comment)
         /*
         if(!this.props.userStore.user.commented){
           setTimeout(()=>{Alert.alert("Teşekkürler","İlk yorumunuzu yaptığınız için 15 Kredi kazandınız!")},200)
@@ -559,14 +564,17 @@ export default class SocialFal extends React.Component {
       var _comments= [];
       comments.map((x,index)=>{
         if(x.parentIndex>0){
-          this.state.commentsList[this.state.commentsList.length-1].push(x)
-    }
-    else{
-      var clear = [];
-      _comments= clear
-       _comments.push(x);
-      this.state.commentsList.push(_comments)
-    }
+
+          if(this.state.commentsList[this.state.commentsList.length-1]){
+            this.state.commentsList[this.state.commentsList.length-1].push(x)
+          }
+        }
+        else{
+          var clear = [];
+          _comments= clear
+           _comments.push(x);
+          this.state.commentsList.push(_comments)
+        }
 
     })
 
@@ -635,8 +643,8 @@ export default class SocialFal extends React.Component {
 
   renderComments = () => {
    //
-    this.parseComments(this.state.comments)
 
+   this.parseComments(this.state.comments)
       //this.state.comments.map(function (comment,index) {console.warn(JSON.stringify(comment.likesNew?(comment.likesNew.name+comment.likesNew):"hata"));console.warn(index)})
       //this.state.comments.map(function (comment,index) {console.warn(JSON.stringify(comment.dislikesNew?(comment):"hata"));console.warn(index)})
       //this.state.comments.map(x=>console.warn(x.dislikesNew))
@@ -767,7 +775,7 @@ export default class SocialFal extends React.Component {
 
                       </Text>
                       <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
-                        <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input.focus(); }}>
+                        <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input?this.refs.Input.focus():null; }}>
                           <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
                                         fontSize: 15,
                                         fontWeight: "bold",
@@ -855,7 +863,7 @@ export default class SocialFal extends React.Component {
 
                         </Text>
                         <View style={{flexDirection:'row',alignItems:'center',marginTop:5,marginBottom:5}}>
-                          <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input.focus(); }}>
+                          <TouchableOpacity onPress={()=>{this.setState({replyingTo:commentIndex+1}); this.refs.Input?this.refs.Input.focus():null; }}>
                             <Text style={{textDecorationLine:'underline',  fontFamily: "SourceSansPro-Bold",
                                           fontSize: 15,
                                           fontWeight: "bold",

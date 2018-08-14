@@ -20,6 +20,7 @@ import SocialFal from './screens/SocialFal';
 import GunlukFal from './screens/GunlukFal';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
+
 import Greeting from './screens/Greeting';
 import Kimiz from './screens/Kimiz';
 import Mesajlar from './screens/Mesajlar';
@@ -27,6 +28,7 @@ import Swipers from './screens/Swipers';
 import User from './screens/User';
 import Profil from './screens/Profil';
 import FalPuan from './screens/FalPuan';
+import FalBakKazan from './screens/FalBakKazan';
 import FalPaylas from './screens/FalPaylas';
 import Oneri from './screens/Oneri';
 import JoinTeam from './screens/JoinTeam';
@@ -81,6 +83,7 @@ let KahvefaliappNav = StackNavigator({
     GunlukFal: {screen:GunlukFal},
     Swipers: {screen:Swipers},
     FalPuan: {screen:FalPuan},
+    FalBakKazan: {screen:FalBakKazan},
     FalPaylas: {screen:FalPaylas},
     Leader: {screen:Leader},
     User: {screen:User}
@@ -111,7 +114,7 @@ export default class Kahvefaliapp extends Component {
                  if (prevScreen !== currentScreen) {
                    // the line below uses the Google Analytics tracker
                    // change the tracker here to use other Mobile analytics SDK.
-                   firebase.analytics().setCurrentScreen(currentScreen);
+                   firebase.analytics().setCurrentScreen(currentScreen,currentScreen);
                  }
                }}
                />

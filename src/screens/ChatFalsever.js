@@ -555,8 +555,8 @@ export default class ChatFalsever extends React.Component {
             loadEarlier={false}
             user={{
               _id: Backend.getUid(),
-              name: Backend.getName(),
-              avatar:Backend.getAvatar(),
+              name: this.props.userStore.userName,
+              avatar:this.props.userStore.profilePic,
             }}
 
             renderBubble={this.renderBubble}

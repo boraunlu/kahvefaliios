@@ -35,6 +35,7 @@ import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Picker from 'react-native-picker';
 import ProfilePicker from '../components/ProfilePicker';
+import FalBakModal from '../components/FalBakModal';
 import PopupDialog, { DialogTitle ,  SlideAnimation } from 'react-native-popup-dialog';
 import * as Animatable from 'react-native-animatable';
 //import FCM, {FCMEvent, RemoteNotificationResult, WillPresentNotificationResult, NotificationType} from 'react-native-fcm';
@@ -102,7 +103,8 @@ export default class Greeting extends React.Component {
       marquee:'',
       reklam:null,
       appState: AppState.currentState,
-      drawerVisible:false
+      drawerVisible:false,
+      falbakVisible: true,
   };
   this.navigateto = this.navigateto.bind(this);
   this.greetingMounted = false;
@@ -207,6 +209,7 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   navigateToFalPaylas = (type) => {
+    firebase.analytics().logEvent("anasayfadanButon"+type)
     this.props.navigation.navigate('FalPaylas',{type:type})
   }
 
@@ -284,6 +287,15 @@ static navigationOptions = ({ navigation }) => ({
     }
   }
 
+  setFalbakVisibility = (visible) => {
+    ////console.log(visible);
+    this.setState(() => {
+      return {
+        falbakVisible: visible,
+      };
+    });
+  }
+
   generatefalcisayisi = () => {
     var saat = moment().hour()
     var gun = 2
@@ -319,7 +331,7 @@ static navigationOptions = ({ navigation }) => ({
   }
 
   componentDidMount() {
-    setTimeout(()=>{this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })},600)
+    setTimeout(()=>{this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })},200)
     AppState.addEventListener('change', this._handleAppStateChange);
     //FCM.setBadgeNumber(0);
     axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
@@ -341,11 +353,22 @@ static navigationOptions = ({ navigation }) => ({
        this.props.socialStore.setAllFals(response)
     })
 
-    this.messageListener = firebase.messaging().onMessage((message: RemoteMessage) => {
-      console.log("asdf")
-        console.log(message)
-        alert("asd")
+
+
+
+    this.notificationListener = firebase.notifications().onNotification((notification: Notification) => {
+      var notif=notification
+      if(notif.deeplink){
+        var deeplink=JSON.parse(notif.deeplink)
+        if(deeplink.type=='gunluk'||deeplink.type=='sosyal'){
+          Backend.getAllFals().then( (response) => {
+             this.props.socialStore.setAllFals(response)
+          })
+        }
+      }
     });
+
+
 
     this.notificationOpenedListener = firebase.notifications().onNotificationOpened((notificationOpen: NotificationOpen) => {
        // Get the action triggered by the notification being opened
@@ -354,7 +377,7 @@ static navigationOptions = ({ navigation }) => ({
 
        const notification: Notification = notificationOpen.notification;
        var notif =notification.data
-       //FCM.setBadgeNumber(1);
+
        if(notif.deeplink){
          var deeplink=JSON.parse(notif.deeplink)
          //alert(deeplink.type)
@@ -407,7 +430,6 @@ static navigationOptions = ({ navigation }) => ({
 
   componentWillUnmount() {
     AppState.removeEventListener('change', this._handleAppStateChange);
-    this.messageListener();
   }
 
   _handleAppStateChange = (nextAppState) => {
@@ -443,7 +465,6 @@ static navigationOptions = ({ navigation }) => ({
 
   renderTek = () => {
     if(this.props.socialStore.tek){
-      var falType=this.props.userStore.user.lastFalType
 
       var tek = this.props.socialStore.tek
       var bakildi= false
@@ -737,14 +758,15 @@ static navigationOptions = ({ navigation }) => ({
 
           </View>
 
-            {
 
-          <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Social')}} style={{backgroundColor:'rgb(230,213,160)',borderRadius: 4,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',padding:5,paddingLeft:8,}}>
+
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Social');this.props.navigation.navigate('FalBakKazan');firebase.analytics().logEvent("anasayfadanKazan");}} style={{backgroundColor:'rgb(230,213,160)',borderRadius: 4,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',padding:5,paddingLeft:8,}}>
 
                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',color:"#241466",fontSize:14,paddingRight:5}}>
-                Fal bak{'\n'}Kazan</Text>
+                Fal bak{'\n'}Kazan
+              </Text>
 
-          </TouchableOpacity>}
+          </TouchableOpacity>
 
             {this.renderTek()}
 
@@ -765,11 +787,12 @@ static navigationOptions = ({ navigation }) => ({
         <View style={{flex:1}}>
         <View style={{flex:1,marginBottom:10,marginTop:15,paddingRight:23,paddingLeft:23}}>
           <Image style={{alignSelf:'center',height:80,width:80, borderRadius:0,marginTop:0,marginBottom:10}} source={require('../static/images/logo.png')}></Image>
+
+          <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FAL BAK, KAZAN"}</Text>
+          </TouchableOpacity>
           <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}  onPress={() => {this.props.navigation.navigate('Oneri')}}>
             <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FİKİR VER, KAZAN"}</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('FalPuan')}}>
-            <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"FAL PUAN"}</Text>
           </TouchableOpacity>
            <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() => {this.props.navigation.navigate('Kimiz')}}>
              <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"BİZ KİMİZ?"}</Text>
@@ -787,8 +810,7 @@ static navigationOptions = ({ navigation }) => ({
 
          </View>
         </View>
-       </PopupDialog>
-
+      </PopupDialog>
         {this.renderReklam()}
       </ImageBackground>
 
