@@ -800,7 +800,7 @@ export default class SocialFal extends React.Component {
 
 
 
-                      {count>1&&
+                      {count>0&&
                         <View style={{}}>
                         <TouchableOpacity style={{flexDirection:"row",marginTop:5,marginBottom:-8}}  onPress={()=>{__hiddenComments.length>1?this.showComments(__hiddenComments):null}}>
                         {(__hiddenComments[0]&&this.state.hiddenComments[0])&&__hiddenComments[0]==this.state.hiddenComments[0]?<Icon name="angle-up" color={'grey'} size={24} />:<Icon name="angle-down" color={'#241466'} size={24} />}
@@ -908,7 +908,7 @@ export default class SocialFal extends React.Component {
     else{
       return(
         <View style={{backgroundColor:'#F9F8F9',flex:1}}>
-          <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala yorum yapan ilk 3 kişiden biri ol, <Text style={{fontWeight:'bold'}}>2 kat</Text> FalPuan kazan 😉</Text>
+          <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:5,color:'black',padding:15,fontSize:16}}>Haydi bu fala ilk yorum yapan sen ol 😉</Text>
         </View>
       )
     }

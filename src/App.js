@@ -23,12 +23,14 @@ import Odeme from './screens/Odeme';
 
 import Greeting from './screens/Greeting';
 import Kimiz from './screens/Kimiz';
+import Sikayet from './screens/Sikayet';
 import Mesajlar from './screens/Mesajlar';
 import Swipers from './screens/Swipers';
 import User from './screens/User';
 import Profil from './screens/Profil';
 import FalPuan from './screens/FalPuan';
 import FalBakKazan from './screens/FalBakKazan';
+import KrediKazan from './screens/KrediKazan';
 import FalPaylas from './screens/FalPaylas';
 import Oneri from './screens/Oneri';
 import JoinTeam from './screens/JoinTeam';
@@ -82,6 +84,8 @@ let KahvefaliappNav = StackNavigator({
     SocialFal: {screen:SocialFal},
     GunlukFal: {screen:GunlukFal},
     Swipers: {screen:Swipers},
+    Sikayet: {screen:Sikayet},
+    KrediKazan: {screen:KrediKazan},
     FalPuan: {screen:FalPuan},
     FalBakKazan: {screen:FalBakKazan},
     FalPaylas: {screen:FalPaylas},

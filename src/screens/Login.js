@@ -231,11 +231,13 @@ _keyboardDidShow = (event) => {
                 </TouchableHighlight>
               </View>
             </View>
-            <Button
-              onPress={() => {this.loginAnonly()}}
-              title="Devam >"
-              color="#808080"
-            />
+            <TouchableOpacity   onPress={() => {this.loginAnonly()}}
+              style={{height:30,backgroundColor:'white'}}
+              >
+              <Text>
+                Devam >
+              </Text>
+          </TouchableOpacity>
           </View>
             );
         } else {

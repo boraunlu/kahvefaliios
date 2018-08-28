@@ -637,6 +637,16 @@ export default class Leader extends React.Component {
      hours<0?hours=0:null
      days<0?days=0:null
 
+     var odulText=''
+     var weekPoint=this.props.userStore.week
+     if(weekPoint<50){odulText=(50-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi ve 50 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<100){odulText=(100-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi daha ve 100 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<150){odulText=(150-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi daha ve 150 TL'lik hediye çeki şansı kazanacaksın!"}
+     else {
+       odulText="Tebrikler, 150 TL'lik hediye çeki kazanma şansını yakaladın!"
+     }
+
+
     return (
 
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
@@ -647,6 +657,43 @@ export default class Leader extends React.Component {
          tabBarPosition='overlayTop'
          >
          <ScrollView tabLabel='HAFTALIK YARIŞMA' style={{flex:1,width:"100%"}}>
+
+           <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
+            <View style={styles.row2}>
+              <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
+
+              </View>
+              <Image source={{uri:this.props.userStore.profilePic}} style={styles.falciAvatar}></Image>
+                <View style={{width:"100%",flex:1,justifyContent:'center'}}>
+                  <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
+                    {this.props.userStore.userName}
+                   </Text>
+                </View>
+                <View style={{width:"100%",justifyContent:'center', width: 70,marginTop:18,marginRight:15,
+                              height: 45,
+                              borderRadius: 4,
+                              backgroundColor: "#e7e5e9"}}>
+                  <Text style={{textAlign:'center',  fontFamily: "SourceSansPro-Regular",
+                              fontSize: 12,
+                              fontWeight: "normal",
+                              fontStyle: "normal",
+                              letterSpacing: 0,
+                              textAlign: "center",
+                              color: "#241466"}}>FalPuan</Text>
+                            <Text style={{textAlign:'center', fontFamily: "SourceSansPro-Bold",
+                              fontSize: 13,
+                              fontWeight: "bold",
+                              fontStyle: "normal",
+                              letterSpacing: 0,
+                              textAlign: "center",
+                              color: "#241466"}}>{this.props.userStore.week}</Text>
+                </View>
+            </View>
+            <Text style={{paddingLeft:10,paddingBottom:15,backgroundColor:'white',textAlign: "center",color: "#241466",paddingRight:10,fontFamily:'SourceSansPro-Regular'}}>
+              {odulText}
+            </Text>
+           </TouchableOpacity>
+
            <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
              <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
                {"Yarışma bitimine kalan süre: "+days+" gün, "+hours+" saat"}
@@ -710,6 +757,13 @@ export default class Leader extends React.Component {
     borderBottomWidth:1,
     borderColor:"rgba(166,158,171,0.4)",
     backgroundColor: "#ffffff"
+
+  },
+  row2:{
+    flexDirection:'row',
+    height:65,
+    borderColor:"rgba(166,158,171,0.4)",
+    backgroundColor: "white"
 
   },name:{
     fontFamily: "SourceSansPro-Regular",fontSize: 15,fontWeight: "600",fontStyle: "normal",letterSpacing: 0,textAlign: "left",color: "#241466",marginBottom:0,marginLeft:10

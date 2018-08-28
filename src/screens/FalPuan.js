@@ -8,7 +8,8 @@ import {
   Image,
   ImageBackground,
   ScrollView,
-  Dimensions
+  Dimensions,
+  Linking
 } from 'react-native';
 
 import Icon from "react-native-vector-icons/FontAwesome"
@@ -58,7 +59,7 @@ export default class FalPuan extends React.Component {
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
         <ScrollView>
           <Text style={{fontSize:22,color:'white',marginTop:10,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>🎁 ÖDÜLLER 🎁</Text>
-          
+
 
           <Text style={{textAlign:'left',color:'white',fontFamily:'SourceSansPro-Bold',marginTop:10}}>      Haftalık</Text>
           <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
@@ -142,18 +143,32 @@ export default class FalPuan extends React.Component {
           </View>
           <Text style={styles.infotext}>
             {'\u2022'} Haftalık Fal Puanınınızın sayımı Pazar 23:59'da sonlanmaktadır.{'\n'}
-            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 50 krediniz yüklenir.{'\n'}
-            {'\u2022'} Migros Alışveriş Kartı çekilişi her hafta Pazartesi veya Salı günü Instagramdaki 'kahvefalisohbeti' hesabımızda hikaye olarak yayınlanacaktır.
+            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 50 krediniz yüklenir. 100 falpuana ulaştığınızda 50 kredi daha anında yüklenir.{'\n'}
+            {'\u2022'} Migros Alışveriş Kartı çekilişi her hafta Pazartesi veya Salı günü Instagramdaki <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
+                onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
+              >
+                kahvefalısohbeti
+              </Text> hesabımızda hikaye olarak yayınlanacaktır.
           </Text>
 
           <View style={styles.containers}>
             <Text style={styles.textTitle2}>
-              Fal Puan Nasıl Kazanılır?
+              FalPuan Nasıl Kazanılır?
+            </Text>
+
+            <Text style={styles.textKey3}>
+              *Bir faldan, 5'i fal sahibinden 5'i falseverlerden olmak üzere en fazla 10 FalPuan kazanılabilir. Ne kadar çok farklı fala yorum yaparsanız FalPuan kazancınız o kadar artar!
             </Text>
             <View style={{flexDirection:'row'}}>
 
             <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
-              <Text style={styles.textKey}>Yorumunuzun Beğenilmesi: </Text>
+              <Text style={styles.textKey}>Fal Sahibinin Yorumunuzu Beğenmesi: </Text>
+              <Text style={styles.textValue}>5 Puan</Text>
+            </View>
+            <View style={{flexDirection:'row'}}>
+
+            <Icon style={styles.Icon} name="arrow-right" color="#b78d0c" size={14} />
+              <Text style={styles.textKey}>Falseverlerin Yorumunuzu Beğenmesi: </Text>
               <Text style={styles.textValue}>1 Puan</Text>
             </View>
             <View style={{flexDirection:'row'}}>
@@ -208,6 +223,15 @@ const styles = StyleSheet.create({
     color: "#241466",
     paddingBottom:10
   },
+  textKey3:{
+    fontFamily: "SourceSansPro-Regular",
+    fontSize: 14,
+    fontStyle: "normal",
+    letterSpacing: 0,
+    textAlign: "left",
+    color: "#241466",
+    paddingBottom:10
+  },
   textKey2:{
     fontFamily: "SourceSansPro-Bold",
     fontSize: 14,
@@ -255,12 +279,12 @@ const styles = StyleSheet.create({
   },containers:{
     width:deviceWidth*0.9,
     flex:1,
-    height: 205,
     opacity: 0.9,
     borderRadius: 4,
     backgroundColor: "#ffffff",
     marginTop:20,
-    padding:15
+    padding:15,
+    alignSelf:'center'
   },containers2:{
     width:deviceWidth*0.9,
     flex:1,

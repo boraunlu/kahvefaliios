@@ -15,7 +15,7 @@ import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import PropTypes from 'prop-types';
 
-export default class Oneri extends React.Component {
+export default class Sikayet extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -25,19 +25,19 @@ export default class Oneri extends React.Component {
 }
 
   static navigationOptions = {
-      title: 'Önerilerin',
+      title: 'Sorun Bildir',
       headerRight:<View></View>,
 
     };
 
 
     sendMail = () => {
-        if(this.state.text == 'Buraya Önerileriniziyazabilirsiniz. Teşekkür ederiz!'||this.state.text==""){
-          alert("Lütfen önce önerini yaz")
+        if(this.state.text == 'Buraya Önerilerinizi ve Şikayetlerinizi yazabilirsiniz. Teşekkür ederiz!'||this.state.text==""){
+          alert("Lütfen önce önerini veya şikayetini yaz")
         }
         else{
-          Alert.alert('Şikayet & Oneri','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
-          this.setState({text:'Buraya Önerilerinizi yazabilirsiniz. Teşekkür ederiz!'})
+          Alert.alert('Şikayet','Yorumlarınız bize ulaşmıştır. Teşekkürler!')
+          this.setState({text:'Buraya problemlerinizi yazabilirsiniz. Teşekkür ederiz!'})
          // this.popupDialog2.dismiss(() => {
          //   console.log('callback');
          // });
@@ -51,7 +51,7 @@ export default class Oneri extends React.Component {
             body: JSON.stringify({
               uid: Backend.getUid(),
               text: this.state.text,
-              type: 'oneri'
+              type: 'sikayet'
             })
           })
           .then((response) => {
@@ -78,8 +78,8 @@ export default class Oneri extends React.Component {
     return (
 
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
-        <Text style={{fontSize:22,color:'white',textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>ÖNERİDE BULUN KREDİ KAZAN!</Text>
-        <Text style={{fontSize:15,color:'white',textAlign:'center',fontFamily:'SourceSansPro-Regular'}}>{"\n"}Uygulamamız ile ilgili aksaklıkları veya güzel fikirlerinizi bize bildirin, size 30 kredi hediye edelim!</Text>
+        <Text style={{fontSize:22,color:'white',textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>Sorun Bildir</Text>
+        <Text style={{fontSize:15,color:'white',textAlign:'center',fontFamily:'SourceSansPro-Regular'}}>{"\n"}Uygulamamız ile ilgili aksaklıkları veya problemlerinizi buradan bize bildirebilirsiniz!</Text>
         {/* <Image style={{height:80,width:80, borderRadius:40,marginTop:30,marginBottom:30}} source={require('../static/images/anneLogo3.png')}></Image>*/}
         <View style={{width:Dimensions.get('window').width*0.9,borderRadius:0,backgroundColor:'rgba(0, 0, 0, 0.3)',padding:10,marginTop:20}}>
         <View style={{width:"100%",height:Dimensions.get('window').height*0.3}}>
@@ -88,7 +88,7 @@ export default class Oneri extends React.Component {
               multiline = {true}
               style={{flex:1,position:"relative",width:"100%",top:0,padding:15,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1}}
               onChangeText={(text) => this.setState({text})}
-              placeholder={'Buraya Önerilerinizi yazabilirsiniz. Teşekkür ederiz!'}
+              placeholder={'Buraya sorunlarınızı yazabilirsiniz. Teşekkür ederiz!'}
               editable = {true}
               />
               </View>

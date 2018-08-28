@@ -23,12 +23,13 @@ import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 //import {AdMobRewarded} from 'react-native-admob'
-import { ShareDialog, ShareButton } from 'react-native-fbsdk';
+//import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+/*
 const shareModel = {
          contentType: 'link',
           contentUrl: "https://facebook.com/kahvefalisohbeti",
@@ -38,7 +39,7 @@ const shareLinkContent = {
   contentType: 'link',
   contentUrl: "http://www.falsohbeti.com/indir",
   contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
-};
+};*/
 
 @inject("userStore")
 @observer
@@ -46,9 +47,6 @@ export default class Odeme extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      credit:this.props.userStore.userCredit,
-      sharedWeek:this.props.userStore.sharedWeek,
-      shareLinkContent: shareLinkContent,
       spinnerVisible:false,
       dynamiclink:null
   };
@@ -63,9 +61,7 @@ export default class Odeme extends React.Component {
        ),
     };
 
-    advert = firebase.admob().rewarded('ca-app-pub-6158146193525843/9355345612');
-   AdRequest = firebase.admob.AdRequest;
-    request = new this.AdRequest();
+
 
     pay = (credit) => {
       this.setState({spinnerVisible:true})
@@ -193,6 +189,7 @@ export default class Odeme extends React.Component {
             }
           },
           (error) => {
+            alert(error)
           }
         );
       }
@@ -263,17 +260,6 @@ export default class Odeme extends React.Component {
 
     Keyboard.dismiss()
 
-    this.advert.loadAd(this.request.build());
-    this.advert.on('onAdLoaded', () => {
-      //console.log('Advert ready to show.');
-
-    });
-
-    this.advert.on('onRewarded', (event) => {
-      console.log('The user watched the entire video and will now be rewarded!', event);
-      Backend.addCredits(5,"reklam"); setTimeout(function(){Alert.alert('Tebrikler','5 Kredi hesabınıza eklendi!')},1000); this.props.userStore.increment(5);
-      this.advert.loadAd(this.request.build());
-    });
 
     const link =
     new firebase.links.DynamicLink('http://www.falsohbeti.com/indir?senderID='+Backend.getUid(), 'qwue3.app.goo.gl')
@@ -330,7 +316,7 @@ export default class Odeme extends React.Component {
                 {/* Mevcut Kredi */}
 
 
-                <View style={{paddingRight:15,height: 30,borderRadius: 15,position:'absolute',top:20,flexDirection:'row',justifyContent:'flex-start'}}>
+                <View style={{paddingRight:15,height: 30,borderRadius: 15,marginTop:20,flexDirection:'row',justifyContent:'flex-start'}}>
                      <TouchableOpacity  onPress={() => {this.props.navigation.navigate("Odeme")}} style={{flexDirection:'row'}}>
                      <View style={{width:30,height: 30,borderRadius: 15,backgroundColor: 'white',flexDirection:'row',justifyContent:'center',alignItems:'center',zIndex:3}}>
 
@@ -356,90 +342,19 @@ export default class Odeme extends React.Component {
                      </View>
               </TouchableOpacity>
           </View>
+          <TouchableOpacity  onPress={() => {this.props.navigation.navigate('KrediKazan')}} style={{width:'100%',height:55,marginTop:20,marginBottom:10,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+            <Text style={{fontSize:18,textAlign:'center',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Bold'}}>+ HEMEN BEDAVA KREDİ KAZAN! +</Text>
+          </TouchableOpacity>
 
           {/* Arkadaşınla paylaş   */}
 
 
-          <View style={{position:'absolute',top:10,right:12,  height: 56,justifyContent:'space-between',
-                 borderRadius: 6,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
-            <TouchableOpacity onPress={() => {this.shareWithFriends()}} style={{flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Icon style={{alignSelf:'center'}}name="users" color={'#ffffff'} size={22} />
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Arkadaşınla Paylaş{'\n'}20 Kredi Kazan!</Text></TouchableOpacity>
 
-          </View>
 
 
 
       {/*      Bedava Kredi kazan div      */}
 
-
-
-
-        <View style={{marginBottom:0,marginTop:75}}>
-
-          <View style={{flexDirection:'row',flex:1,  height: 56,justifyContent:'space-between',
-                 borderRadius: 6,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
-
-
-           <View style={{flex:2,height: 56,justifyContent:'center',paddingLeft:30}}>
-
-                <Text style={{ opacity: 0.7,
-                               fontFamily: "SourceSansPro-BoldItalic",
-                               fontSize: 12,
-                               fontWeight: "bold",
-                               fontStyle: "italic",
-                               letterSpacing: 0,
-                               textAlign: "left",
-                               color: "#ffffff"}}>HEMEN BEDAVA{'\n'}KREDİ KAZAN!</Text>
-
-            </View>
-
-            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog()}}
-            style={{flex:1,flexDirection:"column-reverse", padding:5,backgroundColor:'transparent',alignItems:'center'}}>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                fontWeight: "normal",
-                fontSize: 10,
-                fontStyle: "italic",
-                letterSpacing: 0,
-                textAlign: "left",
-                textDecorationLine:'underline',
-
-                color: "#ffffff"}}>Paylaş</Text>
-            <Image source={require('../static/images/krediler/facebookAppLogo.png')} style={{width:22, height: 23}}/></TouchableOpacity>
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginTop:20}}></View>
-            <TouchableOpacity onPress={() => {this.reklamGoster()}}
-            style={{flex:1,padding:5,backgroundColor:'transparent',alignItems:'center',flexDirection:"column-reverse"}}>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "left",
-                  textDecorationLine:'underline',
-
-                  color: "#ffffff"}}>Reklam izle</Text>
-            <Image source={require('../static/images/krediler/shape.png')} style={{width:23.6, height: 22}}/></TouchableOpacity>
-            {this.props.userStore.user ? this.props.userStore.user.appRated||!this.props.userStore.user.timesUsed ? <View/> : <TouchableOpacity onPress={() => {this.rateApp()}} style={{flex:1,padding:5,backgroundColor:'transparent',alignItems:'center',flexDirection:"column-reverse"}}>
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",position:'absolute',left:0,top:20}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "left",
-                  textDecorationLine:'underline',
-
-                 color: "#ffffff"}}>Puan Ver</Text><Icon name="star" color={'#ffffff'} size={22} /></TouchableOpacity> : <View/> }
-          </View>
-        </View>
         <View style={{flex:1}}>
           <View style={styles.container2}>
           <View style={{}}>

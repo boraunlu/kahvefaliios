@@ -35,6 +35,7 @@ export default class UserStore {
   @observable profilePic = 'https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/erkekharfler%2FKE.jpg?alt=media';
   @observable userCredit= 0;
   @observable falPuan= 0;
+  @observable week= 0;
   @observable bizdenUnread= 0;
   @observable aktifUnread= 0;
   @observable gunlukUnread= 0;
@@ -274,6 +275,7 @@ export default class UserStore {
       Backend.setProfilePic(profilePic)
     }
     this.falPuan=user.falPuan
+    this.week=user.week
     this.bio=user.bio
     this.age=user.age
     this.city=user.city

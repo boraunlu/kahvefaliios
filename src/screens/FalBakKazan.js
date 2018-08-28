@@ -71,13 +71,13 @@ export default class FalBakKazan extends React.Component {
           <View style={{alignSelf:'center',marginBottom:15}}>
               <Icon name="arrow-down" color={'rgb( 236 ,196 ,75)'} size={35} />
           </View>
-          <View style={{flexDirection:'row',alignSelf:'center',marginBottom:10,padding:10}}>
+          <View style={{flexDirection:'row',alignSelf:'center',marginBottom:0,padding:10}}>
             <View style={{height:26,width:26,borderRadius:13,backgroundColor:'rgb( 236 ,196 ,75)',marginRight:5,justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'rgb(36, 20, 102)',fontFamily:'SourceSansPro-Bold',fontWeight:'bold',textAlign:'center'}}>3</Text></View>
             <Text style={{fontSize:20,color:'white',textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>FAL PUANLARINLA SEVİYE ATLA, ANINDA KREDİ KAZAN VE ÇEKİLİŞE KATIL! 🎁</Text>
             <View style={{width:31,height:2}}></View>
         </View>
           <TouchableOpacity style={{alignSelf:'center'}} onPress={()=>{this.props.navigation.navigate('FalPuan')}}>
-            <Text style={{color:'white'}}>Ödülleri Gör</Text>
+            <Text style={{color:'white',textDecorationLine:'underline'}}>Ödülleri Gör</Text>
           </TouchableOpacity>
           <TouchableOpacity  onPress={() => {this.props.navigation.goBack()}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
             <Text style={{textAlign:'center',color:'rgb(36, 20, 102)',fontWeight:'bold'}}>HEMEN YORUM YAPMAYA BAŞLA</Text>

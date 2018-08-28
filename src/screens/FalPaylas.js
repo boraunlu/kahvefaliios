@@ -244,7 +244,20 @@ export default class FalPaylas extends React.Component {
 
             this.setState({spinnerVisible:false})
             if(supertype==0){
-              this.postSosyal(urls)
+              if(this.props.userStore.gunlukUsed){
+                if(this.props.userStore.userCredit<100){
+                  this.paySosyal(urls,100)
+                }
+                else{
+                  Backend.addCredits(-100)
+                  this.props.userStore.increment(-100)
+                  this.postSosyal(urls)
+                }
+              }
+              else {
+                this.postSosyal(urls)
+              }
+
             }
             else if(supertype==1){
 
@@ -258,14 +271,20 @@ export default class FalPaylas extends React.Component {
               }
             }
             else if (supertype==3) {
-              if(this.props.userStore.userCredit<50){
-                this.paySosyal(urls,50)
+              if(this.props.userStore.user.handUsed){
+                if(this.props.userStore.userCredit<50){
+                  this.paySosyal(urls,50)
+                }
+                else{
+                  Backend.addCredits(-50)
+                  this.props.userStore.increment(-50)
+                  this.postSosyal(urls)
+                }
               }
               else{
-                Backend.addCredits(-50)
-                this.props.userStore.increment(-50)
                 this.postSosyal(urls)
               }
+
             }
             else {
               if(this.props.userStore.userCredit<150){
@@ -420,7 +439,7 @@ export default class FalPaylas extends React.Component {
               </Text>
               <Text   style={normalyazi}>
                 {'\u2022'} 2 gün pano süresi{"\n"}
-                {'\u2022'} 10 yorum gelmezse kredi iade
+                {'\u2022'} 5 yorum gelmezse kredi iade
               </Text>
               <View style={{padding:5,position:'absolute',bottom:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
                 <Image source={require('../static/images/coins.png')} style={styles.coin}/>
@@ -435,7 +454,7 @@ export default class FalPaylas extends React.Component {
               </Text>
               <Text  style={superyazi}>
                 {'\u2022'} 3 gün pano süresi{"\n"}
-                {'\u2022'} 20 yorum gelmezse kredi iade{"\n"}
+                {'\u2022'} 10 yorum gelmezse kredi iade{"\n"}
                 {'\u2022'} Falınız 1 gün boyunca panonun üst kısmına sabitlenir
               </Text>
               <View style={{padding:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
