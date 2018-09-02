@@ -52,6 +52,7 @@ export default class UserStore {
   @observable dmBlocked= false;
   @observable gunlukUsed=false;
   @observable isAdmin=false;
+  @observable sosyal=null;
 
 
 
@@ -168,7 +169,7 @@ export default class UserStore {
   }
 
   @computed get totalNoti() {
-        return this.falseverUnread+this.gunlukUnread + this.sosyalUnread;
+        return this.falseverUnread+this.aktifUnread + this.sosyalUnread;
   }
 
   @computed get meslek() {
@@ -239,7 +240,7 @@ export default class UserStore {
   }
   @action setUserName(name) {
 
-    this.userName=name.nametext
+    this.userName=name
   }
   @action setBio(name) {
 
@@ -283,7 +284,15 @@ export default class UserStore {
     this.sharedWeek=user.sharedToday
     this.isAdmin=user.isAdmin
     if(user.lastMessage){
-      this.aktifLastMessage=user.lastMessage.text
+
+        this.aktifLastMessage=user.lastMessage.text
+        if(user.lastMessage.read==false){this.aktifUnread=1}
+
+    }
+    if(user.sosyal){
+
+        this.sosyal=user.sosyal
+
     }
     if(user.relStatus){
       this.iliskiStatus=user.relStatus

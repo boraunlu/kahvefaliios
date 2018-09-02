@@ -59,6 +59,8 @@ export default class Profil extends React.Component {
       cameraVisible: false,
       spinnerVisible:false,
       drawerVisible:false,
+      newUserName:"Yeni İsim"
+
   };
 }
 
@@ -340,6 +342,82 @@ static navigationOptions =({ navigation }) =>  ({
     Picker.show()
   }
 
+  changeName = () => {
+   var dateDb  ;
+   var today = new Date();
+   if(typeof this.props.userStore.user.nameChangeDate !== "undefined"){
+       dateDb = new Date(this.props.userStore.user.nameChangeDate);
+       var timeDiff = today - dateDb;
+   }else{
+       dateDb= new Date();
+       var timeDiff = today - dateDb;
+   }
+
+
+  // var date = new Date(this.props.userStore.user.nameChangeDate);
+
+
+   var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
+  // alert(diffDays);
+   console.log("storeDays:", this.props.userStore.user.nameChangeDate);
+   console.log("todayDays:", today);
+   console.log("dbDays:", dateDb);
+   console.log("timediffDays:", timeDiff);
+   console.log("Diffdays:", diffDays);
+
+   if(diffDays>=30||diffDays<=0){
+     this.popupDialog6.show();
+   }
+   else{
+
+     const options = [ 'İptal'];
+     const cancelButtonIndex = options.length - 1;
+
+         Alert.alert(
+           'Uyarı',
+           '30 gün içerisinde yalnız 1 kere isim değiştirebilirsiniz.',
+           [
+
+             {text: 'Tamam', onPress: () => console.log('OK Pressed'), style: 'cancel'},
+           ],
+           { cancelable: false }
+         )
+       }
+ }
+
+
+ sendName = () => {
+   let name = this.state.newUserName;
+   if(name == 'Yeni kullanıcı adınızı giriniz.'||name==""){
+     alert("Lütfen geçerli bir ad giriniz.")
+   }
+   else{
+     Alert.alert('Kullanıcı adınız değiştirilmiştir.')
+     this.popupDialog6.dismiss(() => {
+       console.log('callback');
+     });
+     Keyboard.dismiss()
+     this.props.userStore.setUserName(name)
+     fetch('https://eventfluxbot.herokuapp.com/appapi/setName', {
+       method: 'POST',
+       headers: {
+         'Accept': 'application/json',
+         'Content-Type': 'application/json',
+       },
+       body: JSON.stringify({
+         uid: Backend.getUid(),
+         name: name
+       })
+     })
+     .then((response) => {
+
+     })
+
+     this.setState({newUserName:'Yeni kullanıcı adınızı giriniz.'})
+   }
+ }
+
+
   OpenDrawer =  () => {
     if(this.state.drawerVisible===true){
       this.popupDialog.dismiss()
@@ -468,6 +546,9 @@ static navigationOptions =({ navigation }) =>  ({
 
 
             <Text style={{alignSelf:'center',marginBottom:-13,fontWeight:'bold',color:'rgb(36,20,102)',fontFamily:'SourceSansPro-Bold',fontSize:18}}>{this.props.userStore.userName}</Text>
+              <TouchableOpacity onPress={()=>{this.changeName()}} style={{elevation:3,width:24,height:24,borderRadius:12,alignItems:'center',top:51,right:73,position:'absolute',alignSelf:'center',zIndex:3,backgroundColor:'white'}}>
+          <Image style={{backgroundColor:'transparent',height:12,width:12, borderRadius:6,position:'absolute',top:6}} source={require('../static/images/profile/group.png')}></Image>
+          </TouchableOpacity>
 
 
             <View style={{alignItems:'center'}}>
@@ -569,6 +650,35 @@ static navigationOptions =({ navigation }) =>  ({
        </View>
       </View>
      </PopupDialog>
+     {/* İsim değiştir */}
+     <PopupDialog
+         dialogTitle={<DialogTitle titleTextStyle={{fontWeight:'bold'}} title="Kullanıcı Adı" />}
+         dialogStyle={{marginTop:-250}}
+         width={0.9}
+         height={0.3}
+         ref={(popupDialog) => { this.popupDialog6 = popupDialog; }}
+         >
+         <View style={{flex:1}}>
+           <TextInput
+
+             multiline = {false}
+             autoCorrect={false}
+             style={{height: 20,flex:1,padding:5,fontSize: 16,backgroundColor:'#ffffff', borderColor: 'gray', borderWidth: 1,borderRadius:4}}
+             onChangeText={(newUserName) => this.setState({newUserName:newUserName})}
+             underlineColorAndroid='transparent'
+             blurOnSubmit={true}
+             placeholder={'Yeni kullanıcı adınızı giriniz.'}
+             editable = {true}
+             />
+
+             <View style={{marginBottom:10}}>
+                <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',backgroundColor:"#37208e",borderColor:'rgba(36,20,102,0.55)',height:30}}   onPress={() =>this.sendName()}>
+         <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'white',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"Uygula"}</Text>
+       </TouchableOpacity>
+           </View>
+         </View>
+     </PopupDialog>
+
 
       </ImageBackground>
 

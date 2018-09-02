@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import PropTypes from 'prop-types';
 
 @inject("socialStore")
+@inject("userStore")
 @observer
 export default class NotificationIcon extends React.Component {
   constructor(props) {
@@ -15,7 +16,7 @@ export default class NotificationIcon extends React.Component {
   }
 
   render() {
-    let  totalNoti  = this.props.socialStore.totalNoti;
+    let  totalNoti  = this.props.socialStore.totalNoti+this.props.userStore.aktifUnread;
 
    // below is an example notification icon absolutely positioned
     return (

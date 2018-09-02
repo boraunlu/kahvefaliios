@@ -549,7 +549,7 @@ export default class Chat extends React.Component {
       this.setState({falPhotos:[image]})
       this.props.socialStore.addPhoto(image)
       this.props.socialStore.addPhoto(image)
-      //AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
+      AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
     }
 
     if(payload=="appstart"){
@@ -572,7 +572,7 @@ export default class Chat extends React.Component {
     }
     else if (payload.payload=='sosyalfal') {
       //this.popupSosyal.show()
-      this.props.navigation.navigate('FalPaylas',{falType:this.state.falType})
+      this.props.navigation.navigate('FalPaylas',{type:1})
     }
     else{
       if(payload.type=="postback"){
@@ -784,7 +784,7 @@ export default class Chat extends React.Component {
         }
       });
 
-      //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
+      AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
       this.props.userStore.setAktifUnread(0)
 
   }
@@ -931,7 +931,7 @@ export default class Chat extends React.Component {
         imajlar=imajlar.slice(3)
       }
     //  this.props.socialStore.setPhotos({falPhotos:imajlar})
-      //AsyncStorage.setItem('falPhotos',JSON.stringify(imajlar));
+      AsyncStorage.setItem('falPhotos',JSON.stringify(imajlar));
     }
     whoosh.play();
   }
@@ -1080,7 +1080,7 @@ export default class Chat extends React.Component {
   render() {
     return (
 
-        <ImageBackground source={require('../static/images/splash4.png')}  style={styles.containerimage}>
+        <ImageBackground source={require('../static/images/newImages/BG.png')}  style={styles.containerimage}>
 
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
           <GiftedChat
@@ -1113,7 +1113,7 @@ export default class Chat extends React.Component {
               visible={this.state.loadingVisible}
               onRequestClose={() => {}}
               >
-              <ImageBackground source={require('../static/images/splashscreenfinal.jpg')} style={{ flex:1, width: null, height: null,justifyContent:'center' }}>
+              <ImageBackground source={require('../static/images/newImages/BG.png')} style={{ flex:1, width: null, height: null,justifyContent:'center' }}>
                  <View style={{ height: 100,backgroundColor:'white',justifyContent:'center' }}>
                   <Text style={{textAlign:'center'}}>
                     Uygun falcı aranıyor...

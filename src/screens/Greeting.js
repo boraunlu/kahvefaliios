@@ -334,7 +334,7 @@ static navigationOptions = ({ navigation }) => ({
     setTimeout(()=>{this.props.navigation.setParams({ openDrawer: this.OpenDrawer  })},200)
     AppState.addEventListener('change', this._handleAppStateChange);
     //FCM.setBadgeNumber(0);
-    axios.post('https://eventfluxbot.herokuapp.com/appapi/getAppUser', {
+    axios.post('https://eventfluxbot.herokuapp.com/webhook/getAppUser', {
       uid: Backend.getUid(),
     })
     .then( (response) => {
@@ -343,15 +343,27 @@ static navigationOptions = ({ navigation }) => ({
         this.showReklamPopup(responseJson.reklam)
 
        this.props.userStore.setUser(responseJson)
+       //alert(JSON.stringify(responseJson.lastMessage))
 
     })
     .catch(function (error) {
 
     });
 
-    Backend.getAllFals().then( (response) => {
-       this.props.socialStore.setAllFals(response)
-    })
+    Backend.lastMessageUpdate((message) => {
+
+       this.props.userStore.setAktifLastMessage(message.text)
+       if(message.user==0){
+
+         if(message.read==false){
+           this.props.userStore.setAktifUnread(1)
+         }
+       }
+
+     })
+
+
+
 
 
 
@@ -462,7 +474,7 @@ static navigationOptions = ({ navigation }) => ({
     }
     this.setState({appState: nextAppState});
   }
-
+  /*
   renderTek = () => {
     if(this.props.socialStore.tek){
 
@@ -512,7 +524,8 @@ static navigationOptions = ({ navigation }) => ({
           </View>
         )
     }
-  }
+  }*/
+
   renderReklam = () => {
     if(this.state.reklam){
       return(
@@ -535,6 +548,219 @@ static navigationOptions = ({ navigation }) => ({
     }
 
   }
+
+  renderTek = () => {
+    if(this.props.userStore.user==null){
+      return null
+    }
+    else{
+      if(this.props.userStore.sosyal){
+
+        var tek = this.props.userStore.sosyal
+        var bakildi= false
+        if(tek.comments.length>0){bakildi=true; var lastComment=tek.comments[tek.comments.length-1];}
+
+          return(
+            <View>
+              <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
+              <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToFal()}}>
+               <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+                <View>
+                  <Image source={{uri:tek.photos[0]}} style={styles.falciAvatar}></Image>
+                </View>
+
+                   {bakildi?
+                     <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                       {lastComment.name}
+                      </Text>
+                      <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                      {capitalizeFirstLetter(lastComment.comment)}
+                     </Text>
+                     </View>
+                     :
+                      <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:16,color:'rgb(36, 20, 102)'}}>
+                       Yorum bekleniyor...
+                      </Text>
+                       </View>
+                   }
+
+                 <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                  {tek.unread==0
+                    ?
+                    <Icon name="angle-right" color={'gray'} size={20}/>
+                    :
+                    <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                      <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                      <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{tek.unread}</Text>
+                    </View>
+                  }
+                 </View>
+               </View>
+              </TouchableOpacity>
+            </View>
+          )
+      }
+      else if (this.props.userStore.user.lastMessage) {
+        if(this.props.userStore.user.aktif){
+          var userData=this.props.userStore.user
+          return (
+            <View>
+              <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
+              <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+               <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+                <View>
+                  <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar2}></Image>
+                  <View style={{height:12,width:12,borderRadius:6,backgroundColor:'#00FF00',right:8,top:8,position:'absolute'}}></View>
+                </View>
+
+
+                     <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                       {falcilar[userData.currentFalci].name}
+                      </Text>
+                      <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                      {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
+                     </Text>
+                     </View>
+
+
+                 <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                  {this.props.userStore.aktifUnread==0
+                    ?
+                    <Icon name="angle-right" color={'gray'} size={20}/>
+                    :
+                    <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                      <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                      <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{1}</Text>
+                    </View>
+                  }
+                 </View>
+               </View>
+              </TouchableOpacity>
+            </View>
+          )
+        }
+        else {
+          return (
+            <View>
+              <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
+              <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+               <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+                <View>
+                  <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar2}></Image>
+                  <View style={{height:12,width:12,borderRadius:6,backgroundColor:'gray',right:8,top:8,position:'absolute'}}></View>
+                </View>
+
+
+                     <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                       {falcilar[userData.currentFalci].name}
+                      </Text>
+                      <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                      {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
+                     </Text>
+                     </View>
+
+
+                 <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                  {this.props.userStore.aktifUnread==0
+                    ?
+                    <Icon name="angle-right" color={'gray'} size={20}/>
+                    :
+                    <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                      <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                      <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{1}</Text>
+                    </View>
+                  }
+                 </View>
+               </View>
+              </TouchableOpacity>
+            </View>
+          )
+        }
+      }
+
+    }
+  }
+
+  renderAktif = () => {
+
+    if(this.props.userStore.user==null){
+      return null
+    }
+    else{
+      var userData = this.props.userStore.user
+      if(userData.aktif== true){
+
+        return(
+          <View>
+          <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Canlı Sohbetin</Text></View>
+          <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+           <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+              <View>
+              <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+              <View style={{height:12,width:12,borderRadius:6,backgroundColor:'#00FF00',right:8,top:8,position:'absolute'}}></View>
+             </View>
+             <View style={{padding:10,flex:2}}>
+               <Text style={{fontWeight:'bold',fontSize:16}}>
+                 {falcilar[userData.currentFalci].name}
+                </Text>
+                <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
+               </Text>
+             </View>
+             <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+              {this.props.userStore.aktifUnread<1 ?      <Icon name="angle-right" color={'gray'} size={20} /> :  <View style={{height:26,width:26,borderRadius:13,backgroundColor:'red',justifyContent:'center'}}><Text style={{backgroundColor:'transparent',color:'white',fontWeight:'bold',textAlign:'center'}}>1</Text></View>}
+
+               </View>
+           </View>
+
+          </TouchableOpacity>
+          </View>
+        )
+      }
+      else{
+        if(userData.lastMessage){
+          return(
+            <View>
+            <View style={{backgroundColor:'teal'}}><Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>Son Konuşman</Text></View>
+            <TouchableOpacity style={{backgroundColor:'white',borderTopWidth:1,borderBottomWidth:1,borderColor:'#c0c0c0',marginBottom:0}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',height:60,}}>
+                <View>
+                <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+                <View style={{height:12,width:12,borderRadius:6,backgroundColor:'gray',right:8,top:8,position:'absolute'}}></View>
+               </View>
+               <View style={{padding:10,flex:2}}>
+                 <Text style={{fontWeight:'bold',fontSize:16}}>
+                   {falcilar[userData.currentFalci].name}
+                   <Text style={{fontStyle:'italic',fontWeight:'normal',fontSize:12,color:'gray'}}> (Sohbetten Ayrıldı)</Text>
+                  </Text>
+                  <Text numberOfLines={1} ellipsizeMode={'tail'}>
+                  {capitalizeFirstLetter(userData.lastMessage.text)}
+                 </Text>
+               </View>
+               <View style={{padding:20}}>
+
+                 <Icon name="angle-right" color={'gray'} size={20} />
+                 </View>
+             </View>
+
+            </TouchableOpacity>
+            </View>
+          )
+        }
+        else{
+          return(
+            null
+          )
+        }
+
+      }
+    }
+  }
+
 
   renderFalTypes = () => {
     if(this.state.userData==null){
@@ -806,7 +1032,7 @@ static navigationOptions = ({ navigation }) => ({
            <TouchableOpacity style={{marginBottom:17,borderRadius:5,flexDirection:'column',justifyContent:'center',borderWidth:2,borderColor:'rgba(36,20,102,0.55)',height:30,marginBottom:14}}  onPress={() => {this.logout()}}>
              <Text style={{paddingTop:3,fontSize:14,flex:1,color: 'rgb(36,20,102)',textAlign: 'center',fontFamily:'SourceSansPro-Bold',fontWeight:'900'}}>{"ÇIKIŞ YAP"}</Text>
            </TouchableOpacity>
-        
+
 
          </View>
         </View>
@@ -943,5 +1169,12 @@ const styles = StyleSheet.create({
     margin:5,
     marginLeft:5,
     borderRadius:4,
+  },
+  falciAvatar2:{
+    height:48,
+    width:48,
+    margin:5,
+    marginLeft:5,
+    borderRadius:24,
   }
 });

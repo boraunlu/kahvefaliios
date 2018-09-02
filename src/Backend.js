@@ -84,6 +84,7 @@ class Backend {
     return new Promise((resolve, reject) => {
 
      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://','') : uri
+     const ref= 'postsnew/'+moment().year()+'-'+moment().month()+'-'+moment().date()
      ImageResizer.createResizedImage(uri, 500, 500,'JPEG',80)
        .then(({uri}) => {
          let uploadBlob = null
@@ -94,7 +95,7 @@ class Backend {
             imageName += possible.charAt(Math.floor(Math.random() * possible.length));
          }
          var mime ='image/jpg'
-         const imageRef = firebase.storage().ref('posts').child(imageName)
+         const imageRef = firebase.storage().ref(ref).child(imageName)
          imageRef.put(uri, { contentType: mime })
 
          .then(() => {

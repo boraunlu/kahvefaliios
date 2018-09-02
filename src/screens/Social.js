@@ -241,36 +241,46 @@ export default class Social extends React.Component {
 
 
     renderTek = () => {
-      if(this.props.socialStore.tek){
-        var tek = this.props.socialStore.tek
-        var bakildi= false
-        if(tek.comments.length>0){bakildi=true; var lastComment=tek.comments[tek.comments.length-1];}
+      if(this.props.userStore.user==null){
+        <View style={{backgroundColor:'transparent',padding:20,height:90}}>
+          <TouchableOpacity  onPress={() => {this.navigateToFalPaylas(1);}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+            <Text style={{fontSize:18,fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white'}}>FAL PAYLAŞ     </Text>
+             <Image source={require('../static/images/fincan.png')} style={{ height: 20,width:20,alignSelf:'center'}}></Image>
+          </TouchableOpacity>
+        </View>
+      }
+      else{
+        if(this.props.userStore.sosyal){
 
-          return(
-            <View style={{marginLeft:0,marginRight:0,marginTop:10}}>
-              <View style={{backgroundColor:'transparent',marginBottom:10,paddingLeft:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
-              <TouchableOpacity style={{  height: 58,borderRadius: 0,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToTekFal()}}>
-               <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
-                <View>
-                  <Image source={{uri:tek.photos[0]}} style={styles.kahveAvatar}></Image>
-                </View>
+          var tek = this.props.userStore.sosyal
+          var bakildi= false
+          if(tek.comments.length>0){bakildi=true; var lastComment=tek.comments[tek.comments.length-1];}
 
-                   {bakildi?
-                     <View style={{padding:10,flex:2,justifyContent:'center'}}>
-                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
-                       {lastComment.name}
-                      </Text>
-                      <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
-                      {capitalizeFirstLetter(lastComment.comment)}
-                     </Text>
-                     </View>
-                     :
-                      <View style={{padding:10,flex:2,justifyContent:'center'}}>
-                     <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:16,color:'rgb(36, 20, 102)'}}>
-                       Yorum bekleniyor...
-                      </Text>
+            return(
+              <View>
+                <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
+                <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToFal()}}>
+                 <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+                  <View>
+                    <Image source={{uri:tek.photos[0]}} style={styles.falciAvatar}></Image>
+                  </View>
+
+                     {bakildi?
+                       <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                       <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                         {lastComment.name}
+                        </Text>
+                        <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                        {capitalizeFirstLetter(lastComment.comment)}
+                       </Text>
                        </View>
-                   }
+                       :
+                        <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                       <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:16,color:'rgb(36, 20, 102)'}}>
+                         Yorum bekleniyor...
+                        </Text>
+                         </View>
+                     }
 
                    <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
                     {tek.unread==0
@@ -283,19 +293,20 @@ export default class Social extends React.Component {
                       </View>
                     }
                    </View>
-               </View>
+                 </View>
+                </TouchableOpacity>
+              </View>
+            )
+        }else {
+          return(
+            <View style={{backgroundColor:'transparent',padding:20,height:90}}>
+              <TouchableOpacity  onPress={() => {this.navigateToFalPaylas(1);}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+                <Text style={{fontSize:18,fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white'}}>FAL PAYLAŞ     </Text>
+                 <Image source={require('../static/images/fincan.png')} style={{ height: 20,width:20,alignSelf:'center'}}></Image>
               </TouchableOpacity>
             </View>
           )
-      }else {
-        return(
-          <View style={{backgroundColor:'transparent',padding:20,height:90}}>
-            <TouchableOpacity  onPress={() => {this.navigateToFalPaylas(1);}} style={{flex:1,alignItems:'center',flexDirection:'row',height:55,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
-              <Text style={{fontSize:18,fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white'}}>FAL PAYLAŞ     </Text>
-               <Image source={require('../static/images/fincan.png')} style={{ height: 20,width:20,alignSelf:'center'}}></Image>
-            </TouchableOpacity>
-          </View>
-        )
+        }
       }
     }
 

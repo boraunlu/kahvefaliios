@@ -35,11 +35,10 @@ export default class SocialStore {
 
     var allSocials=Array.from(allfals.sosyals)
     this.allSocials=allSocials
-    var allGunluks=Array.from(allfals.gunluks)
-    this.allGunluks=allGunluks
+
 
     var sosyalUnread = 0
-    var gunlukUnread = 0
+
 
     if(allSocials){
       for (var i = 0; i < allSocials.length; i++) {
@@ -48,65 +47,7 @@ export default class SocialStore {
         }
       }
     }
-
-    if(allGunluks){
-      for (var i = 0; i < allGunluks.length; i++) {
-        if(allGunluks[i].unread>0){
-            gunlukUnread=+allGunluks[i].unread
-        }
-      }
-    }
-
     this.sosyalUnread=sosyalUnread
-    this.gunlukUnread=gunlukUnread
-
-    var lastGunluk=allGunluks[0]
-    var lastSocial=allSocials[0]
-    var lastFalType=null
-    if(lastSocial){
-      if(lastGunluk){
-        lastSocial.time>lastGunluk.time?lastFalType='sosyal':lastFalType='gunluk'
-      }
-      else {
-        lastFalType='sosyal';
-      }
-    }
-    else {
-      if(lastGunluk){
-        lastFalType='gunluk';
-      }
-    }
-
-    if(lastFalType=='sosyal'){
-      var sosyal=lastSocial
-      var simdi =moment()
-      if(sosyal.status===1){
-        if(simdi.diff(moment(sosyal.time),"days")<2){
-              this.tek=sosyal
-                  this.lastFalType='sosyal'
-
-        }
-      }
-      else if (sosyal.status===3) {
-        if(simdi.diff(moment(sosyal.time),"days")<3){
-              this.tek=sosyal
-                  this.lastFalType='sosyal'
-
-        }
-      }
-    }
-
-    if(lastFalType=='gunluk'){
-      var gunluk=lastGunluk
-      var simdi =moment()
-      if(gunluk.status===1){
-        if(simdi.diff(moment(gunluk.time),"days")<1){
-              this.tek=gunluk
-                  this.lastFalType='gunluk'
-        }
-      }
-    }
-
 
   }
 

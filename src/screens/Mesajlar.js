@@ -170,6 +170,9 @@ export default class Mesajlar extends React.Component {
 
   componentDidMount() {
 
+    Backend.getAllFals().then( (response) => {
+       this.props.socialStore.setAllFals(response)
+    })
 
     var falseverref = firebase.database().ref('messages/'+Backend.getUid()+'/falsever/bilgiler');
     falseverref.on('value',function(dataSnapshot){
@@ -507,6 +510,105 @@ export default class Mesajlar extends React.Component {
   _keyExtractor = (item, index) => index.toString();
 
 
+  renderGunluk = () => {
+    if(this.props.userStore.user){
+
+
+    if (this.props.userStore.user.lastMessage) {
+      if(this.props.userStore.user.aktif){
+        var userData=this.props.userStore.user
+        return (
+          <View>
+
+            <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToAktif(userData.currentFalci)}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+              <View>
+                <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+                <View style={{height:12,width:12,borderRadius:6,backgroundColor:'#00FF00',right:8,top:8,position:'absolute'}}></View>
+              </View>
+
+
+                   <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                   <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                     {falcilar[userData.currentFalci].name}
+                    </Text>
+                    <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                    {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
+                   </Text>
+                   </View>
+
+
+               <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                {this.props.userStore.aktifUnread==0
+                  ?
+                  <Icon name="angle-right" color={'gray'} size={20}/>
+                  :
+                  <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                    <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                    <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{1}</Text>
+                  </View>
+                }
+               </View>
+             </View>
+            </TouchableOpacity>
+          </View>
+        )
+      }
+      else {
+        return (
+          <View>
+
+            <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
+             <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
+              <View>
+                <Image source={{uri:falcilar[userData.currentFalci].url}} style={styles.falciAvatar}></Image>
+                <View style={{height:12,width:12,borderRadius:6,backgroundColor:'gray',right:8,top:8,position:'absolute'}}></View>
+              </View>
+
+
+                   <View style={{padding:10,flex:2,justifyContent:'center'}}>
+                   <Text style={{fontFamily:'SourceSansPro-SemiBold',fontSize:15,color:'rgb(36, 20, 102)'}}>
+                     {falcilar[userData.currentFalci].name}
+                    </Text>
+                    <Text style={{fontFamily:'SourceSansPro-Regular',fontSize:14,color:'rgb(36, 20, 102)'}} numberOfLines={1} ellipsizeMode={'tail'}>
+                    {capitalizeFirstLetter(this.props.userStore.aktifLastMessage)}
+                   </Text>
+                   </View>
+
+
+               <View style={{padding:15,justifyContent:'center',alignItems:'center'}}>
+                {this.props.userStore.aktifUnread==0
+                  ?
+                  <Icon name="angle-right" color={'gray'} size={20}/>
+                  :
+                  <View style={{height:26,width:31,justifyContent:'center',paddingTop:0}}>
+                    <Image source={require('../static/images/anasayfa/noun965432Cc.png')} style={{height:26,width:31,justifyContent:'center'}}/>
+                    <Text style={{fontSize:14,backgroundColor:'transparent',color:'white',fontWeight:'bold',fontFamily:'SourceSansPro-Regular',textAlign:'center',position:'absolute',top:2,right:12}}>{1}</Text>
+                  </View>
+                }
+               </View>
+             </View>
+            </TouchableOpacity>
+          </View>
+        )
+      }
+    }
+    else {
+      <View style={{backgroundColor:'#F9F8F9',flex:1}}>
+        <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:0,color:'black',padding:15,fontSize:16}}>Aktif günlük falın yok. Haydi ana sayfadan günlük falını paylaş!</Text>
+      </View>
+    }
+    }
+    else {
+      <ActivityIndicator
+        animating={true}
+        style={[styles.centering, {height: 80}]}
+        size="large"
+      />
+    }
+
+  }
+
   renderAllGunluks = (props) => {
 
 
@@ -688,20 +790,22 @@ export default class Mesajlar extends React.Component {
           tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
          >
 
-         <ScrollView tabLabel={'FALLARIN ('+(this.props.socialStore.sosyalUnread+this.props.socialStore.gunlukUnread)+")"} style={{flex:1,width:'100%'}}>
-           <View style={{flex:1}}>
-             <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
-               <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>SOSYAL FALLARIN</Text>
-             </View>
-             {this.renderAllSosyals()}
-           </View>
+         <ScrollView tabLabel={'FALLARIN ('+(this.props.socialStore.sosyalUnread+this.props.userStore.aktifUnread)+")"} style={{flex:1,width:'100%'}}>
 
           <View style={{flex:1}}>
             <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
-              <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>GÜNLÜK FALLARIN</Text>
+              <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>GÜNLÜK FALIN</Text>
             </View>
-            {this.renderAllGunluks()}
+
+            {this.renderGunluk()}
           </View>
+          <View style={{flex:1}}>
+            <View style={{height:50,justifyContent:'center',backgroundColor:'transparent',paddingLeft:23}}>
+              <Text style={{fontFamily:'SourceSansPro-Bold',color:'rgb(250, 249, 255)'}}>SOSYAL FALLARIN</Text>
+            </View>
+            {this.renderAllSosyals()}
+          </View>
+
          </ScrollView>
          <ScrollView tabLabel={'SOHBETLERİN ('+this.props.socialStore.falseverUnread+")"} style={{flex:1,width:'100%'}}>
           {this.renderFalsevers()}
@@ -722,9 +826,10 @@ const styles = StyleSheet.create({
     width: null,
   },
   falciAvatar:{
-    height:50,
-    width:50,
-
+    height:48,
+    width:48,
+    margin:5,
+    marginLeft:15,
     borderRadius:25,
   },
   kahveAvatar:{
