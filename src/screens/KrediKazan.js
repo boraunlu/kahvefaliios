@@ -237,129 +237,59 @@ export default class KrediKazan extends React.Component {
 
         <ScrollView style={{padding:30,flex:1,width:'100%'}}>
 
-          <View style={{ height: 56,justifyContent:'space-between',
-                 borderRadius: 6,marginBottom:20,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+          <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.props.navigation.navigate('FalPuan')}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Icon style={{alignSelf:'center'}}name="heart" color={'#ffffff'} size={22} />
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Fallara yorum yap, Kredi ve Hediyeler Kazan!</Text>
-                  <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-                    <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                          fontSize: 10,
-                          fontWeight: "normal",
-                          fontStyle: "italic",
-                          letterSpacing: 0,
-                          textAlign: "center",
-                          color: "#ffffff"}}>50 Kredi</Text>
-              </TouchableOpacity>
+              <Icon style={{alignSelf:'center'}}name="heart" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Fallara yorum yap, Kredi ve Hediyeler Kazan!</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>50 Kredi</Text>
+            </TouchableOpacity>
 
           </View>
 
-          <View style={{ height: 56,justifyContent:'space-between',
-                 borderRadius: 6,marginBottom:20,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+          <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.shareWithFriends()}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Icon style={{alignSelf:'center'}}name="users" color={'#ffffff'} size={22} />
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Arkadaşınla Paylaş, İndirsin, Kredi Kazan!</Text>
-                  <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-                    <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                          fontSize: 10,
-                          fontWeight: "normal",
-                          fontStyle: "italic",
-                          letterSpacing: 0,
-                          textAlign: "center",
-                          color: "#ffffff"}}>20 Kredi</Text>
-              </TouchableOpacity>
+             <Icon style={{alignSelf:'center'}}name="users" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Arkadaşınla Paylaş, İndirsin, Kredi Kazan!</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>20 Kredi</Text>
+            </TouchableOpacity>
 
           </View>
 
-      
 
-          <View style={{ height: 56,justifyContent:'space-between',
-                 borderRadius: 6,marginBottom:20,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+
+          <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.reklamGoster()}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Image source={require('../static/images/krediler/shape.png')} style={{width:23.6, height: 22}}/>
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Günde iki kere reklam izle</Text>
-                  <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-                    <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                          fontSize: 10,
-                          fontWeight: "normal",
-                          fontStyle: "italic",
-                          letterSpacing: 0,
-                          textAlign: "center",
-                          color: "#ffffff"}}>5+5 Kredi</Text>
-              </TouchableOpacity>
+              <Image source={require('../static/images/krediler/shape.png')} style={{width:23.6, height: 22}}/>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Günde iki kere reklam izle</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>5+5 Kredi</Text>
+            </TouchableOpacity>
 
           </View>
 
-          <View style={{ height: 56,justifyContent:'space-between',
-                 borderRadius: 6,marginBottom:20,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+          <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.rateApp()}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Icon name="star" color={'#ffffff'} size={22} />
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Uygulamaya puan ver</Text>
-                  <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-                    <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                          fontSize: 10,
-                          fontWeight: "normal",
-                          fontStyle: "italic",
-                          letterSpacing: 0,
-                          textAlign: "center",
-                          color: "#ffffff"}}>15 Kredi</Text>
-              </TouchableOpacity>
+              <Icon name="star" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Uygulamaya puan ver</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>15 Kredi</Text>
+            </TouchableOpacity>
 
           </View>
-          <View style={{ height: 56,justifyContent:'space-between',
-                 borderRadius: 6,marginBottom:20,
-                 backgroundColor: "rgba(0, 0, 0, 0.25)"}}>
+          <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.props.navigation.navigate('Oneri')}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
-            <Icon style={{alignSelf:'center'}}name="comments" color={'#ffffff'} size={22} />
-            <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-            <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                  fontSize: 10,
-                  fontWeight: "normal",
-                  fontStyle: "italic",
-                  letterSpacing: 0,
-                  textAlign: "center",
-                  color: "#ffffff"}}>Fikir ver, beğenilirse kredi kazan!</Text>
-                  <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
-                    <Text style={{marginBottom:5, fontFamily: "SourceSansPro-Italic",
-                          fontSize: 10,
-                          fontWeight: "normal",
-                          fontStyle: "italic",
-                          letterSpacing: 0,
-                          textAlign: "center",
-                          color: "#ffffff"}}>30 Kredi</Text>
-              </TouchableOpacity>
+              <Icon style={{alignSelf:'center'}}name="comments" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Fikir ver, beğenilirse kredi kazan!</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>30 Kredi</Text>
+            </TouchableOpacity>
 
           </View>
 
@@ -385,5 +315,15 @@ const styles = StyleSheet.create({
     paddingBottom:0
 
   },
+  textStyle:{marginBottom:5, fontFamily: "SourceSansPro-Italic",
+        fontSize: 14,
+        fontWeight: "normal",
+        fontStyle: "italic",
+        letterSpacing: 0,
+        textAlign: "center",
+        color: "#ffffff"},
+  row:{ height: 56,justifyContent:'space-between',
+         borderRadius: 6,marginBottom:20,
+         backgroundColor: "rgba(0, 0, 0, 0.6)",paddingLeft:5}
 
 });

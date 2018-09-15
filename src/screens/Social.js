@@ -393,14 +393,14 @@ export default class Social extends React.Component {
 
              </View>
              <View style={{paddingRight:10,alignItems:'center',justifyContent:'flex-end',width:80,borderColor:'rgb(215,215,215)',flexDirection:'row'}}>
-                {item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:28}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
+                {item.type==2?<Icon style={{position:'absolute',left:0,top:28}} name="moon-o" color={'#E72564'} size={16} />:item.poll1?item.poll1.length>0?<Icon style={{position:'absolute',left:0,top:28}} name="pie-chart" color={'#E72564'} size={16} />:null:null}
                 <Text style={{fontFamily: "SourceSansPro-Bold",
       fontSize: 15,
       fontWeight: "bold",
       fontStyle: "normal",
       letterSpacing: 0,
       textAlign: "right",flexDirection:"row",
-      color: "#241466"}}>{item.comments?item.comments.length>5?<Text> <Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
+      color: "#241466"}}>{item.comments?item.comments.length>10?<Text> <Text style={{fontSize:16}}>🔥</Text> ({item.comments.length})</Text>:"("+item.comments.length+")":0}</Text>
              </View>
            </View>
 

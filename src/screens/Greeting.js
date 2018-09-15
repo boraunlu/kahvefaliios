@@ -554,7 +554,29 @@ static navigationOptions = ({ navigation }) => ({
       return null
     }
     else{
-      if(this.props.userStore.sosyal){
+      var sosyal=this.props.userStore.sosyal
+      var lastMessage=this.props.userStore.user.lastMessage
+      var showsosyal=false
+      var showlastMessage=false
+      if(sosyal){
+        if(lastMessage){
+          if(moment(sosyal.time).isBefore(lastMessage.createdAt)){
+            showlastMessage=true
+          }
+          else {
+            var showsosyal=true
+          }
+        }
+        else {
+          var showsosyal=true
+        }
+      }
+      else {
+        if(lastMessage){
+            showlastMessage=true
+        }
+      }
+      if(showsosyal){
 
         var tek = this.props.userStore.sosyal
         var bakildi= false
@@ -602,9 +624,10 @@ static navigationOptions = ({ navigation }) => ({
             </View>
           )
       }
-      else if (this.props.userStore.user.lastMessage) {
+      else if (showlastMessage) {
         if(this.props.userStore.user.aktif){
           var userData=this.props.userStore.user
+
           return (
             <View>
               <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
@@ -643,6 +666,8 @@ static navigationOptions = ({ navigation }) => ({
           )
         }
         else {
+          var userData=this.props.userStore.user
+
           return (
             <View>
               <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
@@ -879,6 +904,53 @@ static navigationOptions = ({ navigation }) => ({
             </TouchableOpacity>
 
           </View>
+          <View style={{flexDirection:'row',borderRadius:4}}>
+            <TouchableOpacity style={styles.faltypecontainer} onPress={() => {this.navigateToFalPaylas(4)}}>
+              <View  style={styles.faltypeimage}>
+                <View style={{
+
+                  position:'absolute',
+                  top:-57,
+                  right:-65,
+                  overflow:'hidden',
+                  width: 100,
+                  height: 100,
+                  backgroundColor: "rgb(93,94,135)",
+                  shadowColor: "rgba(0, 0, 0, 0.2)",
+                  shadowOffset: {
+                    width: 0,
+                    height: 2
+                  },
+                  shadowRadius: 1,
+                  shadowOpacity: 1,
+                  borderRadius: 50,
+                  borderRadius: 50,
+                  zIndex:1,
+                  transform: [
+                    {scaleX: 2}]}}>
+
+                </View>
+                <View style={{padding:5,zIndex:1001,elevation:5,flexDirection:'row',position:'absolute',top:4,right:4,backgroundColor:'transparent'}}>
+                  <Text style={[styles.label]}>
+                    100
+                  </Text>
+                  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>
+                </View>
+                <View style={{flex:1,alignSelf: 'stretch',borderRadius:4,alignItems:'center',justifyContent:'center',backgroundColor:'rgb(103,104,145)'}}>
+
+                  <Text style={styles.faltypeyazi}>
+                    Sosyal Rüya Tabiri
+                  </Text>
+                  <Text style={styles.faltypeyazikucuk}>
+                    Rüyanızda Yolculuğa Çıkın  <Icon name="moon-o" color={'white'} size={20}/>
+                  </Text>
+                <View style={{position:'absolute',left:-15,bottom:-15,backgroundColor:'transparent'}}>
+                    <Image source={require('../static/images/anasayfa/aydede3.png')} style={{height:130,width:100}}/>
+                </View>
+                </View>
+              </View>
+            </TouchableOpacity>
+          </View>
           <View style={{flexDirection:'row'}}>
             <TouchableOpacity style={[styles.faltypecontainer,{borderRadius:4,backgroundColor:"#8975cd"}]} onPress={() => {this.navigateToFalPaylas(3)}}>
               <View  style={styles.faltypeimage}>
@@ -985,14 +1057,14 @@ static navigationOptions = ({ navigation }) => ({
           </View>
 
 
-
+          {/*
           <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Social');this.props.navigation.navigate('FalBakKazan');firebase.analytics().logEvent("anasayfadanKazan");}} style={{backgroundColor:'rgb(230,213,160)',borderRadius: 4,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',padding:5,paddingLeft:8,}}>
 
                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',color:"#241466",fontSize:14,paddingRight:5}}>
                 Fal bak{'\n'}Kazan
               </Text>
 
-          </TouchableOpacity>
+          </TouchableOpacity>*/}
 
             {this.renderTek()}
 

@@ -555,7 +555,9 @@ export default class Mesajlar extends React.Component {
         )
       }
       else {
+        var userData=this.props.userStore.user
         return (
+
           <View>
 
             <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateto('ChatOld',userData.currentFalci)}}>
@@ -594,18 +596,20 @@ export default class Mesajlar extends React.Component {
       }
     }
     else {
+      return (
       <View style={{backgroundColor:'#F9F8F9',flex:1}}>
         <Text style={{fontFamily:'SourceSansPro-Regular',textAlign:'center',marginTop:0,color:'black',padding:15,fontSize:16}}>Aktif günlük falın yok. Haydi ana sayfadan günlük falını paylaş!</Text>
-      </View>
+      </View>)
     }
-    }
-    else {
-      <ActivityIndicator
-        animating={true}
-        style={[styles.centering, {height: 80}]}
-        size="large"
-      />
-    }
+  }
+  else {
+    return (
+    <ActivityIndicator
+      animating={true}
+      style={[styles.centering, {height: 80}]}
+      size="large"
+    />)
+  }
 
   }
 

@@ -267,6 +267,15 @@ export default class FalPaylas extends React.Component {
             valid=true
 
         }
+        else if (supertype===4||supertype===5) {
+          if(this.state.sosyalInput.length<20){
+
+            Alert.alert("Kısa rüya","Lütfen rüyanla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
+          }
+          else{
+              valid=true
+          }
+        }
         else {
 
           if(this.state.falPhotos.length>1){
@@ -297,10 +306,11 @@ export default class FalPaylas extends React.Component {
             firebase.analytics().logEvent("falPaylas"+supertype)
           }
 
+          var fakeUrls=["https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/images%2Fwaxing-crescent-moon.jpg?alt=media","https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/images%2Fwaxing-crescent-moon.jpg?alt=media","https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/images%2Fwaxing-crescent-moon.jpg?alt=media"]
           if(supertype==0){
             if(this.props.userStore.gunlukUsed){
               if(this.props.userStore.userCredit<100){
-                this.paySosyal(urls,100)
+                this.paySosyal(fakeUrls,100)
               }
               else{
                 Backend.addCredits(-100)
@@ -317,7 +327,7 @@ export default class FalPaylas extends React.Component {
           else if (supertype==3) {
             if(this.props.userStore.user.handUsed){
               if(this.props.userStore.userCredit<50){
-                this.paySosyal(urls,50)
+                this.paySosyal(fakeUrls,50)
               }
               else{
                 Backend.addCredits(-50)
@@ -327,6 +337,38 @@ export default class FalPaylas extends React.Component {
             }
             else{
               this.navigateto('Chat',0,3)
+            }
+
+          }
+          else if (supertype==4||supertype==5) {
+            if(this.props.userStore.user.handUsed){
+              if(this.props.userStore.userCredit<100){
+                this.paySosyal(fakeUrls,100)
+              }
+              else{
+                Backend.addCredits(-100)
+                this.props.userStore.increment(-100)
+                this.postSosyal(fakeUrls)
+              }
+            }
+            else{
+              this.postSosyal(fakeUrls)
+            }
+
+          }
+          else if (supertype==5) {
+            if(this.props.userStore.user.handUsed){
+              if(this.props.userStore.userCredit<150){
+                this.paySosyal(fakeUrls,150)
+              }
+              else{
+                Backend.addCredits(-150)
+                this.props.userStore.increment(-150)
+                this.postSosyal(fakeUrls)
+              }
+            }
+            else{
+              this.postSosyal(fakeUrls)
             }
 
           }else {
@@ -381,8 +423,6 @@ export default class FalPaylas extends React.Component {
       this.setState({sosyalInput:'',falPhotos:[]})
        setTimeout(()=>{Alert.alert("Teşekkürler",alertMessage);},550)
        setTimeout(()=>{
-
-
          const resetAction = NavigationActions.reset({
             index: 0,
             actions: [
@@ -507,6 +547,7 @@ export default class FalPaylas extends React.Component {
         }
 
         return(
+
           <View style={styles.box2}>
             <TouchableOpacity onPress={() => {this.setState({super:1});}} style={normal}>
               <Text style={normalboldyazi}>
@@ -541,6 +582,67 @@ export default class FalPaylas extends React.Component {
             </TouchableOpacity>
 
           </View>
+        )
+      }
+      else if(this.state.super===4||this.state.super===5){
+        if(this.state.super===4){
+          var normal= styles.innerwrapselected;
+          var normalyazi= styles.yaziselected;
+          var normalboldyazi=styles.yaziselectedBold
+          var superolan=styles.innerwrap
+          var superyazi=styles.yazinotselected
+          var superboldyazi=styles.yazinotselectedBold
+        }
+        else {
+          var normal= styles.innerwrap;
+          var normalyazi= styles.yazinotselected
+          var normalboldyazi=styles.yazinotselectedBold
+          var superolan=styles.innerwrapselected
+          var superyazi=styles.yaziselected;
+          var superboldyazi=styles.yaziselectedBold
+        }
+
+        return(
+          <View style={{flex:1,alignItems:'center',width:'100%'}}>
+            <View style={[styles.box,{marginTop:0,marginBottom:15}]}>
+              <Text style={[styles.faltypeyazipopup,{textAlign:'center'}]}>
+                Rüyanızı detaylıca anlatın, bir çok farklı uzmandan rüya tabirinizi alın!
+              </Text>
+            </View>
+            <View style={styles.box2}>
+              <TouchableOpacity onPress={() => {this.setState({super:4});}} style={normal}>
+                <Text style={normalboldyazi}>
+                  Normal
+                </Text>
+                <Text   style={normalyazi}>
+                  {'\u2022'} 2 gün pano süresi{"\n"}
+                </Text>
+                <View style={{padding:5,position:'absolute',bottom:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
+                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  <Text style={[styles.label]}>
+                    100
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => {this.setState({super:5});magic.play();}} style={superolan}>
+                <Text style={superboldyazi}>
+                  Süper 🌟
+                </Text>
+                <Text  style={superyazi}>
+                  {'\u2022'} 3 gün pano süresi{"\n"}
+                  {'\u2022'} Falınız 1 gün boyunca panonun üst kısmına sabitlenir
+                </Text>
+                <View style={{padding:5,marginTop:10,flexDirection:'row',backgroundColor:"#5033c0",borderRadius:5,alignSelf:'center'}}>
+                  <Image source={require('../static/images/coins.png')} style={styles.coin}/>
+                  <Text style={[styles.label]}>
+                    150
+                  </Text>
+                </View>
+              </TouchableOpacity>
+
+            </View>
+          </View>
+
         )
       }
       else {
@@ -599,18 +701,30 @@ export default class FalPaylas extends React.Component {
           </View>
         )
 
-      }/*
-      else if (this.state.super===3) {
+      }
+      else if (this.state.super===4||this.state.super===5) {
         return (
-          <View style={{width:'100%',marginLeft:-15,marginRight:-15}}>
+          <View style={{flex:1,width:'100%',marginTop:10}}>
+            <View style={{flex:1,width:'100%'}}>
+              <TextInput
+                multiline={true}
+                value={this.state.sosyalInput}
+                maxLength={300}
+                blurOnSubmit={true}
+                onChangeText={(text) =>{this.setState({sosyalInput:text})}}
+                placeholder={"Rüyanızı Detaylıca Anlatın ve Sorularınız Varsa Sorun"}
+                style={{height:110,width:'100%',fontSize:14, padding:14,borderRadius:4,marginBottom:10,backgroundColor:'white'}}
+              />
+            </View>
 
-              <Text style={{color:'white',marginTop:-10,marginBottom:25,marginLeft:50,textAlign:'center'}}>2 fotoğraf yeterlidir</Text>
-
-
-            <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+            {this.state.profileIsValid?
+              null:<View style={{width:'100%',marginTop:20}}>
+                <ProfilePicker checkValidation={this.state.checkValidation} changeValidation={this.changeValidation}/>
+              </View>
+            }
           </View>
         )
-      }*/
+      }
       else {
 
         return (
@@ -721,15 +835,9 @@ export default class FalPaylas extends React.Component {
   }
   renderPrice(){
     if(this.props.userStore.user){
-      if(this.state.super==1){
+      if(this.state.super==1||this.state.super==2||this.state.super==4||this.state.super==5){
         return(
-        null
-
-        )
-      }
-      else if (this.state.super==2) {
-        return(
-        null
+          null
         )
       }
       else if (this.state.super==3) {
@@ -831,17 +939,19 @@ export default class FalPaylas extends React.Component {
 
             </View>
 
-            {this.props.navigation.state.params.type==1?
+            {this.state.super==1?
               <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:30,width:'100%'}}>
                 <Text style={{textAlign:'center',color:'white',fontSize:20,fontFamily:'SourceSansPro-Bold'}}>Sosyal Kahve Falı</Text>
               </View>:
-              this.props.navigation.state.params.type==3?
+              this.state.super==3?
               <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
                 <Text style={{textAlign:'center',color:'white',fontSize:20,fontFamily:'SourceSansPro-Bold'}}>El Falı</Text>
               </View>:
-              this.props.navigation.state.params.type==2?
-              <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
-                <SwitchSelector  options={options2} buttonColor={'rgb(236,196,75)'} initial={1} onPress={(value) => {this.setState({super:value});value==2?magic.play():null;}} />
+              this.state.super==4||this.state.super==5?
+              <View style={{justifyContent:'center',flex:1,paddingLeft:30,paddingRight:30,marginTop:30,width:'100%',flexDirection:'row',alignItems:'center'}}>
+
+                <Text style={{textAlign:'center',color:'white',fontSize:20,fontFamily:'SourceSansPro-Bold'}}> Sosyal Rüya Tabiri    </Text>
+                 <Icon name="moon-o" color={'white'} size={20}/>
               </View>:
               <View style={{flex:1,paddingLeft:30,paddingRight:30,marginTop:50,width:'100%'}}>
                 <Text style={{textAlign:'center',color:'white',fontSize:24,fontFamily:'SourceSansPro-Bold'}}>Günlük Kahve Falı</Text>
@@ -871,7 +981,7 @@ export default class FalPaylas extends React.Component {
 
               :null
             }
-              {this.renderSosyalInput()}
+            {this.renderSosyalInput()}
 
            <TouchableOpacity  onPress={() => {this.sendSosyal(this.state.super);}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
              {this.state.super==0||this.state.super==3?<Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>BAŞLA</Text>:<Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>GÖNDER</Text>}

@@ -16,9 +16,12 @@ import {
   ImageBackground,
   Share,
   Flatlist,
+  Modal,
   AppState
 } from 'react-native';
 import axios from 'axios';
+//import ImageZoom from 'react-native-image-pan-zoom';
+import ImageViewer from 'react-native-image-zoom-viewer';
 import ScrollableTabView, { DefaultTabBar,  ScrollableTabBar,  } from 'react-native-scrollable-tab-view';
 import PropTypes from 'prop-types';
 import firebase from 'react-native-firebase';
@@ -71,7 +74,9 @@ export default class SocialFal extends React.Component {
       commentLikes:null,
       appState: AppState.currentState,
       commentsList:[],
-      hiddenComments:[]
+      hiddenComments:[],
+      modalVisible: false
+
 
   };
 }
@@ -1365,19 +1370,19 @@ export default class SocialFal extends React.Component {
 
    renderSuperle = () => {
      if(this.state.fal.status===1&&this.state.falowner){
-
+       var superText="FALINI SÜPERLE 🌟"
+       if(this.state.fal.type==2){superText="RÜYANI SÜPERLE 🌟"}
        return(
          <View style={{flexDirection:'row',backgroundColor:'#f7f7f7',paddingBottom:10,paddingRight:50,paddingLeft:50}}>
            <TouchableOpacity  onPress={() => {this.showSuper();}} style={{flex:1,alignItems:'center',shadowColor: "rgba(0, 0, 0, 0.2)",
-           shadowOffset: {
-             width: 3,
-             height: 6
-           },
-           shadowRadius: 1,
-           shadowOpacity: 1,flexDirection:'row',height:35,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
-             <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>FALINI SÜPERLE 🌟 </Text>
+             shadowOffset: {
+               width: 3,
+               height: 6
+             },
+             shadowRadius: 1,
+             shadowOpacity: 1,flexDirection:'row',height:35,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
+             <Text style={{textAlign:'center',color:'white',fontFamily:'SourceSansPro-Bold'}}>{superText}</Text>
            </TouchableOpacity>
-
          </View>
        )
      }
@@ -1555,6 +1560,45 @@ export default class SocialFal extends React.Component {
 
   }
 
+  setModalVisible = (visible) => {
+    this.setState({modalVisible: visible});
+  }
+
+  renderPhotos = () => {
+    if(this.state.fal.type==2){
+      return null
+    }
+    else {
+      var fal = this.state.fal
+      return(
+        <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:115,paddingBottom:10}}>
+          {
+            fal.photos.map(function (foto,index) {
+
+              return (
+                <View style={{flex:1,height:85,margin:10,elevation:3}} key={index}>
+                  <TouchableOpacity style={{width:85,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:85}} onPress={() => this.setState({ modalVisible: true,photoIndex:index })}>
+                     <Image source={{uri:foto}} style={{ width: 85,
+                                                 height: 85,
+                                                 borderRadius: 4,
+                                                 shadowColor: "rgba(0, 0, 0, 0.2)",
+                                                 shadowOffset: {
+                                                   width: 0,
+                                                   height: 2
+                                                 },
+                                                 shadowRadius: 2,
+                                                 shadowOpacity: 1,alignSelf:'center'}}></Image>
+
+                   </TouchableOpacity>
+                 </View>
+                );
+            }, this)
+          }
+        </View>
+      )
+    }
+  }
+
   renderBody = () => {
       var fal = this.state.fal
       if(fal){
@@ -1612,9 +1656,39 @@ export default class SocialFal extends React.Component {
                 break;
 
         }
+        const images = []
+        fal.photos.map(function (foto,index) {
+         let photo = {
+              url: foto,
+              props: {}
+          }
+         images.push(photo)
+        })
+
+        var falTypeIcon=require('../static/images/newImages/noun548595Cc.png')
+        if(fal.type==2){var falTypeIcon=require('../static/images/moondream.jpg')}
+
         return(
             <View style={{flex:1}}>
 
+              <Modal
+
+               animationType="slide"
+               visible={this.state.modalVisible}
+                onRequestClose={() => {
+                  //alert('Modal has been closed.');
+                }}
+                transparent={true}>
+              <TouchableOpacity style={{width:40,alignItems:'center',position:"absolute",top:4,right:4,zIndex:100,elevation:5,justifyContent:'center',borderColor:'gray',height:40}}  onPress={() => {
+                            this.setModalVisible(!this.state.modalVisible);
+                          }}>
+                    <Icon name="times" color={'#5033c0'} size={40} />
+              </TouchableOpacity>
+                          {/* <View style={{backgroundColor:"red",flex:1,width:200,height:200}}></View> */}
+                          <ImageViewer
+                          index={this.state.photoIndex}
+                          imageUrls={images}/>
+            </Modal>
 
               <View style={{alignItems:'flex-start',flexDirection:'row',backgroundColor:'#f7f7f7',justifyContent:'flex-start',borderColor:'gray',borderBottomWidth:0,paddingTop:8, height: 78}}>
                 <TouchableOpacity style={{}}
@@ -1648,7 +1722,7 @@ export default class SocialFal extends React.Component {
               </View>
               {this.renderSuperle()}
               <View style={{alignItems:'flex-start',borderColor:'gray',backgroundColor:'white',borderBottomWidth:0,padding:5,paddingRight:15,marginLeft:"4%",marginRight:"4%",marginBottom:15,marginTop:10,flexDirection:"row",justifyContent:"flex-start"}}>
-              <Image source={require('../static/images/newImages/noun548595Cc.png')} style={{  width: 40,
+              <Image source={falTypeIcon} style={{  width: 40,
                                 height: 40,
                                 borderRadius: 4,
                                 shadowColor: "rgba(0, 0, 0, 0.2)",
@@ -1669,36 +1743,8 @@ export default class SocialFal extends React.Component {
 
                 </Text>
               </View>
-              <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:115,paddingBottom:10}}>
 
-              {
-                fal.photos.map(function (foto,index) {
-
-                  return (
-                    <View style={{flex:1,height:85,margin:10,elevation:3}} key={index}>
-                     <Lightbox navigator={null} renderContent={() => { return(<Image source={{uri:foto}} style={{flex:1,resizeMode:'contain' ,  shadowColor: "rgba(0, 0, 0, 0.2)",
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2
-                                },
-                                shadowRadius: 2,
-                                shadowOpacity: 1,}}></Image>)}} style={{height:85}}>
-
-                      <Image source={{uri:foto}} style={{  width: 85,
-                                height: 85,
-                                borderRadius: 4,
-                                shadowColor: "rgba(0, 0, 0, 0.2)",
-                                shadowOffset: {
-                                  width: 0,
-                                  height: 2
-                                },
-                                shadowRadius: 2,
-                                shadowOpacity: 1,alignSelf:'center'}}></Image>
-                     </Lightbox>
-                     </View>
-                    );
-                }, this)}
-              </View>
+              {this.renderPhotos()}
               {this.renderPoll()}
 
               <View style={{flex:1}}>

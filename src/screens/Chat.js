@@ -44,6 +44,9 @@ const { InAppUtils } = NativeModules
 import * as Animatable from 'react-native-animatable';
 require('../components/data/falcilar.js');
 
+const Banner = firebase.admob.Banner;
+const AdRequest = firebase.admob.AdRequest;
+const request = new AdRequest();
 
 const shareModel = {
          contentType: 'link',
@@ -1083,6 +1086,16 @@ export default class Chat extends React.Component {
         <ImageBackground source={require('../static/images/newImages/BG.png')}  style={styles.containerimage}>
 
           <Spinner visible={this.state.spinnerVisible} textStyle={{color: '#DDD'}} />
+            <Banner
+               unitId={'ca-app-pub-6158146193525843/6972275728'}
+               request={request.build()}
+               onAdFailedtoLoad={() => {
+
+               }}
+               onAdLoaded={() => {
+
+                 }}
+             />
           <GiftedChat
             messages={this.state.messages}
 

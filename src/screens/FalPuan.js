@@ -58,25 +58,28 @@ export default class FalPuan extends React.Component {
 
       <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
         <ScrollView>
-          <Text style={{fontSize:22,color:'white',marginTop:10,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>🎁 ÖDÜLLER 🎁</Text>
+          <Text style={{fontSize:24,color:'white',marginTop:10,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>🎁 ÖDÜLLER 🎁</Text>
 
+          <Text style={{fontSize:20,color:'white',marginTop:20,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>HER 50 FALPUAN = 25 KREDİ</Text>
+          {/*
+          <Text style={{fontSize:26,color:'white',marginTop:10,textAlign:'center',fontFamily:'SourceSansPro-Bold'}}>+</Text>
 
-          <Text style={{textAlign:'left',color:'white',fontFamily:'SourceSansPro-Bold',marginTop:10}}>      Haftalık</Text>
+          <Text style={{textAlign:'left',color:'white',fontFamily:'SourceSansPro-Bold',marginTop:5}}>      Haftalık Fal Puan Sıralamasında</Text>
           <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
             <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
-              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
-                <Text style={styles.textKey2}>150{"\n"}FalPuan</Text> <Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              <View style={{ flex: 2, height: 50, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>1.ye</Text>
               </View>
-                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+                   <View style={{ flex: 5, height: 50, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
 
                      <Text style={styles.textTitle}>
-                       {'\u2022'} 150 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
-                       {'\u2022'} 150 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+
+                       {'\u2022'} 150 TL Değerinde Alışveriş Kartı
                      </Text>
                    </View>
                  </View>
                  <View style={{
-                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 50,
                    borderRadius: 4,
                    backgroundColor: "#bc4576"
                  }}>
@@ -90,19 +93,19 @@ export default class FalPuan extends React.Component {
           </View>
           <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
             <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
-              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
-                <Text style={styles.textKey2}>100{"\n"}FalPuan</Text><Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              <View style={{ flex: 2, height: 50, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>2.ye</Text>
               </View>
-                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+                   <View style={{ flex: 5, height: 50, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
 
                      <Text style={styles.textTitle}>
-                       {'\u2022'} 100 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
-                       {'\u2022'} 100 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+
+                       {'\u2022'} 100 TL Değerinde Alışveriş Kartı
                      </Text>
                    </View>
                  </View>
                  <View style={{
-                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 50,
                    borderRadius: 4,
                    backgroundColor: "#e4b05c"
 
@@ -117,19 +120,19 @@ export default class FalPuan extends React.Component {
           </View>
           <View style={[styles.faltypecontainer, { flexDirection: 'row-reverse', alignSelf: 'stretch', alignItems: 'center', justifyContent: 'center' }]} >
             <View style={{ flex: 1, flexDirection: 'row', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
-              <View style={{ flex: 2, height: 80, justifyContent: 'center', alignItems: 'center', width: 45}}>
-                <Text style={styles.textKey2}>50{"\n"}FalPuan</Text><Icon style={styles.Icon2} name="arrow-right" color="#b78d0c" size={14} />
+              <View style={{ flex: 2, height: 50, justifyContent: 'center', alignItems: 'center', width: 45}}>
+                <Text style={styles.textKey2}>3.ye</Text>
               </View>
-                   <View style={{ flex: 5, height: 80, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
+                   <View style={{ flex: 5, height: 50, justifyContent: 'center', alignItems: 'flex-start',paddingLeft:10  }}>
 
                      <Text style={styles.textTitle}>
-                       {'\u2022'} 50 Kredi  <Image source={require('../static/images/anasayfa/coinsCopy.png')} style={styles.coin}/>{"\n"}
-                       {'\u2022'} 50 TL Değerinde Migros Alışveriş Kartı Çekiliş Hakkı
+
+                       {'\u2022'} 50 TL Değerinde Alışveriş Kartı
                      </Text>
                    </View>
                  </View>
                  <View style={{
-                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 80,
+                   flex: 5, position: 'relative', zIndex: 3, alignSelf: 'flex-end', alignItems: 'center', justifyContent: 'center', height: 50,
                    borderRadius: 4,
                     backgroundColor: "#C0C0C0"
                  }}>
@@ -141,15 +144,7 @@ export default class FalPuan extends React.Component {
                  }}>
                  </View>
           </View>
-          <Text style={styles.infotext}>
-            {'\u2022'} Haftalık Fal Puanınınızın sayımı Pazar 23:59'da sonlanmaktadır.{'\n'}
-            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 50 krediniz yüklenir. 100 falpuana ulaştığınızda 50 kredi daha anında yüklenir.{'\n'}
-            {'\u2022'} Migros Alışveriş Kartı çekilişi her hafta Pazartesi veya Salı günü Instagramdaki <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
-                onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
-              >
-                kahvefalısohbeti
-              </Text> hesabımızda hikaye olarak yayınlanacaktır.
-          </Text>
+          */}
 
           <View style={styles.containers}>
             <Text style={styles.textTitle2}>
@@ -192,6 +187,26 @@ export default class FalPuan extends React.Component {
               <Text style={styles.textValue}>10 Puan</Text>
             </View>
           </View>
+          {/*
+          <Text style={styles.infotext}>
+            {'\u2022'} Haftalık Fal Puanınınızın sayımı Pazar 23:59'da sonlanmaktadır.{'\n'}
+            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 25 krediniz yüklenir. 100 falpuana ulaştığınızda 25 kredi daha anında yüklenir.{'\n'}
+            {'\u2022'} Alışveriş Kartı kazananı her hafta Pazartesi veya Salı günü <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
+                onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
+              >
+                @kahvefalısohbeti
+              </Text> Instagram hesabımızda hikaye olarak yayınlanacaktır.{'\n'}
+              {'\u2022'} Bir haftada maksimum 150 Kredi kazanılabilir.{'\n'}
+              {'\u2022'} Hediye Kartı kazanabilmek için en az 18 yaşında olmak gerekir.{'\n'}
+              {'\u2022'} Apple şirketinin bu yarışma ile herhangi bir ilişkisi bulunmamaktadır.
+          </Text>*/}
+          <Text style={styles.infotext}>
+            {'\u2022'} Haftalık Fal Puanınınızın sayımı Pazar 23:59'da sonlanmaktadır.{'\n'}
+            {'\u2022'} Fal Puan ile kazanılan krediler anında hesabınıza eklenmektedir. Örneğin haftalık 50 falpuana ulaştığınız anda 25 krediniz yüklenir. 100 falpuana ulaştığınızda 25 kredi daha anında yüklenir.{'\n'}
+
+              {'\u2022'} Bir haftada maksimum 150 Kredi kazanılabilir.{'\n'}
+
+          </Text>
         </ScrollView>
       </ImageBackground>
 
@@ -319,7 +334,7 @@ const styles = StyleSheet.create({
   },
   faltypecontainer:{
     flex:1,
-    height: 80,
+    height: 50,
   borderRadius: 4,
   backgroundColor: "#ffffff",
   marginBottom :15
@@ -346,6 +361,7 @@ const styles = StyleSheet.create({
 infotext:{
   color:'white',
   fontSize:12,
-  fontFamily:'SourceSansPro-Regular'
+  fontFamily:'SourceSansPro-Regular',
+  marginTop:10
 }
 });

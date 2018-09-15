@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   ImageBackground,
+  Linking,
   Alert
 } from 'react-native';
 import PropTypes from 'prop-types';
@@ -32,6 +33,16 @@ function capitalizeFirstLetter(string) {
 function replaceGecenHafta(string) {
     return string.replace("geçen hafta ","")
 }
+function compare(a, b) {
+
+  let comparison = 0;
+  if (a.winner > b.winner) {
+    comparison = 1;
+  } else if (a.winner < b.winner) {
+    comparison = -1;
+  }
+  return comparison;
+}
 
 @inject("userStore")
 @observer
@@ -42,7 +53,8 @@ export default class Leader extends React.Component {
       leaders:[],
       profinfo:null,
       weeks:[],
-      weekResults:[]
+      weekResults:[],
+      winners:[]
   };
 }
 
@@ -129,7 +141,11 @@ export default class Leader extends React.Component {
       var leaders=Array.from(responseJson.leaders)
       var weeks=Array.from(responseJson.weeks)
       var weekResults=Array.from(responseJson.weekresults)
-      this.setState({leaders:leaders,weeks:weeks,weekResults:weekResults});
+
+      var winners = weekResults.filter(week=>{return week.winner})
+      winners.sort(compare);
+
+      this.setState({leaders:leaders,weeks:weeks,weekResults:weekResults,winners:winners});
     })
     .catch(function (error) {
 
@@ -562,13 +578,111 @@ export default class Leader extends React.Component {
       />)
     }
   }
+  renderWinners = () => {
+
+    if(this.state.winners.length==0){
+      return null
+      /*
+      return (
+        <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
+          <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
+            Hediye çekilişi henüz yapılmamıştır. Çekilişi Pazartesi veya Salı akşamı<Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
+                onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
+              >
+                @kahvefalisohbeti
+              </Text> Instagram hesabımızdan takip edebilirsiniz.
+          </Text>
+        </View>
+      )*/
+    }
+    else {
+      return(
+        <View>
+          <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:20,color:"white"}}>Çekiliş Sonuçları</Text>
+          <View style={{marginTop:10,height:180,width:'100%',flex:1,flexDirection:'row',justifyContent:'space-around'}}>
+            <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[1].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[1].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:80,width:70}}>
+                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>2.</Text>
+
+              </View>
+            </View>
+             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[0].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[0].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:100,width:70}}>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>1.</Text>
+
+              </View>
+            </View>
+             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[2].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[2].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:60,width:70}}>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>3.</Text>
+
+              </View>
+            </View>
+          </View>
+
+        </View>
+
+      )
+      /*
+      return(
+        <View>
+          <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:20,color:"white"}}>Çekiliş Sonuçları</Text>
+          <View style={{marginTop:10,height:180,width:'100%',flex:1,flexDirection:'row',justifyContent:'space-around'}}>
+            <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[1].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[1].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:80,width:70}}>
+                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>100{"\n"}TL</Text>
+                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
+              </View>
+            </View>
+             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[0].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[0].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:100,width:70}}>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>150{"\n"}TL</Text>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
+              </View>
+            </View>
+             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
+              <Image source={{uri:this.state.winners[2].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
+              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[2].name}</Text>
+              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:60,width:70}}>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>50{"\n"}TL</Text>
+                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
+              </View>
+            </View>
+          </View>
+          <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
+            <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
+              Yukarıdaki çekiliş, <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
+                  onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
+                >
+                  @kahvefalisohbeti
+                </Text> Instagram hesabımızda canlı olarak yayınlanmıştır.
+            </Text>
+          </View>
+        </View>
+
+      )*/
+    }
+  }
+
   renderWeekResults = () => {
     var leaders = this.state.weekResults
     if(leaders.length>0){
       return (
 
          leaders.map(function (leader,index) {
-
+           var creditsWon=0
+           creditsWon=(Math.floor(leader.falPuan/50))*25
+           if(creditsWon>150){creditsWon=150}
            var profile_pic=null
            leader.profile_pic?profile_pic={uri:leader.profile_pic}:leader.gender=="female"?profile_pic=require('../static/images/femaleAvatar.png'):profile_pic=require('../static/images/maleAvatar.png')
            return (
@@ -587,10 +701,20 @@ export default class Leader extends React.Component {
 
 
                   </View>
+                  <View style={{width:"100%",flex:1,justifyContent:'center',}}>
+
+                    <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
+                      {creditsWon+" KREDİ"}
+                    </Text>
+
+
+                  </View>
                   <View style={{width:"100%",justifyContent:'center', width: 70,marginTop:18,marginRight:15,
                                 height: 45,
                                 borderRadius: 4,
                                 backgroundColor: "#e7e5e9"}}>
+
+
 
                     <Text style={{textAlign:'center',  fontFamily: "SourceSansPro-Regular",
                                 fontSize: 12,
@@ -639,11 +763,25 @@ export default class Leader extends React.Component {
 
      var odulText=''
      var weekPoint=this.props.userStore.week
-     if(weekPoint<50){odulText=(50-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi ve 50 TL'lik hediye çeki şansı kazanacaksın!"}
-     else if(weekPoint<100){odulText=(100-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi daha ve 100 TL'lik hediye çeki şansı kazanacaksın!"}
-     else if(weekPoint<150){odulText=(150-weekPoint)+" FalPuan daha kazanırsan anında 50 kredi daha ve 150 TL'lik hediye çeki şansı kazanacaksın!"}
+     /*
+     if(weekPoint<50){odulText=(50-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi ve "+ (100-weekPoint)+" FalPuan daha kazanırsan 50 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<100){odulText=(100-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha ve 50 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<150){odulText=(150-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha ve "+ (200-weekPoint)+" FalPuan daha kazanırsan 100 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<200){odulText=(200-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha ve 100 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<250){odulText=(250-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha ve "+ (300-weekPoint)+" FalPuan daha kazanırsan 150 TL'lik hediye çeki şansı kazanacaksın!"}
+     else if(weekPoint<300){odulText=(300-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha ve 150 TL'lik hediye çeki şansı kazanacaksın!"}
      else {
        odulText="Tebrikler, 150 TL'lik hediye çeki kazanma şansını yakaladın!"
+     }*/
+
+     if(weekPoint<50){odulText=(50-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi kazanacaksın!"}
+     else if(weekPoint<100){odulText=(100-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha kazanacaksın!"}
+     else if(weekPoint<150){odulText=(150-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha kazanacaksın!"}
+     else if(weekPoint<200){odulText=(200-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha kazanacaksın!"}
+     else if(weekPoint<250){odulText=(250-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha kazanacaksın!"}
+     else if(weekPoint<300){odulText=(300-weekPoint)+" FalPuan daha kazanırsan anında 25 kredi daha kazanacaksın!"}
+     else {
+       odulText="Tebrikler, 150 kredi kazandın!"
      }
 
 
@@ -656,7 +794,7 @@ export default class Leader extends React.Component {
          renderTabBar={()=><DefaultTabBar  activeTextColor='white' inactiveTextColor='#766d97' tabStyle={{height:40,alignSelf:"center",justifyContent:"center",alignItems:"center"}} underlineStyle={{backgroundColor:'#ecc44b'}} backgroundColor='#241466' />}
          tabBarPosition='overlayTop'
          >
-         <ScrollView tabLabel='HAFTALIK YARIŞMA' style={{flex:1,width:"100%"}}>
+         <ScrollView tabLabel='BU HAFTA' style={{flex:1,width:"100%"}}>
 
            <TouchableOpacity style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('FalPuan')}}>
             <View style={styles.row2}>
@@ -696,13 +834,14 @@ export default class Leader extends React.Component {
 
            <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
              <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
-               {"Yarışma bitimine kalan süre: "+days+" gün, "+hours+" saat"}
+               {"Hafta bitimine kalan süre: "+days+" gün, "+hours+" saat"}
              </Text>
            </View>
 
           {this.renderWeeks()}
          </ScrollView>
          <ScrollView  tabLabel='GEÇEN HAFTA'  style={{flex:1,width:"100%"}}>
+           {/*this.renderWinners()*/}
           {this.renderWeekResults()}
          </ScrollView>
          <ScrollView tabLabel='TÜM ZAMANLAR' style={{flex:1,width:"100%"}}>
@@ -735,46 +874,64 @@ export default class Leader extends React.Component {
 
 
   const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignSelf: 'stretch',
-    width: null,
-    alignItems:'center',
+    container: {
+      flex: 1,
+      alignSelf: 'stretch',
+      width: null,
+      alignItems:'center',
 
 
-  },
-  falciAvatar:{
-    width: 48,
-    height: 48,
-    margin:15,
-    borderRadius:24,
-    marginLeft:0,
-    marginRight:0
-  },
-  row:{
-    flexDirection:'row',
-    height:80,
-    borderBottomWidth:1,
-    borderColor:"rgba(166,158,171,0.4)",
-    backgroundColor: "#ffffff"
+    },
+    falciAvatar:{
+      width: 48,
+      height: 48,
+      margin:15,
+      borderRadius:24,
+      marginLeft:0,
+      marginRight:0
+    },
+    falciAvatar2:{
+      width: 48,
+      height: 48,
+      margin:15,
+      borderRadius:24,
+      marginLeft:0,
+      marginRight:0,
+      marginBottom:5
+    },
+    row:{
+      flexDirection:'row',
+      height:80,
+      borderBottomWidth:1,
+      borderColor:"rgba(166,158,171,0.4)",
+      backgroundColor: "#ffffff"
 
-  },
-  row2:{
-    flexDirection:'row',
-    height:65,
-    borderColor:"rgba(166,158,171,0.4)",
-    backgroundColor: "white"
+    },row2:{
+      flexDirection:'row',
+      height:65,
+      borderColor:"rgba(166,158,171,0.4)",
+      backgroundColor: "#ffffff"
 
-  },name:{
-    fontFamily: "SourceSansPro-Regular",fontSize: 15,fontWeight: "600",fontStyle: "normal",letterSpacing: 0,textAlign: "left",color: "#241466",marginBottom:0,marginLeft:10
-  },index:{
-    fontFamily: "SourceSansPro-Bold",
-    fontSize: 18,
-    fontWeight: "bold",
-    fontStyle: "normal",
-    letterSpacing: 0,
-    textAlign: "center",
-    color: "#241466"
-  }
+    },name:{
+      fontFamily: "SourceSansPro-Regular",fontSize: 15,fontWeight: "600",fontStyle: "normal",letterSpacing: 0,textAlign: "left",color: "#241466",marginBottom:0,marginLeft:10
+    },index:{
+      fontFamily: "SourceSansPro-Bold",
+      fontSize: 18,
+      fontWeight: "bold",
+      fontStyle: "normal",
+      letterSpacing: 0,
+      textAlign: "center",
+      color: "#241466"
+    },
+    coin:{
+      height:35,
+      width:35,
+      marginLeft:10,
+    },
+    coin2:{
+      height:13,
+      width:13,
+
+    }
 
   });
