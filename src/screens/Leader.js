@@ -36,9 +36,9 @@ function replaceGecenHafta(string) {
 function compare(a, b) {
 
   let comparison = 0;
-  if (a.winner > b.winner) {
+  if (a.falPuan > b.falPuan) {
     comparison = 1;
-  } else if (a.winner < b.winner) {
+  } else if (a.falPuan < b.falPuan) {
     comparison = -1;
   }
   return comparison;
@@ -142,8 +142,8 @@ export default class Leader extends React.Component {
       var weeks=Array.from(responseJson.weeks)
       var weekResults=Array.from(responseJson.weekresults)
 
-      var winners = weekResults.filter(week=>{return week.winner})
-      winners.sort(compare);
+      var winners = weekResults.slice(0,3)
+      weekResults.splice(0,3)
 
       this.setState({leaders:leaders,weeks:weeks,weekResults:weekResults,winners:winners});
     })
@@ -256,10 +256,8 @@ export default class Leader extends React.Component {
      <View style={{width:"100%",marginTop:15,height:1,
         backgroundColor: "#cecece"}}>
         </View>
-     {/**/}
-
-     {/**/}
-
+           {/**/}
+           {/**/}
 
         {this.state.profinfo.sosyal? this.renderKendiFali(this.state.profinfo.sosyal):<Text style={{textAlign:'center',marginTop:30,marginBottom: 20, fontFamily: "SourceSansPro-Regular",
   fontSize: 16,
@@ -273,11 +271,11 @@ export default class Leader extends React.Component {
 
 
         <TouchableOpacity style={ { width:'60%',
-  flexDirection:'row',alignSelf:'center',
-    height: 40,
-  borderRadius: 4,
-  backgroundColor: "#37208e",
-  alignItems: 'center', justifyContent: 'center',marginTop:20}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
+          flexDirection:'row',alignSelf:'center',
+            height: 40,
+          borderRadius: 4,
+          backgroundColor: "#37208e",
+          alignItems: 'center', justifyContent: 'center',marginTop:20}} onPress={()=>{this.startChat(this.state.profinfo,seviye)}}>
 
 
                     <View style={{ flex: 1, flexDirection: 'row-reverse', alignSelf: 'stretch', zIndex: 6, position: 'absolute', left: 0, right: 0, alignItems: 'center', justifyContent: 'center', borderRadius: 4, backgroundColor: 'transparent' }}>
@@ -581,30 +579,31 @@ export default class Leader extends React.Component {
   renderWinners = () => {
 
     if(this.state.winners.length==0){
-      return null
-      /*
+
       return (
         <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
           <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
-            Hediye çekilişi henüz yapılmamıştır. Çekilişi Pazartesi veya Salı akşamı<Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
+            Hediye çekilişi henüz yapılmamıştır. Çekilişi Pazartesi veya Salı akşamı <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
                 onPress={() => {Linking.openURL('https://www.instagram.com/kahvefalisohbeti')}}
               >
                 @kahvefalisohbeti
               </Text> Instagram hesabımızdan takip edebilirsiniz.
           </Text>
         </View>
-      )*/
+      )
     }
     else {
+
       return(
         <View>
-          <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:20,color:"white"}}>Çekiliş Sonuçları</Text>
+        {/* <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:20,color:"white"}}>Çekiliş Sonuçları</Text>*/}
           <View style={{marginTop:10,height:180,width:'100%',flex:1,flexDirection:'row',justifyContent:'space-around'}}>
             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
               <Image source={{uri:this.state.winners[1].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
               <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[1].name}</Text>
               <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:80,width:70}}>
                 <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>2.</Text>
+
 
               </View>
             </View>
@@ -625,40 +624,7 @@ export default class Leader extends React.Component {
               </View>
             </View>
           </View>
-
-        </View>
-
-      )
-      /*
-      return(
-        <View>
-          <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:20,color:"white"}}>Çekiliş Sonuçları</Text>
-          <View style={{marginTop:10,height:180,width:'100%',flex:1,flexDirection:'row',justifyContent:'space-around'}}>
-            <View style={{justifyContent:'flex-end',alignItems:'center'}}>
-              <Image source={{uri:this.state.winners[1].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
-              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[1].name}</Text>
-              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:80,width:70}}>
-                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>100{"\n"}TL</Text>
-                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
-              </View>
-            </View>
-             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
-              <Image source={{uri:this.state.winners[0].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
-              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[0].name}</Text>
-              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:100,width:70}}>
-                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>150{"\n"}TL</Text>
-                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
-              </View>
-            </View>
-             <View style={{justifyContent:'flex-end',alignItems:'center'}}>
-              <Image source={{uri:this.state.winners[2].profile_pic}} onError={(error) => {}} style={styles.falciAvatar2}></Image>
-              <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"white"}}>{this.state.winners[2].name}</Text>
-              <View style={{justifyContent:'center',backgroundColor:'rgb( 236 ,196 ,75)',height:60,width:70}}>
-                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',fontSize:16,color:"#241466"}}>50{"\n"}TL</Text>
-                  <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Regular',fontSize:12,color:"#241466"}}>Hediye Çeki</Text>
-              </View>
-            </View>
-          </View>
+          {/*
           <View style={{backgroundColor:'rgb(230,213,160)',flex:1}}>
             <Text style={{textAlign:'center',color:'rgb(89, 70, 159)',fontSize:14,padding:5,fontFamily:'SourceSansPro-Italic'}}>
               Yukarıdaki çekiliş, <Text  style={{fontFamily:'SourceSansPro-Bold',textDecorationLine:'underline',}}
@@ -667,10 +633,10 @@ export default class Leader extends React.Component {
                   @kahvefalisohbeti
                 </Text> Instagram hesabımızda canlı olarak yayınlanmıştır.
             </Text>
-          </View>
+          </View>*/}
         </View>
 
-      )*/
+      )
     }
   }
 
@@ -689,7 +655,7 @@ export default class Leader extends React.Component {
              <TouchableOpacity key={index} style={{backgroundColor:'rgba(248,255,248,0.8)',width:'100%',borderColor:'gray',flex:1,borderBottomWidth:1}} onPress={() => {this.props.navigation.navigate('User',{fireid:leader.fireID,profPhotos:leader.profile_pic})}}>
               <View style={styles.row}>
                 <View style={{width:40,justifyContent:'center',alignItems:'center'}}>
-                  <Text style={styles.index}>{index+1+"."}</Text>
+                  <Text style={styles.index}>{index+4+"."}</Text>
                 </View>
                 <Image source={profile_pic} onError={(error) => {}} style={styles.falciAvatar}></Image>
 
@@ -698,8 +664,6 @@ export default class Leader extends React.Component {
                     <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.name}>
                       {leader.name}
                      </Text>
-
-
                   </View>
                   <View style={{width:"100%",flex:1,justifyContent:'center',}}>
 
@@ -841,8 +805,8 @@ export default class Leader extends React.Component {
           {this.renderWeeks()}
          </ScrollView>
          <ScrollView  tabLabel='GEÇEN HAFTA'  style={{flex:1,width:"100%"}}>
-           {/*this.renderWinners()*/}
-          {this.renderWeekResults()}
+           {this.renderWinners()}
+           {this.renderWeekResults()}
          </ScrollView>
          <ScrollView tabLabel='TÜM ZAMANLAR' style={{flex:1,width:"100%"}}>
            {this.renderLeaders()}

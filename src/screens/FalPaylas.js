@@ -421,6 +421,7 @@ export default class FalPaylas extends React.Component {
       if(this.state.super===3){alertMessage="El falınız gönderildi! Kısa süre içinde falınıza bakılacak"}
       Keyboard.dismiss()
       this.setState({sosyalInput:'',falPhotos:[]})
+      AsyncStorage.removeItem('falPhotos')
        setTimeout(()=>{Alert.alert("Teşekkürler",alertMessage);},550)
        setTimeout(()=>{
          const resetAction = NavigationActions.reset({
@@ -512,9 +513,8 @@ export default class FalPaylas extends React.Component {
     setPhoto = (path) => {
       this.setState({cameraVisible:false,spinnerVisible:false})
       var images = this.state.falPhotos
-      //images.push(path)
-      var asd = "https://via.placeholder.com/350x150"
-      images.push(asd)
+
+      images.push(path)
 
       this.setState({falPhotos:images})
     }
@@ -823,7 +823,7 @@ export default class FalPaylas extends React.Component {
 
     if(this.props.userStore.profileIsValid){this.setState({profileIsValid:true})}
 
-      AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
+      //AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
   }
   componentDidUpdate() {
 
@@ -984,7 +984,7 @@ export default class FalPaylas extends React.Component {
             {this.renderSosyalInput()}
 
            <TouchableOpacity  onPress={() => {this.sendSosyal(this.state.super);}} style={{width:'100%',height:55,marginTop:20,borderRadius:4,backgroundColor:'rgb( 236 ,196 ,75)',justifyContent:'center'}}>
-             {this.state.super==0||this.state.super==3?<Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>BAŞLA</Text>:<Text style={{textAlign:'center',color:'white',fontWeight:'bold'}}>GÖNDER</Text>}
+              {this.state.super==0||this.state.super==3?<Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'center',color:'white',fontWeight:'bold',fontSize:20}}>SOHBETE BAŞLA</Text>:<Text style={{textAlign:'center',color:'white',fontWeight:'bold',fontSize:20,fontFamily:'SourceSansPro-Bold',}}>GÖNDER</Text>}
 
            </TouchableOpacity>
 

@@ -189,6 +189,11 @@ static navigationOptions = ({ navigation }) => ({
 
     }
   }
+  navigateToSosyalFal = (fal) => {
+
+      this.props.navigation.navigate('SocialFal',{fal:fal})
+
+  }
 
   animateButtons = () => {
 
@@ -585,7 +590,7 @@ static navigationOptions = ({ navigation }) => ({
           return(
             <View>
               <View style={{backgroundColor:'transparent',marginBottom:10}}><Text style={{fontFamily:'SourceSansPro-Bold',textAlign:'left',color:'white',fontWeight:'bold',fontSize:14}}>Son Falın</Text></View>
-              <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToFal()}}>
+              <TouchableOpacity style={{  height: 58,borderRadius: 4,backgroundColor: "rgba(250, 249, 255, 0.6)"}} onPress={() => {this.navigateToSosyalFal(tek)}}>
                <View style={{flexDirection:'row',justifyContent:'space-between',height:60}}>
                 <View>
                   <Image source={{uri:tek.photos[0]}} style={styles.falciAvatar}></Image>
@@ -1057,14 +1062,14 @@ static navigationOptions = ({ navigation }) => ({
           </View>
 
 
-          {/*
+
           <TouchableOpacity onPress={()=>{this.props.navigation.navigate('Social');this.props.navigation.navigate('FalBakKazan');firebase.analytics().logEvent("anasayfadanKazan");}} style={{backgroundColor:'rgb(230,213,160)',borderRadius: 4,position:'absolute',top:22,right:0,flexDirection:'row',justifyContent:'flex-start',padding:5,paddingLeft:8,}}>
 
                <Text style={{textAlign:'center',fontFamily:'SourceSansPro-Bold',color:"#241466",fontSize:14,paddingRight:5}}>
                 Fal bak{'\n'}Kazan
               </Text>
 
-          </TouchableOpacity>*/}
+          </TouchableOpacity>
 
             {this.renderTek()}
 

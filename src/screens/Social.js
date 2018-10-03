@@ -173,6 +173,7 @@ export default class Social extends React.Component {
     Backend.getCommenteds().then((socials)=>{
       this.props.socialStore.setCommenteds(socials)
     })
+    firebase.analytics().logEvent("SocialViewed")
 
 
      this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
@@ -410,6 +411,21 @@ export default class Social extends React.Component {
 
   _keyExtractor = (item, index) => index.toString();
 
+  renderInfoBanner = () => {
+    if(this.props.userStore.user){
+      if(this.props.userStore.user.infoMessage){
+        var message=this.props.userStore.user.infoMessage
+        return(
+          <TouchableOpacity onPress={()=>{this.props.navigation.navigate(message.destination)}} style={{padding:5,alignItems:'center',paddingLeft:15,flexDirection:'row',backgroundColor: '#fffff0',width:'100%',borderColor:'rgb(166, 158, 171)',borderBottomWidth:1}}>
+            <Icon name="bullhorn" color={"#241466"} size={30}></Icon>
+            <Text style={{marginLeft:10,fontFamily:'SourceSansPro-Regular',flex:1}}>
+              {message.message}
+            </Text>
+          </TouchableOpacity>
+        )
+      }
+    }
+  }
 
   renderCommenteds = () => {
 
@@ -481,6 +497,7 @@ export default class Social extends React.Component {
           tabBarTextStyle={{fontFamily:'SourceSansPro-Bold'}}
          >
            <View      style={{flex:1}}     tabLabel='YORUM BEKLEYENLER' >
+            {this.renderInfoBanner()}
             {this.renderSosyaller()}
           </View>
            <View     style={{flex:1}}      tabLabel='YORUMLADIKLARINIZ'>

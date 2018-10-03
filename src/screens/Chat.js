@@ -45,8 +45,11 @@ import * as Animatable from 'react-native-animatable';
 require('../components/data/falcilar.js');
 
 const Banner = firebase.admob.Banner;
+const intersti = firebase.admob().interstitial('ca-app-pub-6158146193525843/3388147416');
 const AdRequest = firebase.admob.AdRequest;
 const request = new AdRequest();
+
+
 
 const shareModel = {
          contentType: 'link',
@@ -144,6 +147,11 @@ export default class Chat extends React.Component {
 
     this._isAlright = null;
   }
+
+  intersti = firebase.admob().interstitial('ca-app-pub-6158146193525843/3388147416');
+  AdRequest = firebase.admob.AdRequest;
+  request = new this.AdRequest();
+
   static navigationOptions = ({ navigation }) => ({
     headerLeft:<Icon name="chevron-left" style={{marginLeft:10}} color={'#1194F7'} size={25} onPress={() => {navigation.state.params.setnavigation('Greeting')}} />  ,
     headerRight:<Button title={"Puan Ver"} onPress={() => {navigation.state.params.showpopup()}}/>,
@@ -498,61 +506,21 @@ export default class Chat extends React.Component {
     }
   }
 
-  sendSosyal = () => {
-    if(this.state.sosyalInput.length<20){
-
-      Alert.alert("Kısa soru","Lütfen sorunla ilgili bize biraz daha detay ver. Biz bizeyiz burada :)")
-    }
-    else{
-      if(this.state.sosyalInput.length>200){
-        Alert.alert("Uzun soru","Lütfen sorunu daha kısa bir şekilde ifade et, herkes okusun :).")
-      }
-      else{
-
-        this.setState({spinnerVisible:true})
-        Backend.uploadImages(this.state.falPhotos).then((urls) => {
-
-          this.setState({spinnerVisible:false})
-          if(this.state.falType==1||this.state.falType==2){
-            Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
-            this.popupSosyal.dismiss()
-            Keyboard.dismiss()
-            this.setState({modalVisible:false,inputVisible:false})
-            setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
-          }
-          else{
-
-            if(this.props.userStore.userCredit<50){
-              this.paySosyal(urls)
-            }
-            else{
-              Backend.postSosyal(this.state.sosyalInput,urls,this.state.anonimSwitchIsOn)
-              Backend.addCredits(-50)
-              this.props.userStore.increment(-50)
-              this.popupSosyal.dismiss()
-              Keyboard.dismiss()
-              this.setState({modalVisible:false,inputVisible:false})
-              setTimeout(()=>{Alert.alert("Teşekkürler","Falınız diğer falseverlerle paylaşıldı. Sosyal sayfanıza giderek falınıza gelen yorumlarını takip edebilirsiniz!")},150)
-            }
-          }
-        })
-        .catch(error => {
-          this.setState({spinnerVisible:false,sosyalInput:JSON.stringify(error.error)})
-          Alert.alert("Lütfen tekrar dener misin? Fotoğraflar yüklenirken bir sorun oluştu. ")
-        })
-
-      }
-    }
-  }
-
   sendPayload(payload,image){
 
     if (payload.payload=='secdim') {
 
       this.setState({falPhotos:[image]})
-      this.props.socialStore.addPhoto(image)
-      this.props.socialStore.addPhoto(image)
-      AsyncStorage.setItem('falPhotos',JSON.stringify([image]));
+      //this.props.socialStore.addPhoto(image)
+      //this.props.socialStore.addPhoto(image)
+      var randomNum =  Math.floor(Math.random()*(15-0+1)+0);
+      var randomNum = randomNum*3;
+      var photos=[]
+      photos.push(image)
+      photos.push('https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/images%2Ffincanfotoyok%2F'+(randomNum+1)+'.jpg?alt=media')
+      photos.push('https://firebasestorage.googleapis.com/v0/b/kahve-fali-7323a.appspot.com/o/images%2Ffincanfotoyok%2F'+(randomNum+2)+'.jpg?alt=media')
+
+      AsyncStorage.setItem('falPhotos',JSON.stringify(photos));
     }
 
     if(payload=="appstart"){
@@ -574,8 +542,16 @@ export default class Chat extends React.Component {
       this.popupHand.show()
     }
     else if (payload.payload=='sosyalfal') {
-      //this.popupSosyal.show()
-      this.props.navigation.navigate('FalPaylas',{type:1})
+      firebase.analytics().logEvent("gunluktenSosyale")
+      AsyncStorage.getItem('falPhotos').then((value) => {
+        if(value){
+          value=JSON.parse(value)
+          this.props.navigation.navigate('FalPaylas',{type:1,photos:value})
+        }
+        else {
+            this.props.navigation.navigate('FalPaylas',{type:1})
+        }
+      })
     }
     else{
       if(payload.type=="postback"){
@@ -684,7 +660,10 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
-
+    this.intersti.loadAd(this.request.build());
+    this.intersti.on('onAdLoaded', () => {
+      //this.intersti.show()
+    });
     this.props.navigation.setParams({ showpopup: this.showpopup,setnavigation: this.setnavigation  })
       Backend.loadMessages((message) => {
         if(message!=={}){
@@ -781,13 +760,15 @@ export default class Chat extends React.Component {
 
             }
           }
+          AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
         }
         else{
           this.removeLoading()
+          AsyncStorage.removeItem('falPhotos')
         }
       });
 
-      AsyncStorage.getItem('falPhotos').then((value) => {if(value){this.setState({falPhotos:JSON.parse(value)})}})
+      //
       this.props.userStore.setAktifUnread(0)
 
   }
@@ -816,6 +797,15 @@ export default class Chat extends React.Component {
           this.setState({
             loadingVisible:false,
           });
+
+          setTimeout(() => {
+            var loaded = this.intersti.isLoaded()
+            if(loaded){
+
+                this.intersti.show()
+            }
+          },400);
+
 
           this.sendPayload("appstart")
 

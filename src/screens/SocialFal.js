@@ -1571,13 +1571,13 @@ export default class SocialFal extends React.Component {
     else {
       var fal = this.state.fal
       return(
-        <View style={{backgroundColor:'white',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:115,paddingBottom:10}}>
+        <View style={{backgroundColor:'white',justifyContent:'center',width:'100%',flexDirection:'row',borderColor:'gray',borderBottomWidth:0,height:115,paddingBottom:10}}>
           {
             fal.photos.map(function (foto,index) {
 
               return (
-                <View style={{flex:1,height:85,margin:10,elevation:3}} key={index}>
-                  <TouchableOpacity style={{width:85,alignItems:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:85}} onPress={() => this.setState({ modalVisible: true,photoIndex:index })}>
+                <View style={{flex:1,height:85,margin:10,alignSelf:'center',elevation:3}} key={index}>
+                  <TouchableOpacity style={{width:85,alignItems:'center',alignSelf:'center',justifyContent:'center',borderColor:'gray',borderWidth:1,height:85}} onPress={() => this.setState({ modalVisible: true,photoIndex:index })}>
                      <Image source={{uri:foto}} style={{ width: 85,
                                                  height: 85,
                                                  borderRadius: 4,
@@ -1679,7 +1679,7 @@ export default class SocialFal extends React.Component {
                   //alert('Modal has been closed.');
                 }}
                 transparent={true}>
-              <TouchableOpacity style={{width:40,alignItems:'center',position:"absolute",top:4,right:4,zIndex:100,elevation:5,justifyContent:'center',borderColor:'gray',height:40}}  onPress={() => {
+              <TouchableOpacity style={{width:40,alignItems:'center',position:"absolute",top:20,right:20,zIndex:100,elevation:5,justifyContent:'center',borderColor:'gray',height:40}}  onPress={() => {
                             this.setModalVisible(!this.state.modalVisible);
                           }}>
                     <Icon name="times" color={'#5033c0'} size={40} />

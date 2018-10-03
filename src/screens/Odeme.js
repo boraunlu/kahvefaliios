@@ -23,13 +23,13 @@ import Backend from '../Backend';
 import { NativeModules } from 'react-native'
 const { InAppUtils } = NativeModules
 //import {AdMobRewarded} from 'react-native-admob'
-//import { ShareDialog, ShareButton } from 'react-native-fbsdk';
+import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { observable } from 'mobx';
 import { observer, inject } from 'mobx-react';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-/*
+
 const shareModel = {
          contentType: 'link',
           contentUrl: "https://facebook.com/kahvefalisohbeti",
@@ -39,7 +39,7 @@ const shareLinkContent = {
   contentType: 'link',
   contentUrl: "http://www.falsohbeti.com/indir",
   contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
-};*/
+};
 
 @inject("userStore")
 @observer
@@ -60,6 +60,8 @@ export default class Odeme extends React.Component {
          <Icon name="database" color={tintColor} size={20} />
        ),
     };
+
+
 
 
 
@@ -171,11 +173,17 @@ export default class Odeme extends React.Component {
       }
       else{
         var tmp = this;
-        ShareDialog.canShow(this.state.shareLinkContent).then(
+
+        var shareLinkContent = {
+          contentType: 'link',
+          contentUrl: "http://www.falsohbeti.com/indir",
+          contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
+        };
+        ShareDialog.canShow(shareLinkContent).then(
           function(canShow) {
             if (canShow) {
               Keyboard.dismiss()
-              return ShareDialog.show(tmp.state.shareLinkContent);
+              return ShareDialog.show(shareLinkContent);
             }
           }
         ).then((result) => {

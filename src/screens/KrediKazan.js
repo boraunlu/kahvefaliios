@@ -12,6 +12,7 @@ import {
   Button,
   Linking,
   Alert,
+  Keyboard,
   Share
 } from 'react-native';
 
@@ -19,6 +20,7 @@ import firebase from 'react-native-firebase';
 import Backend from '../Backend';
 import { NavigationActions } from 'react-navigation'
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import PropTypes from 'prop-types';
 import { ShareDialog, ShareButton } from 'react-native-fbsdk';
 import { observable } from 'mobx';
@@ -110,16 +112,29 @@ export default class KrediKazan extends React.Component {
 
     }
 
+    navigateToInstagram = () => {
+
+      if(this.props.userStore.user){
+        if(this.props.userStore.user.sharedInsta){
+          Alert.alert("Sonraki Hafta","Bir sonraki hafta Instagram paylaşımından tekrar kredi kazanabilirsin!")
+        }
+        else {
+          this.props.navigation.navigate("Instagram")
+        }
+      }
+    }
+
     shareLinkWithShareDialog = () => {
       if(this.props.userStore.sharedWeek==null){
-        Alert.alert("Bir hafta içinde sadece 1 kere paylaşarak kredi kazanabilirsin")
+
       }
       else if (this.props.userStore.sharedWeek==true) {
         Alert.alert("Bir hafta içinde sadece 1 kere paylaşarak kredi kazanabilirsin")
       }
       else{
         var tmp = this;
-        var shareLinkContent={
+
+        var shareLinkContent = {
           contentType: 'link',
           contentUrl: "http://www.falsohbeti.com/indir",
           contentDescription: 'Hemen mesaj atın, sohbet ederek falınıza bakalım !',
@@ -130,19 +145,19 @@ export default class KrediKazan extends React.Component {
               Keyboard.dismiss()
               return ShareDialog.show(shareLinkContent);
             }
-            else(alert("asd"))
           }
         ).then((result) => {
 
             if (result.postId) {
-              Backend.addCredits(15,"facebookshare");
+              Backend.addCredits(20,"facebookshare");
               Backend.setSharedWeek()
               this.props.userStore.setSharedTrue();
-              this.props.userStore.increment(15)
-              setTimeout(function(){Alert.alert('Tebrikler','15 Kredi hesabınıza eklendi!')},1000)
+              this.props.userStore.increment(20)
+              setTimeout(function(){Alert.alert('Tebrikler','20 Kredi hesabınıza eklendi!')},1000)
             }
           },
           (error) => {
+            alert(error)
           }
         );
       }
@@ -233,10 +248,11 @@ export default class KrediKazan extends React.Component {
 
     return (
 
-      <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
 
-        <ScrollView style={{padding:30,flex:1,width:'100%'}}>
 
+
+          <ImageBackground source={require('../static/images/newImages/BG.png')} style={styles.container}>
+              <ScrollView style={{padding:30,flex:1,width:'100%'}}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => {this.props.navigation.navigate('FalPuan')}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
               <Icon style={{alignSelf:'center'}}name="heart" color={'#ffffff'} size={22} />
@@ -244,6 +260,28 @@ export default class KrediKazan extends React.Component {
               <View style={{flex:2}}><Text style={styles.textStyle}>Fallara yorum yap, Kredi ve Hediyeler Kazan!</Text></View>
               <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
               <Text style={styles.textStyle}>50 Kredi</Text>
+            </TouchableOpacity>
+
+          </View>
+
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => {this.navigateToInstagram()}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
+              <Icon style={{alignSelf:'center'}} name="instagram" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Instagram'da @kahvefalisohbeti hesabımızı etiketleyip paylaşım yap</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>30 Kredi</Text>
+            </TouchableOpacity>
+
+          </View>
+
+          <View style={styles.row}>
+            <TouchableOpacity onPress={() => {this.shareLinkWithShareDialog();}} style={{flexDirection:'row',alignItems:'center',flex:1,padding:5,backgroundColor:'transparent',justifyContent:'center'}}>
+              <Icon style={{alignSelf:'center'}} name="facebook" color={'#ffffff'} size={22} />
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <View style={{flex:2}}><Text style={styles.textStyle}>Facebook'ta paylaş, krediyi kap</Text></View>
+              <View style={{ width: 2,height: 20,opacity: 0.2,backgroundColor: "#ffffff",marginLeft:5,marginRight:5}}></View>
+              <Text style={styles.textStyle}>20 Kredi</Text>
             </TouchableOpacity>
 
           </View>
@@ -294,7 +332,8 @@ export default class KrediKazan extends React.Component {
           </View>
 
         </ScrollView>
-      </ImageBackground>
+            </ImageBackground>
+
 
     );
   }

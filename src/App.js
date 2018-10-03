@@ -20,6 +20,7 @@ import SocialFal from './screens/SocialFal';
 import GunlukFal from './screens/GunlukFal';
 import Home from './screens/Home';
 import Odeme from './screens/Odeme';
+import Instagram from './screens/Instagram';
 
 import Greeting from './screens/Greeting';
 import Kimiz from './screens/Kimiz';
@@ -76,6 +77,7 @@ let KahvefaliappNav = StackNavigator({
     JoinTeam: { screen: JoinTeam },
     TermsofUse: { screen: TermsofUse },
     Oneri: {screen:Oneri},
+    Instagram: {screen:Instagram},
     Chat: {screen:Chat},
     ChatOld: {screen:ChatOld},
     ChatBizden: {screen:ChatBizden},
